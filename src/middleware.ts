@@ -7,9 +7,9 @@ export function middleware() {
 return NextResponse.next();
 }
 
-export const config = {
-  matcher: ['/:path*'], 
-};
+// export const config = {
+//   matcher: ['/:path*'], 
+// };
 
 
 // middleware ไม่ได้
