@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
 
-  if (path.startsWith('/_next') || path.startsWith('/static') || path === '/favicon.ico') {
+  if (path.startsWith('/_next') || path.startsWith('/static') || path.startsWith('/images') || path === '/favicon.ico') {
     return NextResponse.next();
   }
 
