@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname  } from "next/navigation";
 import React from "react";
-import { FaHome } from "react-icons/fa";
 import { FiHome, FiAirplay, FiCoffee, FiBox ,FiMonitor , FiList, FiHardDrive , FiShoppingCart ,FiCalendar,FiToggleRight, FiShare2       } from "react-icons/fi";
 
 const Navbar = () => {
