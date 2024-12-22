@@ -1,11 +1,12 @@
 
 // middleware ได้
-import { NextResponse } from 'next/server';
+// import { NextResponse } from 'next/server';
+// import type { NextRequest } from 'next/server';
 
-export function middleware() {
+// export function middleware(request: NextRequest) {
 
-return NextResponse.next();
-}
+// return NextResponse.next();
+// }
 
 // export const config = {
 //   matcher: ['/:path*'], 
@@ -14,49 +15,44 @@ return NextResponse.next();
 
 // middleware ไม่ได้
 
-// import { NextResponse } from 'next/server';
-// import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// export function middleware(request: NextRequest) {
-//   const url = request.nextUrl.clone();
-//   const cookieAuth  = request.cookies.get('auth_token');
-//   const cookieStatus  = request.cookies.get('status');
-//   const token = cookieAuth?.value;
-//   const status = cookieStatus?.value;
-//   const path = request.nextUrl.pathname;
-
-
-//   if (path.startsWith('/_next') || path.startsWith('/static') || path === '/favicon.ico') {
-//     return NextResponse.next();
-//   }
+export function middleware(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  const cookieAuth  = request.cookies.get('auth_token');
+  const cookieStatus  = request.cookies.get('status');
+  const token = cookieAuth?.value;
+  const status = cookieStatus?.value;
+  const path = request.nextUrl.pathname;
 
 
-//   // ตรวจสอบว่าเข้าสู่ระบบหรือยัง
-//   if (!token && !status && path !== '/login') {
-//     url.pathname = '/login';
-//     return NextResponse.redirect(url);
-//   }
+  if (path.startsWith('/_next') || path.startsWith('/static') || path === '/favicon.ico') {
+    return NextResponse.next();
+  }
 
-//   // ตรวจสอบสถานะการเข้าสู่ระบบ
+  // ตรวจสอบว่าเข้าสู่ระบบหรือยัง
+  if (!token && !status && path !== '/login') {
+    url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
 
-//   if (status === '3' && !path.startsWith('/admin')) {
-//     url.pathname = '/admin';
-//     return NextResponse.redirect(url);
-    
-//   } 
-  
-//   else if (status === '0' && !path.startsWith('/member')) {
-//     url.pathname = '/member'
-//     return NextResponse.redirect(url)
-//   }
+  // ตรวจสอบสถานะการเข้าสู่ระบบ
+  if (status === '3' && !path.startsWith('/admin')) {
+    url.pathname = '/admin';
+    return NextResponse.redirect(url);
+  } 
 
-//   console.log('66666666');
+  else if (status === '0' && !path.startsWith('/member')) {
+    url.pathname = '/member'
+    return NextResponse.redirect(url)
+  }
 
-//   return NextResponse.next();
-// }
+  return NextResponse.next();
+}
 
-// export const config = {
-//   matcher: ['/:path*'], 
-// };
+export const config = {
+  matcher: ['/:path*'], 
+};
 
 
