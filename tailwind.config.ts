@@ -12,6 +12,10 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        prompt: ["Prompt", "sans-serif"],
+        protest: ["Protest Guerrilla", "sans-serif"],
+      },
     },
   },
   plugins: [],

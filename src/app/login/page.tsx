@@ -48,22 +48,22 @@ const Loginpage = () => {
 
     if (username === "admin" && password === "1234") {
       addToken = "Token_admin";
-      addStatus = "1";
+      addStatus = "3";
       await handleRedireact(addToken, addStatus);
       router.push("/admin");
     } else if (username === "member" && password === "1234") {
       addToken = "Token_member";
-      addStatus = "2";
+      addStatus = "0";
       await handleRedireact(addToken, addStatus);
       router.push("/member");
-    } else if (username === "display" && password === "password") {
+    } else if (username === "display" && password === "1234") {
       addToken = "Token_display";
-      addStatus = "3";
+      addStatus = "2";
       await handleRedireact(addToken, addStatus);
       router.push("/display");
     } else if (username === "account" && password === "password") {
       addToken = "Token_account";
-      addStatus = "4";
+      addStatus = "1";
       await handleRedireact(addToken, addStatus);
       router.push("/account");
     } else {

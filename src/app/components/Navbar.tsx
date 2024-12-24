@@ -4,7 +4,10 @@ import { usePathname  } from "next/navigation";
 import React from "react";
 import { FiHome, FiAirplay, FiCoffee, FiBox ,FiMonitor , FiList, FiHardDrive , FiShoppingCart ,FiCalendar,FiToggleRight, FiShare2       } from "react-icons/fi";
 
-const Navbar = () => {
+type NavbarProps = {
+  toggleNavbar : ()=> void;
+}
+const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
   const pathname  = usePathname()
   const menu_1 = [
     {
@@ -37,7 +40,7 @@ const Navbar = () => {
     },
   ];
   const menu_2 = [
-    { id: 0, name: "ประมูล", icon: <FiMonitor  size={18} />, path: "", status: 3 },
+    { id: 0, name: "ประมูล", icon: <FiMonitor  size={18} />, path: "/admin/auction", status: 3 },
     {
       id: 1,
       name: "รายการประมูล",
@@ -90,7 +93,7 @@ const Navbar = () => {
 
   return (
     <div className="">
-      <aside className="w-64 h-full bg-white p-4 border-r-2 border-gray-200">
+      <div className="w-64 h-full bg-white p-4 border-r-2 border-gray-200">
         <nav>
           <ul className="flex flex-col gap-1 ">
             {menu_1.map((item) => (
@@ -101,6 +104,7 @@ const Navbar = () => {
                 <Link
                   className="flex flex-row gap-2 items-center "
                   href={item.path}
+                  onClick={toggleNavbar}
                 >
                   {" "}
                   {item.icon}
@@ -121,6 +125,7 @@ const Navbar = () => {
                 <Link
                   className="flex flex-row gap-2 items-center "
                   href={item.path}
+                  onClick={toggleNavbar}
                 >
                   {" "}
                   {item.icon}
@@ -172,7 +177,7 @@ const Navbar = () => {
 
           <hr className="text-black mt-3" />
         </nav>
-      </aside>
+      </div>
     </div>
   );
 };

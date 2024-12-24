@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import Swal from "sweetalert2";
 
 export const errorMessage = (err : unknown)=>{
     if (err instanceof AxiosError) {
@@ -15,3 +16,33 @@ export const errorMessage = (err : unknown)=>{
         alert("An unknown error occurred");
       }
 }
+
+// export const alertConfirmError = async () => {
+//   Swal.fire({
+//     title: "ลบข้อมูล ?",
+//     text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
+//     icon: "warning",
+//     showCancelButton: true,
+//     confirmButtonColor: "red",
+//     cancelButtonColor: "gray",
+//     confirmButtonText: "ลบ",
+//     cancelButtonText: "ยกเลิก",
+//   }).then((result) => {
+//     return result.isConfirmed; 
+//   });
+// }
+
+export const alertConfirmError = (): Promise<boolean> => {
+  return Swal.fire({
+    title: "ลบข้อมูล ?",
+    text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "red",
+    cancelButtonColor: "gray",
+    confirmButtonText: "ลบ",
+    cancelButtonText: "ยกเลิก",
+  }).then((result) => {
+    return result.isConfirmed; // ส่งค่า true หากยืนยัน
+  });
+};
