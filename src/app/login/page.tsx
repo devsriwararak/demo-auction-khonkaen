@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Image from "next/image";
-import axios from "axios";
-import { errorMessage } from "@/lib/tool";
+// import axios from "axios";
+// import { errorMessage } from "@/lib/tool";
 
 const Loginpage = () => {
   const [username, setUsername] = useState("");
