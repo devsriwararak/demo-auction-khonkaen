@@ -10,6 +10,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <LayoutPage children={children} />
+    <LayoutPage  > {children}</LayoutPage>
   );
 }

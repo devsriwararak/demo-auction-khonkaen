@@ -14,12 +14,12 @@ import { TbWorldCancel } from "react-icons/tb";
 
 const page = () => {
   return (
-    <div className="flex flex-row gap-8">
+    <div className="flex flex-col lg:flex-row gap-8">
       {/* LEFT SECTION */}
-      <div className="w-4/6">
+      <div className="w-full lg:w-4/6">
         <div className="bg-white shadow-md rounded-md px-5 py-4">
-          <div className="flex flex-col lg:flex-row gap-0 items-center justify-between">
-            <div className="w-1/3 flex flex-col gap-2 justify-start items-start  ">
+          <div className="flex flex-col  lg:flex-row gap-0 items-center justify-between">
+            <div className="w-full lg:w-1/3 flex flex-col gap-2 justify-start items-start  ">
               <label htmlFor="" className="text-sm">
                 เลือกหัวข้อประมูล
               </label>
@@ -28,7 +28,7 @@ const page = () => {
                 <option value="">111</option>
               </select>
             </div>
-            <div className="w-2/3 flex flex-row gap-2 justify-end">
+            <div className="w-full lg:w-2/3 flex  flex-wrap lg:flex-row gap-2 justify-start lg:justify-end mt-4 lg:mt-0">
               <button className="text-sm bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
               <MdOutlineAddShoppingCart size={18}  /> เพิ่มสินค้าใหม่
               </button>
@@ -42,7 +42,7 @@ const page = () => {
           </div>
 
           <div className="flex flex-row gap-4 mt-6">
-            <div className="w-1/3">
+            <div className="w-full lg:w-1/3">
               <p className="text-sm">ฉลากออมสิน / หน่วย</p>
               <input
                 type="text"
@@ -51,7 +51,7 @@ const page = () => {
               />
             </div>
 
-            <div className="w-1/3">
+            <div className="w-full lg:w-1/3">
               <p className="text-sm">ล็อตเตอรี่ / ใบ</p>
               <input
                 type="text"
@@ -64,7 +64,7 @@ const page = () => {
 
         <div className="bg-white shadow-md rounded-md px-5 py-4 mt-4 overflow-y-scroll">
           {/* Start วัตถุมงคล */}
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="w-1/4 flex flex-col justify-center items-center">
               วัตถุมงคล
               <FaPrayingHands
@@ -72,7 +72,7 @@ const page = () => {
                 size={70}
               />
             </div>
-            <div className="w-3/4">
+            <div className="w-full lg:w-3/4">
               <div className="overflow-x-auto border rounded-lg  ">
                 <table className="table-auto  w-full ">
                   <thead>
@@ -130,7 +130,7 @@ const page = () => {
           <hr className="my-6" />
 
           {/* Start โทรศัพท์ */}
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="w-1/4 flex flex-col justify-center items-center">
               โทรศัพท์
               <FaMobileAlt
@@ -138,7 +138,7 @@ const page = () => {
                 size={70}
               />
             </div>
-            <div className="w-3/4">
+            <div className="w-full lg:w-3/4">
               <div className="overflow-x-auto border rounded-lg  ">
                 <table className="table-auto  w-full ">
                   <thead>
@@ -148,6 +148,9 @@ const page = () => {
                       </th>
                       <th className="px-4 py-3 text-start font-medium ">
                         จำนวน
+                      </th>
+                      <th className="px-4 py-3 text-start font-medium ">
+                        หน่วยนับ
                       </th>
                       <th className="px-4 py-3 text-start font-medium ">ลบ</th>
                     </tr>
@@ -184,7 +187,7 @@ const page = () => {
       </div>
 
       {/* RIGHT SECTION */}
-      <div className="w-2/6 flex flex-col gap-4">
+      <div className="w-full lg:w-2/6 flex flex-col gap-4">
         <div className="bg-white shadow-md rounded-md h-3/4 px-4 py-4">
           <div className="overflow-x-auto border rounded-lg  ">
             <table className="table-auto  w-full ">
@@ -203,26 +206,26 @@ const page = () => {
 
               <tbody className="">
                 <tr className="">
-                  <td className="px-4 py-3 font-light text-gray-600">1</td>
-                  <td className="px-4 py-3">นายณัฐวุฒิ ศรีวรารักษ์</td>
-                  <td className="px-4 py-3 font-light text-gray-600">500</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
+                  <td className="px-2 py-3 font-light text-gray-600">1</td>
+                  <td className="px-2 py-3">นายณัฐวุฒิ ศรีวรารักษ์</td>
+                  <td className="px-2 py-3 font-light text-gray-600">500</td>
+                  <td className="px-2 py-3 font-light text-gray-600">
                     <FaRegEdit size={18} className="text-blue-500" />
                   </td>
                 </tr>
                 <tr className="">
-                  <td className="px-4 py-3 font-light text-gray-600">2</td>
-                  <td className="px-4 py-3">บ. เดฟศรีวรารักษ์</td>
-                  <td className="px-4 py-3 font-light text-gray-600">200</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
+                  <td className="px-2 py-3 font-light text-gray-600">2</td>
+                  <td className="px-2 py-3">บ. เดฟศรีวรารักษ์</td>
+                  <td className="px-2 py-3 font-light text-gray-600">200</td>
+                  <td className="px-2 py-3 font-light text-gray-600">
                     <FaRegEdit size={18} className="text-blue-500" />
                   </td>
                 </tr>
                 <tr className="">
-                  <td className="px-4 py-3 font-light text-gray-600">3</td>
-                  <td className="px-4 py-3">สินค้า 004</td>
-                  <td className="px-4 py-3 font-light text-gray-600">700</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
+                  <td className="px-2 py-3 font-light text-gray-600">3</td>
+                  <td className="px-2 py-3">สินค้า 004</td>
+                  <td className="px-2 py-3 font-light text-gray-600">700</td>
+                  <td className="px-2 py-3 font-light text-gray-600">
                     <FaRegEdit size={18} className="text-blue-500" />
                   </td>
                 </tr>
@@ -240,7 +243,7 @@ const page = () => {
           </div>
 
           <div className="">
-            <button className=" bg-gradient-to-r from-red-700 to-red-500 rounded-md py-2 text-white   w-full flex flex-row gap-2 items-center justify-center">
+            <button className=" mt-4 bg-gradient-to-r from-red-700 to-red-500 rounded-md py-2 text-white   w-full flex flex-row gap-2 items-center justify-center">
               {" "}
               <FaRegSave size={18}  />
               บันทีก / อัพเดท
