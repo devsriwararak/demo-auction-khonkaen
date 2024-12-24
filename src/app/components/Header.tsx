@@ -3,14 +3,28 @@ import React from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 const Header = () => {
   const router = useRouter();
   const handleLogout = async () => {
     try {
-      Cookies.remove("auth_token");
-      Cookies.remove("status");
-      router.refresh();
+      Swal.fire({
+        title: "ออกจากระบบ ?",
+        text: "คุณแน่ใจหรือไม่ที่จะออกจากระบบ !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "red",
+        cancelButtonColor: "gray",
+        confirmButtonText: "ออกจากระบบ",
+        cancelButtonText: "ยกเลิก",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Cookies.remove("auth_token");
+          Cookies.remove("status");
+          router.refresh();
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -23,10 +37,10 @@ const Header = () => {
 
         <div className="w-full text-start">
           <ul className="flex flex-row justify-end gap-4 pr-8">
-            <li className="flex flex-row gap-1 items-center">
+            <li className="flex flex-row gap-1 items-center cursor-pointer hover:bg-red-100 px-4 py-1 hover:rounded-lg border-b-2 border-red-500 ">
               {" "}
               <FaSignOutAlt size={15} className="text-gray-600" />{" "}
-              <p className="text-sm text-gray-700" onClick={handleLogout}>
+              <p className="text-sm text-gray-700  " onClick={handleLogout}>
                 ออกจากระบบ
               </p>
             </li>
