@@ -5,11 +5,34 @@ import { FiAirplay, FiPlus } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import ModalAdd from "./ModalAdd";
-import { AiOutlineDelete } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { alertConfirmError } from "@/lib/tool";
 
-const page = () => {
+const dataTest = [
+  {
+    id: 0,
+    header_1: "0001",
+    header_2: "0002",
+    header_3: "0003",
+    header_4: "0004",
+  },
+  {
+    id: 1,
+    header_1: "0005",
+    header_2: "0006",
+    header_3: "0007",
+    header_4: "0008",
+  },
+  {
+    id: 2,
+    header_1: "0009",
+    header_2: "0010",
+    header_3: "0011",
+    header_4: "0012",
+  },
+];
+
+const Page = () => {
   const [open, setOpen] = useState(false);
   const [sendDataToModal, setSendDataToModal] = useState({
     id: 0,
@@ -17,29 +40,7 @@ const page = () => {
   });
   const [search, setSearch] = useState("");
 
-  let dataTest = [
-    {
-      id: 0,
-      header_1: "0001",
-      header_2: "0002",
-      header_3: "0003",
-      header_4: "0004",
-    },
-    {
-      id: 1,
-      header_1: "0005",
-      header_2: "0006",
-      header_3: "0007",
-      header_4: "0008",
-    },
-    {
-      id: 2,
-      header_1: "0009",
-      header_2: "0010",
-      header_3: "0011",
-      header_4: "0012",
-    },
-  ];
+
   const [data, setData] = useState(dataTest);
   // modal Add Action
   const handleModalAdd = async () => {
@@ -58,7 +59,7 @@ const page = () => {
     try {
       const confirm = await alertConfirmError();
       if (confirm) {
-        Swal.fire("ลบเสร็จ !", "", "success");
+        Swal.fire(`ลบเสร็จ ! ${id}`, "", "success");
       }
     } catch (error) {
       console.log(error);
@@ -187,4 +188,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
