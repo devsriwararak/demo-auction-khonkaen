@@ -55,7 +55,7 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
       id: 0,
       name: "ขายสินค้า",
       icon: <FiShoppingCart   size={18} />,
-      path: "",
+      path: "/admin/sale",
       status: 3,
     },
     {

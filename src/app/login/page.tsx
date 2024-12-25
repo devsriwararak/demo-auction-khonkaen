@@ -4,43 +4,50 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Image from "next/image";
-// import axios from "axios";
-// import { errorMessage } from "@/lib/tool";
+import axios from "axios";
+import { encryptData, errorMessage } from "@/lib/tool";
 
 const Loginpage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+
+
   const handleRedireact = async (token: string, status: string) => {
-    Cookies.set("auth_token", token, { expires: 1 });
-    Cookies.set("status", status, { expires: 1 });
+    const encryptedToken = encryptData(token)
+    const encryptedStatus = encryptData(status)
+
+    Cookies.set("auth_token", encryptedToken, { expires: 1 });
+    Cookies.set("status", encryptedStatus, { expires: 1 });
     router.refresh();
   };
 
-  // const handleLogin2 = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await axios.post(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/auth/${process.env.NEXT_PUBLIC_API_VERSION}/login`,
-  //       {
-  //         username,
-  //         password,
-  //       }
-  //     );
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/${process.env.NEXT_PUBLIC_API_VERSION}/login`,
+        {
+          username,
+          password,
+        }
+      );
 
-  //     if (res.status === 200) {
-  //       const token = res.data.token.token;
-  //       const status = res.data.token.status;
-  //       await handleRedireact(token, status);
-  //     }
-  //   } catch (err: unknown) {
-  //     console.log(err);
-  //     errorMessage(err);
-  //   }
-  // };
+      if (res.status === 200) {
+   
+        const token = res.data.token.token;
+        const status = res.data.token.status;
+        await handleRedireact(token, status);
+        console.log({token});
+      }
+    } catch (err: unknown) {
+      console.log(err);
+      errorMessage(err);
+    }
+  };
 
-  const handleLogin = async (e:React.FormEvent) => {
+  const handleLogin2 = async (e:React.FormEvent) => {
     e.preventDefault()
 
     let addToken = "";

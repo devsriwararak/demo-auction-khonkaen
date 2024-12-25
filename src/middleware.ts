@@ -17,14 +17,23 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { decryptData } from './lib/tool';
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
-  const cookieAuth  = request.cookies.get('auth_token');
-  const cookieStatus  = request.cookies.get('status');
-  const token = cookieAuth?.value;
-  const status = cookieStatus?.value;
+  const cookieAuth  = request.cookies.get('auth_token')?.value;
+  const cookieStatus  = request.cookies.get('status')?.value;
   const path = request.nextUrl.pathname;
+  let token = ""
+  let status = ""
+  
+  // ถอดรหัส
+  if (cookieAuth){
+    token = decryptData(cookieAuth) 
+  }
+  if(cookieStatus) {
+    status = decryptData(cookieStatus)
+  }
 
 
   if (path.startsWith('/_next') || path.startsWith('/static') || path.startsWith('/images') || path === '/favicon.ico') {

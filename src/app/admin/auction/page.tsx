@@ -15,7 +15,7 @@ import { TbWorldCancel } from "react-icons/tb";
 const page = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
-      <a href="/admin/auction/WebSocketTest">xxx</a>
+      {/* <a href="/admin/auction/WebSocketTest">xxx</a> */}
       {/* LEFT SECTION */}
       <div className="w-full lg:w-4/6">
         <div className="bg-white shadow-md rounded-md px-5 py-4">
@@ -63,7 +63,7 @@ const page = () => {
           </div>
         </div>
 
-        <div className="bg-white shadow-md rounded-md px-5 py-4 mt-4 overflow-y-scroll">
+        <div className="bg-white h-[500px] shadow-md rounded-md px-5 py-4 mt-4 overflow-y-scroll">
           {/* Start วัตถุมงคล */}
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="w-1/4 flex flex-col justify-center items-center">
@@ -194,38 +194,38 @@ const page = () => {
             <table className="table-auto  w-full ">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-300  ">
-                  <th className="px-4 py-3 text-start font-medium ">ลำดับ</th>
+                  <th className="px-2 py-3 text-start font-medium  ">ลำดับ</th>
                   <th className="px-4 py-3 text-start font-medium ">
                     ผู้บริจาค
                   </th>
                   <th className="px-4 py-3 text-start font-medium ">
                     จำนวนเงิน
                   </th>
-                  <th className="px-4 py-3 text-start font-medium ">แก้ไข</th>
+                  <th className="px-2 py-3 text-start font-medium ">แก้ไข</th>
                 </tr>
               </thead>
 
               <tbody className="">
                 <tr className="">
                   <td className="px-2 py-3 font-light text-gray-600">1</td>
-                  <td className="px-2 py-3">นายณัฐวุฒิ ศรีวรารักษ์</td>
-                  <td className="px-2 py-3 font-light text-gray-600">500</td>
+                  <td className="px-4 py-3">นายณัฐวุฒิ ศรีวรารักษ์</td>
+                  <td className="px-4 py-3 font-light text-gray-600">500</td>
                   <td className="px-2 py-3 font-light text-gray-600">
                     <FaRegEdit size={18} className="text-blue-500" />
                   </td>
                 </tr>
                 <tr className="">
                   <td className="px-2 py-3 font-light text-gray-600">2</td>
-                  <td className="px-2 py-3">บ. เดฟศรีวรารักษ์</td>
-                  <td className="px-2 py-3 font-light text-gray-600">200</td>
+                  <td className="px-4 py-3">บ. เดฟศรีวรารักษ์</td>
+                  <td className="px-4 py-3 font-light text-gray-600">200</td>
                   <td className="px-2 py-3 font-light text-gray-600">
                     <FaRegEdit size={18} className="text-blue-500" />
                   </td>
                 </tr>
                 <tr className="">
                   <td className="px-2 py-3 font-light text-gray-600">3</td>
-                  <td className="px-2 py-3">สินค้า 004</td>
-                  <td className="px-2 py-3 font-light text-gray-600">700</td>
+                  <td className="px-4 py-3">สินค้า 004</td>
+                  <td className="px-4 py-3 font-light text-gray-600">700</td>
                   <td className="px-2 py-3 font-light text-gray-600">
                     <FaRegEdit size={18} className="text-blue-500" />
                   </td>

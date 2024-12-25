@@ -6,6 +6,7 @@ interface Message {
   username: string;
   status: string;
 }
+ 
 
 const WebSocketComponent = () => {
   const [messages, setMessages] = useState<Message[]>([]);

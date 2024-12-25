@@ -6,7 +6,11 @@ import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import ModalAdd from "./ModalAdd";
 import Swal from "sweetalert2";
-import { alertConfirmError } from "@/lib/tool";
+import { alertConfirmError, createExcel, decryptToken } from "@/lib/tool";
+import axios from "axios";
+const token = decryptToken()
+
+
 
 const dataTest = [
   {
@@ -55,6 +59,7 @@ const Page = () => {
     await handleModalAdd();
   };
 
+  // All Functions
   const handleDelete = async (id: number) => {
     try {
       const confirm = await alertConfirmError();
@@ -66,18 +71,31 @@ const Page = () => {
     }
   };
 
-  const handleSearch = () => {
-    if (!search) {
-      setData(dataTest);
-    } else {
-      const newData = dataTest.filter((item) => item.header_1.includes(search));
-      setData(newData);
+
+  const fetchData = async()=> {
+    try {
+      // ต้องการส้ง bearer token 
+      const res = await axios.get(`http://192.168.1.96:8080/titles/v1/all?startDate=2024-12-25&endDate=2024-12-25`, {
+        // headers : {
+        //   Authorization : `Bearer ${token}`
+        // }, 
+        // params : {
+        //   startDate: "2024-12-25",
+        //   endDate: "2024-12-25"
+        // }
+      })
+      console.log(res.data.data);
+      
+    } catch (error) {
+      console.log(error);
+      
     }
-    
-  };
+  }
+
+  
 
   useEffect(() => {
-    handleSearch();
+    fetchData()
   }, [search]);
 
   return (
@@ -122,9 +140,9 @@ const Page = () => {
             {" "}
             <FiPlus size={20} /> เพิ่มข้อมูล
           </button>
-          <button className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2">
+          <button onClick={()=>createExcel(data)} className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2">
             {" "}
-            <RiFileExcel2Line /> Excel
+            <RiFileExcel2Line  /> Excel
           </button>
         </div>
       </div>
