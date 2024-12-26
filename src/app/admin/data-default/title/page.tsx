@@ -8,102 +8,115 @@ import ModalAdd from "./ModalAdd";
 import Swal from "sweetalert2";
 import { alertConfirmError, createExcel, decryptToken } from "@/lib/tool";
 import axios from "axios";
-const token = decryptToken()
+import moment from "moment";
 
-
-
-const dataTest = [
-  {
-    id: 0,
-    header_1: "0001",
-    header_2: "0002",
-    header_3: "0003",
-    header_4: "0004",
-  },
-  {
-    id: 1,
-    header_1: "0005",
-    header_2: "0006",
-    header_3: "0007",
-    header_4: "0008",
-  },
-  {
-    id: 2,
-    header_1: "0009",
-    header_2: "0010",
-    header_3: "0011",
-    header_4: "0012",
-  },
-];
+interface dataType {
+  id: number;
+  title: string;
+  created_at: string;
+  status: number;
+}
 
 const Page = () => {
   const [open, setOpen] = useState(false);
   const [sendDataToModal, setSendDataToModal] = useState({
     id: 0,
-    name: "",
+    title: "",
   });
   const [search, setSearch] = useState("");
+  const [data, setData] = useState<dataType[]>([]);
+  const [id, setId] = useState(0)
+  // Pagination
+  const [page, setPage] = useState(1)
+  const [totalPage, setTotalPage] = useState(0)
 
+  const dateNow = moment().format("YYYY-MM-DD");
 
-  const [data, setData] = useState(dataTest);
+  const [searchDate, setSearchDate] = useState({
+    startDate: dateNow,
+    endDate: dateNow,
+  });
+
+  const token = decryptToken();
+
   // modal Add Action
   const handleModalAdd = async () => {
     setOpen(!open);
   };
 
-  const handleOpenAdd = async (status: string, id: number, name: string) => {
-    setSendDataToModal({
-      id: status === "add" ? 0 : id,
-      name: status === "add" ? "" : name,
-    });
+  const handleOpenAdd = async ( id: number) => {
+    setId(id)
     await handleModalAdd();
   };
 
   // All Functions
-  const handleDelete = async (id: number) => {
+
+  const fetchData = async () => {
     try {
-      const confirm = await alertConfirmError();
-      if (confirm) {
-        Swal.fire(`ลบเสร็จ ! ${id}`, "", "success");
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            startDate: searchDate.startDate,
+            endDate: searchDate.endDate,
+            title: search,
+            page: page
+          },
+        }
+      );
+
+
+      console.log(res.data.data);
+      if (res.status === 200) {
+        console.log(res.data.pagination);
+        setData(res.data.data);
+        // Pagination
+        setPage(res.data.pagination.current_page)
+        setTotalPage(res.data.pagination.total_pages)
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-
-  const fetchData = async()=> {
+  const handleDelete = async (id: number) => {
     try {
-      // ต้องการส้ง bearer token 
-      const res = await axios.get(`http://192.168.1.96:8080/titles/v1/all?startDate=2024-12-25&endDate=2024-12-25`, {
-        // headers : {
-        //   Authorization : `Bearer ${token}`
-        // }, 
-        // params : {
-        //   startDate: "2024-12-25",
-        //   endDate: "2024-12-25"
-        // }
-      })
-      console.log(res.data.data);
-      
+      const confirm = await alertConfirmError();
+      if (confirm) {
+        const res = await axios.delete(
+          `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (res.status === 204) {
+          Swal.fire(`ลบเสร็จ !`, "", "success");
+          await fetchData();
+        }
+      }
     } catch (error) {
       console.log(error);
-      
     }
-  }
-
-  
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [search]);
+    fetchData();
+  }, [search, searchDate.startDate, searchDate.endDate, page ]);
 
   return (
     <div>
       <ModalAdd
         open={open}
         handleModalAdd={handleModalAdd}
-        sendDataToModal={sendDataToModal}
+        // sendDataToModal={sendDataToModal}
+        id={id}
+        fetchData={fetchData}
       />
       <div className="flex flex-row gap-3 items-center">
         <FiAirplay size={20} />
@@ -116,10 +129,18 @@ const Page = () => {
           <input
             className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
             type="date"
+            value={searchDate?.startDate || ""}
+            onChange={(e) =>
+              setSearchDate((prev) => ({ ...prev, startDate: e.target.value }))
+            }
           />
           <input
             className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
             type="date"
+            value={searchDate?.endDate || ""}
+            onChange={(e) =>
+              setSearchDate((prev) => ({ ...prev, endDate: e.target.value }))
+            }
           />
         </div>
 
@@ -134,15 +155,18 @@ const Page = () => {
 
         <div className="w-full flex flex-row justify-end gap-4">
           <button
-            onClick={() => handleOpenAdd("add", 0, "")}
+            onClick={() => handleOpenAdd(0)}
             className="bg-red-700 hover:bg-red-800 w-full lg:w-40  text-white px-4 py-1 rounded-md flex justify-center items-center gap-2"
           >
             {" "}
             <FiPlus size={20} /> เพิ่มข้อมูล
           </button>
-          <button onClick={()=>createExcel(data)} className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2">
+          <button
+            onClick={() => createExcel(data)}
+            className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2"
+          >
             {" "}
-            <RiFileExcel2Line  /> Excel
+            <RiFileExcel2Line /> Excel
           </button>
         </div>
       </div>
@@ -154,9 +178,10 @@ const Page = () => {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-300 ">
                 <th className="px-4 py-3 text-start font-medium ">ชื่อ</th>
-                <th className="px-4 py-3 text-start font-medium ">Header 2</th>
-                <th className="px-4 py-3 text-start font-medium ">Header 3</th>
-                <th className="px-4 py-3 text-start font-medium ">Header 4</th>
+                <th className="px-4 py-3 text-start font-medium ">
+                  วันที่สร้าง
+                </th>
+                <th className="px-2 py-3 text-start font-medium ">สถานะ</th>
                 <th className="px-4 py-3 text-start font-medium ">
                   แก้ไข / ลบ
                 </th>
@@ -164,28 +189,35 @@ const Page = () => {
             </thead>
 
             <tbody>
-              {data.map((item) => (
+              {data?.map((item) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-100   ">
-                    <td className="px-4 py-3 font-medium  ">{item.header_1}</td>
-                    <td className="px-4 py-3 font-extralight text-gray-800 ">
-                      {item.header_2}
+                    <td className="px-4 py-3 font-medium  ">{item.title}</td>
+                    <td className="px-4 py-3 font-extralight text-gray-800  ">
+                      <p className="w-32">{item.created_at}</p>
                     </td>
-                    <td className="px-4 py-3 font-extralight text-gray-800">
-                      {item.header_3}
-                    </td>
-                    <td className="px-4 py-3 font-extralight text-gray-800">
-                      {item.header_4}
+                    <td className="px-2 py-3 font-extralight text-gray-800">
+                      <p
+                        className={`${
+                          item.status === 0
+                            ? "bg-green-200 text-green-700 rounded-md"
+                            : "bg-red-200 text-red-700 rounded-md"
+                        } w-32 text-center px-2 pt-1`}
+                      >
+                        {item.status === 0 ? "ยังไม่ประมูล" : "ประมูลแล้ว"}
+                      </p>
                     </td>
                     <td className="px-4 py-3  flex flex-row gap-2 items-center">
                       <FaRegEdit
                         size={18}
-                        onClick={() => handleOpenAdd("edit", 1, "test-01")}
+                        onClick={() =>
+                          handleOpenAdd( item.id)
+                        }
                       />
                       <FaRegTrashAlt
                         size={18}
                         className="text-red-700"
-                        onClick={() => handleDelete(1)}
+                        onClick={() => handleDelete(item.id)}
                       />
                     </td>
                   </tr>
@@ -200,7 +232,7 @@ const Page = () => {
           </table>
         </div>
         {/* pagination */}
-        <Pagination />
+        <Pagination page={page} setPage={setPage}  totalPage={totalPage} />
       </div>
     </div>
   );

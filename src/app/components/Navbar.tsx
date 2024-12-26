@@ -28,14 +28,14 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
       id: 2,
       name: "ข้อมูลผู้บริจาค",
       icon: <FiCoffee  size={18} />,
-      path: "",
+      path: "/admin/data-default/users",
       status: 0,
     },
     {
       id: 3,
       name: "ข้อมูลสินค้า",
       icon: <FiBox  size={18} />,
-      path: "",
+      path: "/admin/data-default/stocks",
       status: 0,
     },
   ];

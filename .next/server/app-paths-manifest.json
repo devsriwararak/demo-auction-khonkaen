@@ -1,6 +1,7 @@
 {
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/login/page": "app/login/page.js",
   "/admin/data-default/title/page": "app/admin/data-default/title/page.js",
-  "/admin/auction/page": "app/admin/auction/page.js",
-  "/admin/sale/page": "app/admin/sale/page.js"
+  "/admin/page": "app/admin/page.js",
+  "/admin/data-default/users/page": "app/admin/data-default/users/page.js",
+  "/admin/data-default/stocks/page": "app/admin/data-default/stocks/page.js"
 }

@@ -19,6 +19,7 @@ const Loginpage = () => {
     const encryptedStatus = encryptData(status)
 
     Cookies.set("auth_token", encryptedToken, { expires: 1 });
+
     Cookies.set("status", encryptedStatus, { expires: 1 });
     router.refresh();
   };
@@ -77,6 +78,8 @@ const Loginpage = () => {
       alert("Login Failed");
     }
   };
+
+  
 
   return (
     <div className="bg-red-100 h-screen flex justify-center items-center">
