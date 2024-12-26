@@ -669,6 +669,9 @@ video {
 .w-screen{
   width: 100vw;
 }
+.w-48{
+  width: 12rem;
+}
 .flex-1{
   flex: 1 1 0%;
 }

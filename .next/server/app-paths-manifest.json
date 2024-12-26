@@ -1,7 +1,8 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/login/page": "app/login/page.js",
   "/admin/data-default/title/page": "app/admin/data-default/title/page.js",
   "/admin/page": "app/admin/page.js",
-  "/admin/data-default/users/page": "app/admin/data-default/users/page.js",
-  "/admin/data-default/stocks/page": "app/admin/data-default/stocks/page.js"
+  "/admin/data-default/stocks/page": "app/admin/data-default/stocks/page.js",
+  "/admin/data-default/users/page": "app/admin/data-default/users/page.js"
 }

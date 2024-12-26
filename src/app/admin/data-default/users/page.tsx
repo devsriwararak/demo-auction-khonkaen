@@ -33,7 +33,7 @@ const Page = () => {
   });
 
   // Pagination
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
 
   // modal Add Action

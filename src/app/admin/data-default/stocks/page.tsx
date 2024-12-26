@@ -9,13 +9,14 @@ import Swal from "sweetalert2";
 import { alertConfirmError, createExcel, decryptToken } from "@/lib/tool";
 import axios from "axios";
 import moment from "moment";
+import Select from "react-select";
 
 interface dataType {
   id: number;
-  cus_num: string;
-  cus_name: string;
-  cus_tel: string;
+  product_name: string;
+  product_count: string;
 }
+
 
 const Page = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,12 @@ const Page = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState<dataType[]>([]);
   const [id, setId] = useState(0);
+  const [categoryData, setCategoryData] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [isClient, setIsClient] = useState(false);
+
+  
+
 
   const token = decryptToken();
   const dateNow = moment().format("YYYY-MM-DD");
@@ -33,7 +40,7 @@ const Page = () => {
   });
 
   // Pagination
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
 
   // modal Add Action
@@ -57,27 +64,27 @@ const Page = () => {
             Authorization: `Bearer ${token}`,
           },
           params: {
-            cus_name: search,
-            page : page
+            product_name: search,
+            category_name : selectedCategory ,
+            page: page,
           },
         }
       );
+      console.log(res.data.data);
 
       if (res.status === 200) {
-        console.log(res.data.pagination);
-
         setData(res.data.data);
 
         // Pagination
-        setPage(res.data.pagination.current_page)
-        setTotalPage(res.data.pagination.total_pages)
+        setPage(res.data.pagination.current_page);
+        setTotalPage(res.data.pagination.total_pages);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchDataCategory = async()=> {
+  const fetchDataCategory = async () => {
     try {
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/category/${process.env.NEXT_PUBLIC_API_VERSION}/all`,
@@ -85,23 +92,21 @@ const Page = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: {
-          },
+          params: {},
         }
       );
-      console.log('category nam');
-      
-
-      if(res.status === 200) {
-        console.log(res.data);
-        
+      if (res.status === 200) {
+        const options = res.data.data.map((item : {id:number; category_name: string }) => ({
+          value: item.category_name,
+          label: item.category_name,
+        }));
+        setCategoryData(options);
+        // ต้องการใช้ react-select
       }
-      
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -127,16 +132,20 @@ const Page = () => {
   };
 
   useEffect(() => {
-    fetchDataCategory()
+    fetchDataCategory();
     fetchData();
-  }, [search, searchDate.startDate, searchDate.endDate , page]);
+    setIsClient(true);
+  }, [search, searchDate.startDate, searchDate.endDate, page]);
+
+  if (!isClient) {
+    return null; 
+  }
 
   return (
     <div>
       <ModalAdd
         open={open}
         handleModalAdd={handleModalAdd}
-        // sendDataToModal={sendDataToModal}
         fetchData={fetchData}
         id={id}
       />
@@ -147,12 +156,20 @@ const Page = () => {
 
       {/* Filter */}
       <div className="flex flex-col lg:flex-row gap-3 justify-start items-center mt-4">
-        <div className="w-full ">
+        <div className="w-full flex flex-row gap-2 items-center ">
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
+            className="w-full lg:w-48 px-2 lg:px-4 py-1.5 rounded-md shadow-md"
             type="text"
             placeholder="ค้นหาชื่อผู้บริจาค"
             onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <Select
+            options={categoryData}
+            onChange={(selectedOption) => setSelectedCategory(selectedOption || "")}
+            placeholder="เลือกหมวดหมู่"
+            isClearable
+            className="w-48"
           />
         </div>
 
@@ -175,7 +192,7 @@ const Page = () => {
       </div>
 
       {/* Table Data */}
-      <div className="mt-6 w-full bg-white px-4 py-4 rounded-md shadow-md">
+      <div className="mt-4 w-full bg-white px-4 py-4 rounded-md shadow-md">
         <div className="overflow-x-auto border border-gray-300 rounded-lg  shadow-lg ">
           <table className="table-auto  w-full ">
             <thead>
@@ -193,19 +210,17 @@ const Page = () => {
               {data?.map((item) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-100   ">
-                    <td className="px-4 py-3 font-medium  ">{item.cus_num}</td>
+                    <td className="px-4 py-3 font-medium  ">{item.product_name}</td>
                     <td className="px-4 py-3 font-extralight text-gray-800  ">
-                      <p className="w-32">{item.cus_name}</p>
+                      <p className="w-32">{item.product_count}</p>
                     </td>
-                    <td className="px-4 py-3 font-extralight text-gray-800  ">
-                      <p className="w-32">{item.cus_tel}</p>
-                    </td>
+                  
 
                     <td className="px-4 py-3  flex flex-row gap-2 items-center">
                       <FaRegEdit
                         size={18}
                         onClick={() =>
-                          handleOpenAdd("edit", item.id, item.cus_name)
+                          handleOpenAdd("edit", item.id, item.product_count)
                         }
                       />
                       <FaRegTrashAlt
@@ -226,7 +241,7 @@ const Page = () => {
           </table>
         </div>
         {/* pagination */}
-        <Pagination page={page} setPage={setPage}  totalPage={totalPage} />
+        <Pagination page={page} setPage={setPage} totalPage={totalPage} />
       </div>
     </div>
   );
