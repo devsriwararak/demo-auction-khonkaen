@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
-import Swal from "sweetalert2";
+
+// import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import CryptoJS from "crypto-js";
@@ -25,22 +26,11 @@ export const errorMessage = (err: unknown) => {
   }
 }
 
-// export const alertConfirmError = async () => {
-//   Swal.fire({
-//     title: "ลบข้อมูล ?",
-//     text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
-//     icon: "warning",
-//     showCancelButton: true,
-//     confirmButtonColor: "red",
-//     cancelButtonColor: "gray",
-//     confirmButtonText: "ลบ",
-//     cancelButtonText: "ยกเลิก",
-//   }).then((result) => {
-//     return result.isConfirmed; 
-//   });
-// }
+
 
 export const alertConfirmError = async (): Promise<boolean> => {
+  const Swal = (await import("sweetalert2")).default;
+
   return Swal.fire({
     title: "ลบข้อมูล ?",
     text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
@@ -51,7 +41,7 @@ export const alertConfirmError = async (): Promise<boolean> => {
     confirmButtonText: "ลบ",
     cancelButtonText: "ยกเลิก",
   }).then((result) => {
-    return result.isConfirmed; // ส่งค่า true หากยืนยัน
+    return result.isConfirmed; 
   });
 };
 
