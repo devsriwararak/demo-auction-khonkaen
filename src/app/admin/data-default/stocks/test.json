@@ -1,0 +1,22 @@
+{
+    "id": 1, 
+    "auction_num": "A12345",
+    "title_id": 101,
+    "auction_date": "2024-12-27T12:00:00Z",
+    "auction_status": 1,
+    "auction_price": 10000.00,
+    "bidders": [
+      {
+        "customer_id": 301,
+        "customer_name": "John Doe",
+        "bid_price": 12000.00,
+        "bid_date": "2024-12-26T15:00:00Z"
+      },
+      {
+        "customer_id": 302,
+        "customer_name": "Jane Smith",
+        "bid_price": 12500.00,
+        "bid_date": "2024-12-26T16:00:00Z"
+      }
+    ]
+  }

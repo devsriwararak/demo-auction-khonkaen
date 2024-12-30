@@ -24,31 +24,31 @@ const Loginpage = () => {
     router.refresh();
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/${process.env.NEXT_PUBLIC_API_VERSION}/login`,
-        {
-          username,
-          password,
-        }
-      );
+  // const handleLogin2 = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await axios.post(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/auth/${process.env.NEXT_PUBLIC_API_VERSION}/login`,
+  //       {
+  //         username,
+  //         password,
+  //       }
+  //     );
 
-      if (res.status === 200) {
+  //     if (res.status === 200) {
    
-        const token = res.data.token.token;
-        const status = res.data.token.status;
-        await handleRedireact(token, status);
-        console.log({token});
-      }
-    } catch (err: unknown) {
-      console.log(err);
-      errorMessage(err);
-    }
-  };
+  //       const token = res.data.token.token;
+  //       const status = res.data.token.status;
+  //       await handleRedireact(token, status);
+  //       console.log({token});
+  //     }
+  //   } catch (err: unknown) {
+  //     console.log(err);
+  //     errorMessage(err);
+  //   }
+  // };
 
-  const handleLogin2 = async (e:React.FormEvent) => {
+  const handleLogin = async (e:React.FormEvent) => {
     e.preventDefault()
 
     let addToken = "";
