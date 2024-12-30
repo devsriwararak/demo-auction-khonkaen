@@ -40,7 +40,7 @@ export const errorMessage = (err: unknown) => {
 //   });
 // }
 
-export const alertConfirmError = (): Promise<boolean> => {
+export const alertConfirmError = async (): Promise<boolean> => {
   return Swal.fire({
     title: "ลบข้อมูล ?",
     text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
