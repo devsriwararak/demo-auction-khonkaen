@@ -28,26 +28,30 @@ export const errorMessage = (err: unknown) => {
 
 
 
-export const alertConfirmError = async (): Promise<boolean> => {
-  if (typeof window === 'undefined') {
-    throw new Error("This function can only be used in the browser.");
-  }
+// export const alertConfirmError2 = async (): Promise<boolean> => {
+//   if (typeof window === 'undefined') {
+//     throw new Error("This function can only be used in the browser.");
+//   }
 
-  const Swal = (await import('sweetalert2')).default;
-  
-  return Swal.fire({
-    title: "ลบข้อมูล ?",
-    text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "red",
-    cancelButtonColor: "gray",
-    confirmButtonText: "ลบ",
-    cancelButtonText: "ยกเลิก",
-  }).then((result) => {
-    return result.isConfirmed; 
-  });
-};
+//   const Swal = (await import('sweetalert2')).default;
+
+//   return Swal.fire({
+//     title: "ลบข้อมูล ?",
+//     text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
+//     icon: "warning",
+//     showCancelButton: true,
+//     confirmButtonColor: "red",
+//     cancelButtonColor: "gray",
+//     confirmButtonText: "ลบ",
+//     cancelButtonText: "ยกเลิก",
+//   }).then((result) => {
+//     return result.isConfirmed; 
+//   });
+// };
+
+export const alertConfirmError  = async()=>{
+  return true
+}
 
 
 

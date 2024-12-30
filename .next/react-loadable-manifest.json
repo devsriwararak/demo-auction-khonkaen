@@ -16,11 +16,5 @@
     "files": [
       "static/chunks/node_modules_next_dist_pages__error_js.js"
     ]
-  },
-  "lib\\tool.ts -> sweetalert2": {
-    "id": "lib\\tool.ts -> sweetalert2",
-    "files": [
-      "static/chunks/_app-pages-browser_node_modules_sweetalert2_dist_sweetalert2_all_js.js"
-    ]
   }
 }
