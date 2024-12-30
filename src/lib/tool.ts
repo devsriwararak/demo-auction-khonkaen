@@ -29,8 +29,12 @@ export const errorMessage = (err: unknown) => {
 
 
 export const alertConfirmError = async (): Promise<boolean> => {
-  const Swal = (await import("sweetalert2")).default;
+  if (typeof window === 'undefined') {
+    throw new Error("This function can only be used in the browser.");
+  }
 
+  const Swal = (await import('sweetalert2')).default;
+  
   return Swal.fire({
     title: "ลบข้อมูล ?",
     text: "คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้ !",
