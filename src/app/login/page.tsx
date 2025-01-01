@@ -6,17 +6,16 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import axios from "axios";
 import { encryptData, errorMessage } from "@/lib/tool";
+import { toast } from "react-toastify";
 
 const Loginpage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-
-
   const handleRedireact = async (token: string, status: string) => {
-    const encryptedToken = encryptData(token)
-    const encryptedStatus = encryptData(status)
+    const encryptedToken = encryptData(token);
+    const encryptedStatus = encryptData(status);
 
     Cookies.set("auth_token", encryptedToken, { expires: 1 });
 
@@ -36,7 +35,7 @@ const Loginpage = () => {
   //     );
 
   //     if (res.status === 200) {
-   
+
   //       const token = res.data.token.token;
   //       const status = res.data.token.status;
   //       await handleRedireact(token, status);
@@ -48,8 +47,8 @@ const Loginpage = () => {
   //   }
   // };
 
-  const handleLogin = async (e:React.FormEvent) => {
-    e.preventDefault()
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     let addToken = "";
     let addStatus = "";
@@ -68,6 +67,7 @@ const Loginpage = () => {
       addToken = "Token_display";
       addStatus = "2";
       await handleRedireact(addToken, addStatus);
+      
       router.push("/display");
     } else if (username === "account" && password === "password") {
       addToken = "Token_account";
@@ -75,11 +75,9 @@ const Loginpage = () => {
       await handleRedireact(addToken, addStatus);
       router.push("/account");
     } else {
-      alert("Login Failed");
+      toast.error('เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่')
     }
   };
-
-  
 
   return (
     <div className="bg-red-100 h-screen flex justify-center items-center">
@@ -97,12 +95,12 @@ const Loginpage = () => {
             </div>
           </div>
           <div className="w-full lg:w-2/4  flex flex-col gap-2 justify-center  ">
-            <h1 className="text-3xl">เข้าสู่ระบบ</h1> 
-            <p className="mt-2 text-sm text-gray-400">
-              ระบบประมูลศาลเจ้าขอนแก่น
+            <h1 className="text-3xl">เข้าสู่ระบบ</h1>
+            <p className="mt-0 text-sm text-gray-400">
+              ระบบประมูลศาลเจ้าขอนแก่น โดย Dev Sriwararak
             </p>
             <form onSubmit={handleLogin}>
-              <div className="flex flex-col gap-4 mt-6">
+              <div className="flex flex-col gap-4 mt-4">
                 <input
                   type="text"
                   placeholder="Username"
@@ -124,9 +122,9 @@ const Loginpage = () => {
                   >
                     เข้าสู่ระบบ
                   </button>
-                  <button className="bg-red-600 text-white px-4 py-2 rounded-md">
+                  {/* <button className="bg-red-600 text-white px-4 py-2 rounded-md">
                     ส่ง OTP
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </form>

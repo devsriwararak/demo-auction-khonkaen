@@ -1,14 +1,26 @@
 "use client";
 import Link from "next/link";
-import { usePathname  } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React from "react";
-import { FiHome, FiAirplay, FiCoffee, FiBox ,FiMonitor , FiList, FiHardDrive , FiShoppingCart ,FiCalendar,FiToggleRight, FiShare2       } from "react-icons/fi";
+import {
+  FiHome,
+  FiAirplay,
+  FiCoffee,
+  FiBox,
+  FiMonitor,
+  FiList,
+  FiHardDrive,
+  FiShoppingCart,
+  FiCalendar,
+  FiToggleRight,
+  FiShare2,
+} from "react-icons/fi";
 
 type NavbarProps = {
-  toggleNavbar : ()=> void;
-}
-const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
-  const pathname  = usePathname()
+  toggleNavbar: () => void;
+};
+const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
+  const pathname = usePathname();
   const menu_1 = [
     {
       id: 0,
@@ -27,24 +39,30 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
     {
       id: 2,
       name: "ข้อมูลผู้บริจาค",
-      icon: <FiCoffee  size={18} />,
+      icon: <FiCoffee size={18} />,
       path: "/admin/data-default/users",
       status: 0,
     },
     {
       id: 3,
       name: "ข้อมูลสินค้า",
-      icon: <FiBox  size={18} />,
+      icon: <FiBox size={18} />,
       path: "/admin/data-default/stocks",
       status: 0,
     },
   ];
   const menu_2 = [
-    { id: 0, name: "ประมูล", icon: <FiMonitor  size={18} />, path: "/admin/auction", status: 3 },
+    {
+      id: 0,
+      name: "ประมูล",
+      icon: <FiMonitor size={18} />,
+      path: "/admin/auction",
+      status: 3,
+    },
     {
       id: 1,
       name: "รายการประมูล",
-      icon: <FiList  size={18} />,
+      icon: <FiList size={18} />,
       path: "",
       status: 0,
     },
@@ -54,7 +72,7 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
     {
       id: 0,
       name: "ขายสินค้า",
-      icon: <FiShoppingCart   size={18} />,
+      icon: <FiShoppingCart size={18} />,
       path: "/admin/sale",
       status: 3,
     },
@@ -70,25 +88,31 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
     {
       id: 0,
       name: "บัญชีลูกหนี้",
-      icon: <FiHardDrive  size={18} />,
-      path: "",
+      icon: <FiHardDrive size={18} />,
+      path: "/admin/",
       status: 0,
     },
     {
       id: 1,
       name: "สรุปยอดขาย",
-      icon: <FiCalendar  size={18} />,
-      path: "",
+      icon: <FiCalendar size={18} />,
+      path: "/admin/reports",
       status: 0,
     },
     {
       id: 2,
       name: "จัดการผู้ใช้งาน",
       icon: <FiToggleRight size={18} />,
-      path: "",
+      path: "/admin/sale",
       status: 0,
     },
-    { id: 3, name: "ส่งออก", icon: <FiShare2 size={18} />, path: "", status: 0 },
+    {
+      id: 3,
+      name: "ส่งออก",
+      icon: <FiShare2 size={18} />,
+      path: "/admin/",
+      status: 0,
+    },
   ];
 
   return (
@@ -99,7 +123,11 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
             {menu_1.map((item) => (
               <li
                 key={item.id}
-                className={`${pathname === item.path ? "bg-gradient-to-r from-red-700 to-red-500 text-white" : ""} px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
+                className={`${
+                  pathname === item.path
+                    ? "bg-gradient-to-r from-red-700 to-red-500 text-white"
+                    : ""
+                } px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
               >
                 <Link
                   className="flex flex-row gap-2 items-center "
@@ -120,7 +148,11 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
             {menu_2.map((item) => (
               <li
                 key={item.id}
-                className={`${pathname === item.path ? "bg-gradient-to-r from-red-700 to-red-500 text-white" : ""} px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
+                className={`${
+                  pathname === item.path
+                    ? "bg-gradient-to-r from-red-700 to-red-500 text-white"
+                    : ""
+                } px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
               >
                 <Link
                   className="flex flex-row gap-2 items-center "
@@ -141,7 +173,11 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
             {menu_3.map((item) => (
               <li
                 key={item.id}
-                className={`${pathname === item.path ? "bg-gradient-to-r from-red-700 to-red-500 text-white" : ""} px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
+                className={`${
+                  pathname === item.path
+                    ? "bg-gradient-to-r from-red-700 to-red-500 text-white"
+                    : ""
+                } px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
               >
                 <Link
                   className="flex flex-row gap-2 items-center "
@@ -160,9 +196,15 @@ const Navbar : React.FC<NavbarProps> = ({toggleNavbar}) => {
           <ul className="flex flex-col gap-1 mt-3 ">
             {menu_4.map((item) => (
               <li
-                key={item.id}
-                className={`${pathname === item.path ? "bg-gradient-to-r from-red-700 to-red-500 text-white" : ""} px-4  py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
-              >
+              key={item.id}
+              className={`${
+                (pathname === item.path ||
+                  (pathname.startsWith("/admin/reports") &&
+                    item.path.startsWith("/admin/reports"))) 
+                  ? "bg-gradient-to-r from-red-700 to-red-500 text-white" 
+                  : ""
+              } px-4 py-1.5 hover:bg-red-100 rounded-md cursor-pointer`}
+            >
                 <Link
                   className="flex flex-row gap-2 items-center "
                   href={item.path}
