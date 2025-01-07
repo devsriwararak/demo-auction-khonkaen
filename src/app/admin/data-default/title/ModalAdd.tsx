@@ -7,12 +7,13 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import axios from "axios";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 
 type ModalAddProps = {
   open: boolean;
   handleModalAdd: () => void;
-  id: number,
+  id: number;
   fetchData: () => void;
 };
 
@@ -23,35 +24,27 @@ const ModalAdd: React.FC<ModalAddProps> = ({
   fetchData,
 }) => {
   const token = decryptToken();
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
+  const dateNow = moment().format("YYYY-MM-DD");
+  const [date, setDate] = useState(dateNow);
 
   const handleSave = async () => {
     try {
-      let res;
-      if (id) {
-        res = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/${id}`,
-          { title: title },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } else {
-        res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/create`,
-          { title: title },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/add`,
+        { name, 
+          date, 
+          id: id ? id : "" 
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (res.status === 200) {
-        setTitle("")
+        setName("");
         fetchData();
         handleModalAdd();
       }
@@ -61,37 +54,35 @@ const ModalAdd: React.FC<ModalAddProps> = ({
     }
   };
 
-  const fetchDataByid = async()=>{
+  const fetchDataByid = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          
         }
       );
       if (res.status === 200) {
         console.log(res.data);
-        if(id>0){
-          setTitle(res.data.title)
-          
+        if (id > 0) {
+          setName(res.data.name);
+          setDate(res.data.date);
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    if(id > 0){
-      fetchDataByid()
-    }else {
-      setTitle("")
-      
+    if (id > 0) {
+      fetchDataByid();
+    } else {
+      setName("");
+      setDate(dateNow)
     }
-    
   }, [id]);
 
   return (
@@ -118,15 +109,16 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                 <div className="py-4 flex flex-col lg:flex-row gap-4">
                   <input
                     type="date"
+                    value={date || ""}
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg shadow-lg px-4 py-1.5"
-                    onChange={() => {}}
+                    onChange={(e) => setDate(e.target.value)}
                   />
                   <input
                     type="text"
                     placeholder="หัวข้อประมูล"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg shadow-lg px-4 py-1.5"
-                    value={title || ""}
-                    onChange={(e) => setTitle(e.target.value)}
+                    value={name || ""}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
               </div>

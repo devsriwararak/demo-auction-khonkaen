@@ -13,9 +13,26 @@ import { MdOutlineAddShoppingCart } from "react-icons/md";
 import { RiNumber1, RiNumber2, RiNumber3 } from "react-icons/ri";
 import { TbWorldCancel } from "react-icons/tb";
 import Select from "react-select";
+import ModalAddProduct from "./ModalAddProduct";
+import ModalAddCustomer from "./ModalAddCustomer";
 
 const page = () => {
   const [isClient, setIsClient] = useState(false);
+
+  const [open, setOpen] = useState({
+    product : false,
+    customer : false
+  })
+
+  const handleModal = (numb: number)=>{
+    if(numb === 1) {
+      setOpen({product : ! open.product, customer : false})
+    }
+    if(numb === 2) {
+      setOpen({product : false, customer : !open.customer})
+    }
+  }
+
 
   useEffect(() => {
     setIsClient(true);
@@ -28,7 +45,10 @@ const page = () => {
   ];
   return (
     <div className="flex flex-col lg:flex-row gap-4">
-      {/* <a href="/admin/auction/WebSocketTest">xxx</a> */}
+      <ModalAddProduct  open={open.product} setOpen={setOpen}  />
+      <ModalAddCustomer open={open.customer} setOpen={setOpen} />
+
+
       {/* LEFT SECTION */}
       <div className="w-full lg:w-4/6">
         <div className="bg-white shadow-md rounded-md px-5 py-4">
@@ -43,13 +63,13 @@ const page = () => {
             </div>
             
             <div className="w-full lg:w-2/3 flex  flex-wrap lg:flex-row gap-2 justify-start lg:justify-end  lg:mt-0">
-              <button className="text-sm bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
+              <button onClick={()=>handleModal(1)} className="text-sm bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
                 <MdOutlineAddShoppingCart size={18} /> เพิ่มสินค้าใหม่
               </button>
-              <button className="text-sm bg-gradient-to-r from-green-600 to-green-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
+              <button onClick={()=>handleModal(2)} className="text-sm bg-gradient-to-r from-green-600 to-green-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
                 <FiUserPlus size={18} /> เพิ่มผู้บริจาคใหม่
               </button>
-              <button className="text-sm bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
+              <button  className="text-sm bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center">
                 <TbWorldCancel size={18} /> เคลียร์ห้องประมูล
               </button>
             </div>

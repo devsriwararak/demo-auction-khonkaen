@@ -12,8 +12,8 @@ import moment from "moment";
 
 interface dataType {
   id: number;
-  title: string;
-  created_at: string;
+  name: string;
+  date: string;
   status: number;
 }
 
@@ -25,10 +25,10 @@ const Page = () => {
   });
   const [search, setSearch] = useState("");
   const [data, setData] = useState<dataType[]>([]);
-  const [id, setId] = useState(0)
+  const [id, setId] = useState(0);
   // Pagination
-  const [page, setPage] = useState(1)
-  const [totalPage, setTotalPage] = useState(0)
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(0);
 
   const dateNow = moment().format("YYYY-MM-DD");
 
@@ -44,8 +44,8 @@ const Page = () => {
     setOpen(!open);
   };
 
-  const handleOpenAdd = async ( id: number) => {
-    setId(id)
+  const handleOpenAdd = async (id: number) => {
+    setId(id);
     await handleModalAdd();
   };
 
@@ -53,29 +53,25 @@ const Page = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/all`,
+      const sendData = {
+        page: page,
+        startDate: searchDate.startDate,
+        endDate: searchDate.endDate,
+        search,
+      };
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/all`,
+        sendData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: {
-            startDate: searchDate.startDate,
-            endDate: searchDate.endDate,
-            title: search,
-            page: page
-          },
         }
       );
-
-
-      console.log(res.data.data);
       if (res.status === 200) {
-        console.log(res.data.pagination);
-        setData(res.data.data);
-        // Pagination
-        setPage(res.data.pagination.current_page)
-        setTotalPage(res.data.pagination.total_pages)
+        setData(res.data.result);
+        setTotalPage(res.data.totalPages);
       }
     } catch (error) {
       console.log(error);
@@ -87,7 +83,7 @@ const Page = () => {
       const confirm = await alertConfirmError();
       if (confirm) {
         const res = await axios.delete(
-          `${process.env.NEXT_PUBLIC_API_URL}/titles/${process.env.NEXT_PUBLIC_API_VERSION}/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -95,7 +91,7 @@ const Page = () => {
           }
         );
 
-        if (res.status === 204) {
+        if (res.status === 200) {
           Swal.fire(`ลบเสร็จ !`, "", "success");
           await fetchData();
         }
@@ -105,16 +101,43 @@ const Page = () => {
     }
   };
 
+  const sendExcel = async () => {
+    try {
+      const sendData = {
+        startDate: searchDate.startDate,
+        endDate: searchDate.endDate,
+        search,
+      };
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/send/excel`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+          params: sendData,
+        }
+      );
+
+      await createExcel(res.data, sendData)
+
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
-  }, [search, searchDate.startDate, searchDate.endDate, page ]);
+  }, [search, searchDate.startDate, searchDate.endDate, page]);
 
   return (
     <div>
       <ModalAdd
         open={open}
         handleModalAdd={handleModalAdd}
-        // sendDataToModal={sendDataToModal}
         id={id}
         fetchData={fetchData}
       />
@@ -156,14 +179,14 @@ const Page = () => {
         <div className="w-full flex flex-row justify-end gap-4">
           <button
             onClick={() => handleOpenAdd(0)}
-            className="bg-red-700 hover:bg-red-800 w-full lg:w-40  text-white px-4 py-1 rounded-md flex justify-center items-center gap-2"
+            className="bg-red-700 hover:bg-red-800 w-full lg:w-40  text-white px-4 py-1 rounded-md flex justify-center items-center gap-2 "
           >
             {" "}
             <FiPlus size={20} /> เพิ่มข้อมูล
           </button>
           <button
-            onClick={() => createExcel(data)}
-            className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2"
+            onClick={() => sendExcel()}
+            className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2 "
           >
             {" "}
             <RiFileExcel2Line /> Excel
@@ -192,9 +215,9 @@ const Page = () => {
               {data?.map((item) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-100   ">
-                    <td className="px-4 py-3 font-medium  ">{item.title}</td>
+                    <td className="px-4 py-3 font-medium  ">{item.name}</td>
                     <td className="px-4 py-3 font-extralight text-gray-800  ">
-                      <p className="w-32">{item.created_at}</p>
+                      <p className="w-32">{item.date}</p>
                     </td>
                     <td className="px-2 py-3 font-extralight text-gray-800">
                       <p
@@ -210,13 +233,12 @@ const Page = () => {
                     <td className="px-4 py-3  flex flex-row gap-2 items-center">
                       <FaRegEdit
                         size={18}
-                        onClick={() =>
-                          handleOpenAdd( item.id)
-                        }
+                        onClick={() => handleOpenAdd(item.id)}
+                        className="cursor-pointer"
                       />
                       <FaRegTrashAlt
                         size={18}
-                        className="text-red-700"
+                        className="text-red-700 cursor-pointer"
                         onClick={() => handleDelete(item.id)}
                       />
                     </td>
@@ -232,7 +254,7 @@ const Page = () => {
           </table>
         </div>
         {/* pagination */}
-        <Pagination page={page} setPage={setPage}  totalPage={totalPage} />
+        <Pagination page={page} setPage={setPage} totalPage={totalPage} />
       </div>
     </div>
   );

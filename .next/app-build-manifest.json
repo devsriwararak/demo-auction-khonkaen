@@ -6,11 +6,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/login/page.js"
-    ],
     "/admin/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -20,6 +15,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/page.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/login/page.js"
     ],
     "/admin/data-default/title/page": [
       "static/chunks/webpack.js",
@@ -36,6 +36,21 @@
       "static/chunks/main-app.js",
       "static/chunks/app/admin/sale/page.js"
     ],
+    "/admin/data-default/users/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/data-default/users/page.js"
+    ],
+    "/admin/data-default/stocks/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/data-default/stocks/page.js"
+    ],
+    "/admin/reports/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/reports/layout.js"
+    ],
     "/admin/reports/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -46,30 +61,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/admin/reports/sales/page.js"
     ],
-    "/admin/data-default/stocks/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/data-default/stocks/page.js"
-    ],
-    "/admin/data-default/users/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/data-default/users/page.js"
-    ],
-    "/admin/reports/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/reports/layout.js"
-    ],
     "/admin/reports/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/reports/login/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

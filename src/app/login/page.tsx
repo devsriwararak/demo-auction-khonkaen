@@ -7,6 +7,12 @@ import Image from "next/image";
 import axios from "axios";
 import { encryptData, errorMessage } from "@/lib/tool";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+
+interface CustomJwtPayload {
+  id: string;
+  status: string;
+}
 
 const Loginpage = () => {
   const [username, setUsername] = useState("");
@@ -15,69 +21,66 @@ const Loginpage = () => {
 
   const handleRedireact = async (token: string, status: string) => {
     const encryptedToken = encryptData(token);
-    const encryptedStatus = encryptData(status);
+    const encryptedStatus = encryptData(String(status));
 
     Cookies.set("auth_token", encryptedToken, { expires: 1 });
-
     Cookies.set("status", encryptedStatus, { expires: 1 });
     router.refresh();
   };
 
-  // const handleLogin2 = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await axios.post(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/auth/${process.env.NEXT_PUBLIC_API_VERSION}/login`,
-  //       {
-  //         username,
-  //         password,
-  //       }
-  //     );
-
-  //     if (res.status === 200) {
-
-  //       const token = res.data.token.token;
-  //       const status = res.data.token.status;
-  //       await handleRedireact(token, status);
-  //       console.log({token});
-  //     }
-  //   } catch (err: unknown) {
-  //     console.log(err);
-  //     errorMessage(err);
-  //   }
-  // };
-
+  //TypeError: (0 , jwt_decode__WEBPACK_IMPORTED_MODULE_4__.default) is not a function
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          username,
+          password,
+        }
+      );
 
-    let addToken = "";
-    let addStatus = "";
-
-    if (username === "admin" && password === "1234") {
-      addToken = "Token_admin";
-      addStatus = "3";
-      await handleRedireact(addToken, addStatus);
-      router.push("/admin");
-    } else if (username === "member" && password === "1234") {
-      addToken = "Token_member";
-      addStatus = "0";
-      await handleRedireact(addToken, addStatus);
-      router.push("/member");
-    } else if (username === "display" && password === "1234") {
-      addToken = "Token_display";
-      addStatus = "2";
-      await handleRedireact(addToken, addStatus);
-      
-      router.push("/display");
-    } else if (username === "account" && password === "password") {
-      addToken = "Token_account";
-      addStatus = "1";
-      await handleRedireact(addToken, addStatus);
-      router.push("/account");
-    } else {
-      toast.error('เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่')
+      if (res.status === 200) {
+        const decodedToken = jwtDecode<CustomJwtPayload>(res.data.token);
+        await handleRedireact(res.data.token, decodedToken?.status);
+      }
+    } catch (err: unknown) {
+      console.log(err);
+      errorMessage(err);
     }
   };
+
+  // const handleLogin2 = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   let addToken = "";
+  //   let addStatus = "";
+
+  //   if (username === "admin" && password === "1234") {
+  //     addToken = "Token_admin";
+  //     addStatus = "3";
+  //     await handleRedireact(addToken, addStatus);
+  //     router.push("/admin");
+  //   } else if (username === "member" && password === "1234") {
+  //     addToken = "Token_member";
+  //     addStatus = "0";
+  //     await handleRedireact(addToken, addStatus);
+  //     router.push("/member");
+  //   } else if (username === "display" && password === "1234") {
+  //     addToken = "Token_display";
+  //     addStatus = "2";
+  //     await handleRedireact(addToken, addStatus);
+
+  //     router.push("/display");
+  //   } else if (username === "account" && password === "password") {
+  //     addToken = "Token_account";
+  //     addStatus = "1";
+  //     await handleRedireact(addToken, addStatus);
+  //     router.push("/account");
+  //   } else {
+  //     toast.error('เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่')
+  //   }
+  // };
 
   return (
     <div className="bg-red-100 h-screen flex justify-center items-center">
