@@ -1,5 +1,5 @@
 "use client";
-import { decryptToken, errorMessage } from "@/lib/tool";
+import { dataUnitProduct, decryptToken, errorMessage } from "@/lib/tool";
 import {
   Dialog,
   DialogBackdrop,
@@ -8,105 +8,72 @@ import {
 } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Select from "react-select/base";
+import { toast } from "react-toastify";
 
 type ModalAddProps = {
   open: boolean;
   handleModalAdd: () => void;
-  // sendDataToModal: {
-  //   id: number;
-  //   title: string;
-  // };
   fetchData: () => void;
-  id : number
+  id: number;
 };
+
+interface OptionType {
+  id: string | number;
+  name: string;
+}
 
 const ModalAdd: React.FC<ModalAddProps> = ({
   open,
   handleModalAdd,
   fetchData,
-  id
+  id,
 }) => {
   const token = decryptToken();
 
-  const [cus_name , setCus_name] = useState("")
-  const [cus_address , setCus_address] = useState("")
-  const [cus_delivery , setCus_delivery] = useState("")
-  const [cus_contact , setCus_contact] = useState("")
-  const [cus_noun , setCus_noun] = useState("")
-  const [cus_tel , setCus_tel] = useState("")
-  const [cus_ref , setCus_ref] = useState("")
+  const [dataObject, setDataObject] = useState({
+    category_id: "",
+    name: "",
+    unit: "",
+  });
+  // Select หมวดหมู่
+  const [categoryData, setCategoryData] = useState<OptionType[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<OptionType | null>(
+    null
+  );
 
-  const handleAddDataToState = (data : string ,name : string)=>{
-    if(name === "cus_name"){
-      setCus_name(data)
-    }else if(name === "cus_address"){
-      setCus_address(data)
-    }else if(name === "cus_delivery"){
-      setCus_delivery(data)
-    }else if(name === "cus_contact"){
-      setCus_contact(data)
-    }else if(name === "cus_noun"){
-      setCus_noun(data)
-    }else if (name === "cus_tel"){
-      setCus_tel(data)
-    }else if(name === "cus_ref"){
-      setCus_ref(data)
-    }
-    
-  }
+  // Select หน่วยนับ
+  const [unitData, setUnitData] = useState(dataUnitProduct());
 
   const handleSave = async () => {
-    // ถ้ามี id เข้ามาให้ใช้ เส้น
-
     try {
-      let res;
-      if (id) {
-        res = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/customers/${process.env.NEXT_PUBLIC_API_VERSION}/${id}`,
-          { cus_name, 
-            cus_address,
-            cus_delivery,
-            cus_contact,
-            cus_noun,
-            cus_tel,
-            cus_ref
-           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } else {
-        res = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/customers/${process.env.NEXT_PUBLIC_API_VERSION}/create`,
-          { cus_name, 
-            cus_address,
-            cus_delivery,
-            cus_contact,
-            cus_noun,
-            cus_tel,
-            cus_reference : cus_ref
-           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
+      const sendData = {
+        id: id ? id : "",
+        category_id: dataObject.category_id,
+        name: dataObject.name,
+        unit: dataObject.unit,
+      };
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/product/add`,
+        sendData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (res.status === 200) {
+        toast.success(res.data.message);
         fetchData();
         handleModalAdd();
-
-        setCus_name("")
-        setCus_address("")
-        setCus_delivery("")
-        setCus_contact("")
-        setCus_noun("")
-        setCus_tel("")
-        setCus_ref("")
+        if (id === 0) {
+          setDataObject({
+            category_id: "",
+            name: "",
+            unit: "",
+          });
+        }
       }
     } catch (err: unknown) {
       console.log(err);
@@ -114,47 +81,78 @@ const ModalAdd: React.FC<ModalAddProps> = ({
     }
   };
 
-  const fetchDataByid = async()=>{
+  const fetchDataByid = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/customers/${process.env.NEXT_PUBLIC_API_VERSION}/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          
         }
       );
       if (res.status === 200) {
-        console.log(res.data.data);
-        if(id>0){
-          setCus_name(res.data.data.cus_name)
-          setCus_address(res.data.data.cus_address)
-          setCus_delivery(res.data.data.cus_delivery)
-          setCus_contact(res.data.data.cus_contact)
-          setCus_noun(res.data.data.cus_noun)
-          setCus_tel(res.data.data.cus_tel)
-          setCus_ref(res.data.data.cus_reference)
+        console.log(res.data);
+        if (id > 0) {
+          setDataObject({
+            category_id: res.data.category_id,
+            name: res.data.name,
+            unit: res.data.unit,
+          });
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
+  const handleSetValues = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setDataObject((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const fetchDataCategory = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/product/category/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res.data);
+
+      if (res.status === 200) {
+        // const options = res.data.map((item: { id: number; name: string }) => ({
+        //   value: item.id,
+        //   label: item.name,
+        // }));
+        // const addDefaultOption : OptionType = { value: "", label: "ทั้งหมด" };
+        // const allOption = [addDefaultOption, ...options];
+        // setCategoryData(allOption);
+        const addDefaultOption: OptionType = { id: "", name: "ทั้งหมด" };
+        const allOption = [addDefaultOption, ...res.data];
+        setCategoryData(allOption);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    if(id > 0){
-      fetchDataByid()
-    }else {
-      setCus_name("")
-      setCus_address("")
-      setCus_delivery("")
-      setCus_contact("")
-      setCus_noun("")
-      setCus_tel("")
-      setCus_ref("")
+    if (id > 0) {
+      fetchDataByid();
+    } else {
+      fetchDataCategory();
+      setDataObject({
+        category_id: "",
+        name: "",
+        unit: "",
+      });
     }
-    
   }, [id]);
 
   return (
@@ -163,8 +161,6 @@ const ModalAdd: React.FC<ModalAddProps> = ({
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
       />
-
-
 
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -178,104 +174,53 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   as="h3"
                   className="text-base font-semibold text-gray-900"
                 >
-                  เพิ่มผู้บริจาค  ID : {id}
+                  เพิ่มข้อมูลสินค้า : {id}
                 </DialogTitle>
-                
-                <div className="py-4 flex flex-col lg:flex-row gap-4">
-                  <div className="w-full">
-                    <p className="font-light text-sm">รหัสผู้บริจาค</p>
-                    <input
-                      type="text"
-                      className="w-full mt-1 bg-gray-300 border border-gray-400 rounded-lg shadow-lg px-4 py-1.5"
-                      onChange={() => {}}
-                      disabled
-                      placeholder="รหัสผู้บริจาค Gen Auto"
-                    />
-                  </div>
-                  <div className="w-full">
-                    <p className="font-light text-sm">ชื่อ-สกุล</p>
-                    <input
-                      type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                      value={cus_name || ""}
-                      onChange={(e) =>handleAddDataToState(e.target.value, "cus_name")}
-                      placeholder="ชื่อ-สกุล"
-                    />
-                  </div>
+
+                <div className="mt-4 w-2/3 pr-3">
+                  <p className="text-sm">เลือกหมวดหมู่</p>
+                  <select
+                    className="bg-gray-50 border border-gray-300 rounded-md px-4 py-1 mt-1.5 w-full "
+                    name="category_id"
+                    onChange={(e) => handleSetValues(e)}
+                    value={dataObject.category_id || ""}
+                  >
+                    {categoryData.map((item) => (
+                      <option key={item.id} value={item.id}>{item.name}</option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="">
-                  <p className="font-light text-sm">ที่อยุ่</p>
-                  <input
-                    type="text"
-                    className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                    value={cus_address || ""}
-                    onChange={(e) =>handleAddDataToState(e.target.value, "cus_address")}
-                    placeholder="ที่อยุ่"
-                  />
-                </div>
-
-                
-                <div className="mt-4">
-                  <p className="font-light text-sm">สถานที่จัดส่ง</p>
-                  <input
-                    type="text"
-                    className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                    value={cus_delivery || ""}
-                    onChange={(e) =>handleAddDataToState(e.target.value, "cus_delivery")}
-                    placeholder="สถานที่จัดส่ง"
-                  />
-                </div>
-
-                <div className="py-4 flex flex-col lg:flex-row gap-4">
-                  <div className="w-full">
-                    <p className="font-light text-sm">ผู้ติดต่อ</p>
+                <div className="mt-4 flex flex-row gap-4">
+                  <div className="w-2/3">
+                    <p className="text-sm">ชื่อสินค้า</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                      value={cus_contact || ""}
-                      onChange={(e) =>handleAddDataToState(e.target.value, "cus_contact")}
-                      placeholder="ผู้ติดต่อ"
+                      className="mt-1.5 bg-gray-50 border border-gray-300 shadow-sm rounded-md px-4 py-1 w-full "
+                      placeholder="ชื่อสินค้า"
+                      onChange={(e) => handleSetValues(e)}
+                      value={dataObject.name || ""}
+                      name="name"
                     />
                   </div>
-                  <div className="w-full">
-                    <p className="font-light text-sm">ออกฉลากในนาม</p>
-                    <input
-                      type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                      value={cus_noun || ""}
-                      onChange={(e) =>handleAddDataToState(e.target.value, "cus_noun")}
-                      placeholder="ออกฉลากในนาม"
-                    />
-                  </div>
-                </div>
-
-                <div className=" mb-7 flex flex-col lg:flex-row gap-4">
-                  <div className="w-full">
-                    <p className="font-light text-sm">เบอร๋โทร</p>
-                    <input
-                      type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                      value={cus_tel || ""}
-                      onChange={(e) =>handleAddDataToState(e.target.value, "cus_tel")}
-                      placeholder="เบอร๋โทร"
-                    />
-                  </div>
-                  <div className="w-full">
-                    <p className="font-light text-sm">เลขอ้างอิง</p>
-                    <input
-                      type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
-                      value={cus_ref || ""}
-                      onChange={(e) =>handleAddDataToState(e.target.value, "cus_ref")}
-                      placeholder="เลขอ้างอิง"
-                    />
+                  <div className="w-1/3">
+                    <p className="text-sm">เลือกหน่วยนับ</p>
+                    
+                    <select
+                      className="bg-gray-50 border border-gray-300 rounded-md px-4 py-1 mt-1.5 w-full"
+                      name="unit"
+                      onChange={(e) => handleSetValues(e)}
+                      value={dataObject.unit || ""}
+                    >
+                      {unitData.map((item) => (
+                        <option key={item.id} value={item.name}>{item.name}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-
               </div>
             </div>
-            <div className="bg-gray-100 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <div className="bg-gray-100 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 mt-4">
               <button
                 type="button"
                 onClick={handleSave}

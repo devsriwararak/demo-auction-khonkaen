@@ -1,12 +1,4 @@
 {
-  "/login/page": "app/login/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/data-default/title/page": "app/admin/data-default/title/page.js",
-  "/admin/auction/page": "app/admin/auction/page.js",
-  "/admin/sale/page": "app/admin/sale/page.js",
-  "/admin/data-default/users/page": "app/admin/data-default/users/page.js",
-  "/admin/data-default/stocks/page": "app/admin/data-default/stocks/page.js",
-  "/admin/reports/page": "app/admin/reports/page.js",
-  "/admin/reports/sales/page": "app/admin/reports/sales/page.js",
-  "/admin/reports/login/page": "app/admin/reports/login/page.js"
+  "/display/page": "app/display/page.js",
+  "/admin/auction/page": "app/admin/auction/page.js"
 }

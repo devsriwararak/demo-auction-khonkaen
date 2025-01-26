@@ -40,8 +40,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+
+
   // ตรวจสอบว่าเข้าสู่ระบบหรือยัง
-  if (!token && !status && path !== '/login') {
+  if (!token && !status && path !== '/login' && path !== '/display' && path !== '/demo') {
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
@@ -56,6 +58,10 @@ export function middleware(request: NextRequest) {
     url.pathname = '/member'
     return NextResponse.redirect(url)
   }
+
+
+
+
 
 
 

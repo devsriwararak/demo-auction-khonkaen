@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   images : {
     domains : ['localhost']
-  }
+  },
+  reactStrictMode : false
 };
 
 export default nextConfig;

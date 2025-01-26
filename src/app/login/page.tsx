@@ -8,6 +8,7 @@ import axios from "axios";
 import { encryptData, errorMessage } from "@/lib/tool";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import Link from "next/link";
 
 interface CustomJwtPayload {
   id: string;
@@ -125,9 +126,9 @@ const Loginpage = () => {
                   >
                     เข้าสู่ระบบ
                   </button>
-                  {/* <button className="bg-red-600 text-white px-4 py-2 rounded-md">
-                    ส่ง OTP
-                  </button> */}
+                  <Link href='/display' className="bg-red-600 text-white px-4 py-2 rounded-md">
+                    ดูการประมูล
+                  </Link>
                 </div>
               </div>
             </form>

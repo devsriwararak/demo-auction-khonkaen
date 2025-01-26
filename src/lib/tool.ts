@@ -6,6 +6,9 @@ import { saveAs } from "file-saver";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { io, Socket } from "socket.io-client";
+let socket: Socket  | null = null; // เก็บ instance ของ Socket
+
 
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || "default_key";
@@ -109,6 +112,32 @@ export const decryptToken = () => {
     const bytes = CryptoJS.AES.decrypt(token, SECRET_KEY)
     return bytes.toString(CryptoJS.enc.Utf8)
   }
-
-
 }
+
+// Data
+export const dataUnitProduct = ()=>{
+  const data = [
+    {id:0, name: "ชิ้น"},
+    {id:1, name: "อัน"},
+    {id:2, name: "เครื่อง"},
+    {id:3, name: "ถาด"},
+    {id:4, name: "องค์"},
+    {id:5, name: "อื่นๆ "},
+  ]
+  return data
+}
+
+export const getSocket = (): Socket => {
+  if (!socket) {
+      //  socket = io("http://192.168.1.7:5000"); 
+      socket = io("http://192.168.1.7:5000", {
+        transports: ["websocket"], // ใช้ WebSocket เป็นโปรโตคอลหลัก
+        reconnection: true, // เปิดการเชื่อมต่อใหม่อัตโนมัติ
+        reconnectionAttempts: 5, // จำนวนครั้งสูงสุดที่พยายามเชื่อมต่อใหม่
+        timeout: 10000, // เวลา timeout ในการเชื่อมต่อ (ms)
+      });
+    console.log("Socket.IO instance created.");
+  }
+  return socket; // คืนค่า socket
+};
+

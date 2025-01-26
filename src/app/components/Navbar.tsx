@@ -40,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
       id: 2,
       name: "ข้อมูลผู้บริจาค",
       icon: <FiCoffee size={18} />,
-      path: "/admin/data-default/users",
+      path: "/admin/data-default/customer",
       status: 0,
     },
     {

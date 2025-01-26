@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 type ModalAddProps = {
   open: boolean;
@@ -42,8 +43,11 @@ const ModalAdd: React.FC<ModalAddProps> = ({
           },
         }
       );
+      console.log(res.data);
+      
 
       if (res.status === 200) {
+        toast.success(res.data.message)
         setName("");
         fetchData();
         handleModalAdd();
