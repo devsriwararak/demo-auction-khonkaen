@@ -44,7 +44,7 @@ const Display  = () => {
   const [data, setData] = useState<SendDataType | null>(null);
   const [screen, setScreen] = useState("show_display_screen");
   const [countNumber, setCountNumber] = useState<number | null>(null)
-  const h = "h-72"
+  const h = ""
 
 
   // Systems

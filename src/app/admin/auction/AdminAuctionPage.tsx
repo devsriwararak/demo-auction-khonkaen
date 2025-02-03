@@ -25,7 +25,7 @@ import ModalAddProduct from "./ModalAddProduct";
 import ModalAddCustomer from "./ModalAddCustomer";
 import Swal from "sweetalert2";
 import ModalChangePrice from "./ModalChangePrice";
-import Display from "@/app/display/page";
+// import Display from "@/app/display/page";
 
 
 interface OptionType {
@@ -939,7 +939,6 @@ const Page = () => {
                       <td className="border-b px-4 py-3 font-light  text-gray-600 ">
                         {item.price}
                       </td>
-                      945:29  Error: Expected an assignment or function call and instead saw an expression.  @typescript-eslint/no-unused-expressions
                       <td className="border-b px-4 py-3 font-light  text-gray-600  ">
                         <FaRegEdit
                           onClick={() => {
@@ -962,7 +961,7 @@ const Page = () => {
             ต้องกดบันทึกก่อน จำนวนเงิน ถึงจะเลียงลำดับ
           </p>
           {/* เรียกโชว์ใน Component ทำไมไม่ แสดงข้อมูล Real Time  */}
-          <Display  />
+          {/* <Display  /> */}
 
         </div>
 

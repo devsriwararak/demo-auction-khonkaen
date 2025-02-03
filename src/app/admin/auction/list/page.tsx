@@ -252,7 +252,7 @@ const PageAuctionLst = () => {
         <ModalPdfAuction
           handleOpenModal={handleOpenModal}
           open={openModalPdf}
-          // id={id}
+          id={id}
           
         />
       )}

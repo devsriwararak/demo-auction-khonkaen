@@ -20,6 +20,8 @@ interface dataType {
   title: string;
 }
 
+
+
 const WinnerScreen = forwardRef<HTMLDivElement, WinnerScreenPropType>(
   ({ id }) => {
     // State
@@ -134,10 +136,14 @@ const WinnerScreen = forwardRef<HTMLDivElement, WinnerScreenPropType>(
                 ขอแสดงความยินดี
               </h2>
 
-              <div className="bg-red-900 mt-10 text-center py-2 border-2 border-yellow-500 rounded-md lg:mx-40">
-                <h2 className="text-3xl lg:text-6xl text-white font-semibold text-outline-product px-6 lg:px-14 py-1">
+              <div className="bg-red-900 mt-10 text-center border-2 border-yellow-500 rounded-md lg:mx-40 flex flex-col items-center justify-center py-4">
+                
+                <div className="text-3xl lg:text-6xl text-white font-semibold text-outline-product px-6 lg:px-14 ">
                   {data?.name || ""}
-                </h2>
+                </div>
+                <p>{ " " }</p>
+                <p>{ " " }</p>
+               
               </div>
 
               <h2 className="text-3xl lg:text-5xl text-red-900 font-extrabold text-outline-winner mt-8 text-center">

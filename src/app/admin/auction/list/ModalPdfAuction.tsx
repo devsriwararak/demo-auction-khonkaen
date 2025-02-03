@@ -1,101 +1,154 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { convertNumberToThaiWords } from "@/lib/tool";
+import { convertNumberToThaiWords, decryptToken } from "@/lib/tool";
 import Image from "next/image";
+import axios from "axios";
 
 type ModalPropsType = {
   open: boolean;
   handleOpenModal: (numb: number) => void;
+  id: number;
 };
+
+interface CategoryData {
+  category_id: number;
+  results: {
+    // id: number | null;
+    name: string;
+    category_name: string;
+    product_id: number;
+    quantity: number;
+    unit: string;
+  }[];
+}
+
+interface SendDataType {
+  id: number;
+  code: string;
+  title: string;
+  date: string;
+  government: number;
+  lottery: number;
+  name: string;
+  price: number;
+  status: number;
+  noun: string;
+  ref: string;
+  tel: string;
+  address_customer: string;
+  address_send: string;
+  contact: string;
+  note: string;
+  customer_id: number;
+  auction_title_id: number;
+  products: CategoryData[];
+}
 
 const ModalPdfAuction: React.FC<ModalPropsType> = ({
   open,
   handleOpenModal,
+  id,
 }) => {
-  const contentData = {
-    title: "Invoice Copy 1",
-    companyName: "My Company",
-    address: ["123 Street", "City, Country"],
-    invoiceNo: "N2025-0001",
-    date: "30/01/2025",
-    products: [
-      { name: "Product 1", qty: 1, price: 100, total: 100 },
-      { name: "Product 2", qty: 2, price: 200, total: 400 },
-      { name: "Product 2", qty: 2, price: 200, total: 400 },
-      { name: "Product 2", qty: 2, price: 200, total: 400 },
-    ],
-    sum: 1000,
-    totalAmount: convertNumberToThaiWords(500),
-    notes: "This is a sample note.",
-  };
+
+
+  const [sendData, setSendData] = useState<SendDataType>({
+    id: 0,
+    code: "",
+    title: "",
+    date: "",
+    government: 0,
+    lottery: 0,
+    name: "",
+    price: 0,
+    status: 0,
+    noun: "",
+    ref: "",
+    tel: "",
+    address_customer: "",
+    address_send: "",
+    contact: "",
+    note: "",
+    customer_id: 0,
+    auction_title_id: 0,
+    products: [],
+  });
+
+  // Systems
+  const token = decryptToken();
   const pdfContentRef = useRef<HTMLDivElement>(null);
 
-  // ต้องการทำให้ Titles ที่แสดงผลใน PDF เป็นภาษาไทย แบบไม่ลงฟอร์น
-  // const handlePreviewPDF = async () => {
-  //   if (!pdfContentRef.current) return;
-  //   const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"];
-  //   const pdf = new jsPDF();
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auction/all/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setSendData((prev) => ({
+          ...prev,
+          id: res.data.id,
+          code: res.data.code,
+          title: res.data.title,
+          date: res.data.date,
+          government: res.data.government,
+          lottery: res.data.lottery,
+          name: res.data.name,
+          price: res.data.price,
+          status: res.data.status,
+          noun: res.data.noun,
+          ref: res.data.ref,
+          tel: res.data.tel,
+          address_customer: res.data.address_customer,
+          address_send: res.data.address_send,
+          contact: res.data.contact,
+          note: res.data.note,
+          customer_id: res.data.customer_id,
+          auction_title_id: res.data.auction_id,
+        }));
 
-  //   for (const title of titles) {
-  //     const tempDiv = document.createElement("div");
-  //     tempDiv.style.fontSize = "16px";
-  //   tempDiv.style.fontFamily = "Arial, sans-serif"; // ใช้ฟอนต์ระบบที่รองรับ
-  //   tempDiv.style.position = "absolute";
-  //   tempDiv.style.top = "-9999px"; // ซ่อน <div>
-  //   tempDiv.innerHTML = title;
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  //   document.body.appendChild(tempDiv); // เพิ่ม <div> ลงใน DOM
-  //     // เพิ่มหัวข้อใหม่ในแต่ละหน้า
-  //     pdf.setFontSize(16);
-  //     pdf.text(title, 10, 10); 
-
-  //     // แปลง HTML เป็น Canvas
-  //     const canvas = await html2canvas(pdfContentRef.current);
-  //     const imgData = canvas.toDataURL("image/png");
-
-  //     const pageWidth = pdf.internal.pageSize.getWidth();
-  //     const pageHeight = pdf.internal.pageSize.getHeight();
-  //     const imgWidth = canvas.width;
-  //     const imgHeight = canvas.height;
-
-  //     const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-  //     const imgX = 0; 
-  //     const imgY = 12; 
-
-  //     // เพิ่มเนื้อหาในหน้า PDF
-  //     pdf.addImage(
-  //       imgData,
-  //       "PNG",
-  //       imgX,
-  //       imgY,
-  //       imgWidth * ratio,
-  //       imgHeight * ratio
-  //     );
-
-  //     // เพิ่มหน้าถัดไป (ยกเว้นหน้าสุดท้าย)
-  //     if (title !== titles[titles.length - 1]) {
-  //       pdf.addPage();
-  //     }
-  //   }
-
-  //   const pdfBlob = pdf.output("blob");
-  //   const url = URL.createObjectURL(pdfBlob);
-
-  //   // เปิดหน้าต่างใหม่เพื่อแสดง PDF Preview
-  //   const previewWindow = window.open(url, "_blank");
-  //   previewWindow?.focus();
-  // };
+  const fetchDataAuctionProductList = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auction/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        // setProductsData(res.data.products);
+        setSendData((prev) => ({
+          ...prev,
+          products: res.data.products,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handlePreviewPDF = async () => {
     if (!pdfContentRef.current) return;
-  
+
     const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"]; // ข้อความภาษาไทย
     const pdf = new jsPDF();
-  
+
     for (const title of titles) {
       // สร้าง <div> ชั่วคราวสำหรับข้อความภาษาไทย
       const tempDiv = document.createElement("div");
@@ -106,49 +159,65 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
       tempDiv.style.position = "absolute";
       tempDiv.style.top = "-9999px"; // ซ่อน <div> ออกจากหน้าจอ
       tempDiv.innerHTML = title;
-  
+
       document.body.appendChild(tempDiv); // เพิ่ม <div> ลงใน DOM
-  
+
       // แปลง <div> เป็น Canvas
       const canvas = await html2canvas(tempDiv);
       const imgData = canvas.toDataURL("image/png");
-  
+
       const pageWidth = pdf.internal.pageSize.getWidth();
       const imgX = 10; // ระยะห่างจากขอบซ้าย
       const imgY = 5; // ระยะห่างจากขอบบน
       const imgWidth = 25; // กำหนดความกว้างของภาพข้อความ
       const imgHeight = (canvas.height / canvas.width) * imgWidth; // คำนวณอัตราส่วนความสูง
-  
+
       // เพิ่มภาพข้อความภาษาไทยลงใน PDF
       pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
-  
+
       document.body.removeChild(tempDiv); // ลบ <div> หลังใช้งาน
-  
+
       // เพิ่มเนื้อหาอื่นจาก HTML
       const canvasContent = await html2canvas(pdfContentRef.current);
       const contentImgData = canvasContent.toDataURL("image/png");
-  
+
       const contentX = 10; // ระยะห่างจากขอบซ้าย
       const contentY = imgY + imgHeight + 1; // ระยะห่างจากข้อความภาษาไทย
       const contentWidth = pageWidth - 20; // ลดขอบซ้าย-ขวา
-      const contentHeight = (canvasContent.height / canvasContent.width) * contentWidth; // คำนวณอัตราส่วน
-  
+      const contentHeight =
+        (canvasContent.height / canvasContent.width) * contentWidth; // คำนวณอัตราส่วน
+
       // เพิ่มเนื้อหาในหน้า PDF
-      pdf.addImage(contentImgData, "PNG", contentX, contentY, contentWidth, contentHeight);
-  
+      pdf.addImage(
+        contentImgData,
+        "PNG",
+        contentX,
+        contentY,
+        contentWidth,
+        contentHeight
+      );
+
       // เพิ่มหน้าถัดไป (ยกเว้นหน้าสุดท้าย)
       if (title !== titles[titles.length - 1]) {
         pdf.addPage();
       }
     }
-  
+
     const pdfBlob = pdf.output("blob");
     const url = URL.createObjectURL(pdfBlob);
-  
+
     // เปิดหน้าต่างใหม่เพื่อแสดง PDF Preview
     const previewWindow = window.open(url, "_blank");
     previewWindow?.focus();
   };
+
+  const productItems = sendData.products.flatMap(
+    (category) => category.results
+  );
+  useEffect(() => {
+    fetchData();
+    fetchDataAuctionProductList();
+  }, []);
 
   return (
     <Dialog
@@ -171,6 +240,9 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                 </button>
               </div>
             </div>
+
+            {/* {JSON.stringify(sendData)} */}
+            {/* {JSON.stringify(productItems)} */}
 
             {/* Hidden PDF Content */}
             <div ref={pdfContentRef} className="px-12 pb-10  ">
@@ -204,40 +276,61 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                 <div className="w-9/12 flex flex-col gap-2 ">
                   <div>
                     ชื่อผู้บริจาค :{" "}
-                    <span className=" font-extralight">xxx</span>
+                    <span className=" font-extralight">
+                      {sendData?.name || "-"}
+                    </span>
                   </div>
 
                   <div>
-                    ที่อยู่ : <span className=" font-extralight">xxx</span>
+                    ที่อยู่ :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.address_customer || "-"}
+                    </span>
                   </div>
 
                   <div>
-                    ออกสลากในนาม : <span className=" font-extralight">xxx</span>
+                    ออกสลากในนาม :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.name || "-"}
+                    </span>
                   </div>
 
                   <div>
-                    ผู้ติดต่อ : <span className=" font-extralight">xxx</span>
+                    ผู้ติดต่อ :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.name || "-"}
+                    </span>
                   </div>
                 </div>
 
                 <div className="w-3/12">
                   <div className="w-full flex flex-col  gap-2">
                     <div>
-                      วันที่ : <span className=" font-extralight">xxx</span>
+                      วันที่ :{" "}
+                      <span className=" font-extralight">
+                        {sendData?.date || "-"}
+                      </span>
                     </div>
 
                     <div>
                       เลขที่ใบเสร็จ :{" "}
-                      <span className=" font-extralight">xxx</span>
+                      <span className=" font-extralight">
+                        {sendData?.code || "-"}
+                      </span>
                     </div>
 
                     <div>
                       เบอร์โทรศัพท์ :{" "}
-                      <span className=" font-extralight">xxx</span>
+                      <span className=" font-extralight">
+                        {sendData?.tel || "-"}
+                      </span>
                     </div>
 
                     <div>
-                      บิลอ้างอิง : <span className=" font-extralight">xxx</span>
+                      บิลอ้างอิง :{" "}
+                      <span className=" font-extralight">
+                        {sendData?.ref || "-"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -265,7 +358,7 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                     <th className="px-4 py-2 border border-black bg-gray-50 font-medium text-center">
                       จำนวน
                     </th>
-                    <th className="px-4 py-2 border border-black bg-gray-50 font-medium text-center" >
+                    <th className="px-4 py-2 border border-black bg-gray-50 font-medium text-center">
                       จำนวนเงิน
                     </th>
                     <th className="px-4 py-2 border border-black bg-gray-50 font-medium text-center">
@@ -274,7 +367,31 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                   </tr>
                 </thead>
                 <tbody>
+            
                   {Array.from({ length: 10 }).map((_, index) => {
+                    const item = productItems[index];
+                    return (
+                      <tr key={index}>
+                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                          {index + 1}{" "}
+                        </td>
+                        <td className="px-4 py-2 border border-black w-6/12 font-light">
+                          {item?.name || ""}{" "}
+                        </td>
+                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                          {Number(item?.quantity || 0).toLocaleString() || ""}{" "}
+                        </td>
+                        <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
+                          -{" "}
+                        </td>
+                        <td className="px-4 border border-black w-2/12 font-light text-center">
+                          {" "}
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {/* {Array.from({ length: 10 }).map((_, index) => {
                     const product = contentData.products[index];
                     return (
                       <tr key={index}>
@@ -295,47 +412,68 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                         </td>
                       </tr>
                     );
-                  })}
+                  })} */}
 
                   <tr>
                     <td></td>
                     <td className="px-4 py-2 text-sm text-center">
-                      ( {contentData.totalAmount} )
+                      ( {convertNumberToThaiWords(sendData.price || 0)} )
                     </td>
                     <td></td>
                     <td className="px-4 py-2 text-sm">รวมเป็นเงิน</td>
-                    <td className="px-4 py-2">1000</td>
+                    <td className="px-4 py-2">
+                      {Number(sendData.price || 0).toLocaleString()} บาท
+                    </td>
                   </tr>
                 </tbody>
               </table>
 
               <div className="mt-6">
-                บิลอ้างอิง : <span className=" font-extralight">xxx</span>
+                ชำระเงิน :{" "}
+                <span className=" font-extralight">
+                  {sendData.status === 1 && "ยังไม่ชำระเงิน"}
+                  {sendData.status === 2 && "ชำระเงินแล้ว"}
+                  {sendData.status === 3 && "ยกเลิกบิล"}
+                </span>
               </div>
 
               <div className="mt-2">
-                สถานที่จัดส่ง : <span className=" font-extralight">xxx</span>
+                สถานที่จัดส่ง :{" "}
+                <span className=" font-extralight">
+                  {sendData?.address_send || "-"}
+                </span>
               </div>
 
               <div className="mt-2">
-                หมายเหตุ : <span className=" font-extralight">xxx</span>
+                หมายเหตุ :{" "}
+                <span className=" font-extralight">
+                  {sendData?.note || "-"}
+                </span>
               </div>
 
               <div className="mt-8 flex flex-row justify-center gap-4 font-light">
                 <div className="w-full flex flex-col justify-center items-center">
-                    <span> ผู้รับเงิน</span>
-                    <span className="mt-2">( ........................................................ )</span>
-                    <span className="text-sm mt-2" >วันที่ .........................................................</span>
+                  <span> ผู้รับเงิน</span>
+                  <span className="mt-2">
+                    ( ........................................................ )
+                  </span>
+                  <span className="text-sm mt-2">
+                    วันที่
+                    .........................................................
+                  </span>
                 </div>
 
                 <div className="w-full flex flex-col justify-center items-center">
-                    <span>ผู้รับสินค้า</span>
-                    <span className="mt-2">( ........................................................ )</span>
-                    <span className="text-sm mt-2" >วันที่ .........................................................</span>
+                  <span>ผู้รับสินค้า</span>
+                  <span className="mt-2">
+                    ( ........................................................ )
+                  </span>
+                  <span className="text-sm mt-2">
+                    วันที่
+                    .........................................................
+                  </span>
                 </div>
-
               </div>
-
             </div>
           </DialogPanel>
         </div>

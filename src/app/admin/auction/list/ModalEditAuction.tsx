@@ -508,7 +508,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       <div className="w-full">
                         <p>ที่อยู่</p>
                         <p className=" text-sm font-light">
-                          {sendData?.address_customer}
+                          {sendData?.address_customer || "-"}
                         </p>
                       </div>
                       <div className="w-full">
@@ -520,13 +520,13 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                     <div className="flex flex-row gap-4 mt-3">
                       <div className="w-full">
                         <p className="">เบอร์โทรศัพท์</p>
-                        <p className=" text-sm font-light">{sendData?.tel}</p>
+                        <p className=" text-sm font-light">{sendData?.tel || "-"}</p>
                       </div>
 
                       <div className="w-full">
                         <p className="">สถานที่จัดส่ง</p>
                         <p className=" text-sm font-light">
-                          {sendData?.address_send}
+                          {sendData?.address_send || "-"}
                         </p>
                       </div>
                     </div>
@@ -535,13 +535,13 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       <div className="w-full">
                         <p>ผู้ติดต่อ</p>
                         <p className=" text-sm font-light">
-                          {sendData?.contact}
+                          {sendData?.contact || "-"}
                         </p>
                       </div>
 
                       <div className="w-full">
                         <p>ออกสลากในนาม</p>
-                        <p className=" text-sm font-light">{sendData.noun}</p>
+                        <p className=" text-sm font-light">{sendData.noun || "-"}</p>
                       </div>
                     </div>
                   </div>
