@@ -19,10 +19,7 @@ interface dataType {
 
 const Page = () => {
   const [open, setOpen] = useState(false);
-  const [sendDataToModal, setSendDataToModal] = useState({
-    id: 0,
-    title: "",
-  });
+
   const [search, setSearch] = useState("");
   const [data, setData] = useState<dataType[]>([]);
   const [id, setId] = useState(0);
@@ -143,14 +140,14 @@ const Page = () => {
       />
       <div className="flex flex-row gap-3 items-center">
         <FiAirplay size={20} />
-        <h1 className="text-xl">หัวข้อประมูล</h1>
+        <h1 className="text-lg">หัวข้อประมูล</h1>
       </div>
 
       {/* Filter */}
       <div className="flex flex-col lg:flex-row gap-3 justify-start items-center mt-4">
         <div className="w-full lg:w-96 flex flex-row gap-2 ">
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
+            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
             type="date"
             value={searchDate?.startDate || ""}
             onChange={(e) =>
@@ -158,7 +155,7 @@ const Page = () => {
             }
           />
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
+            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
             type="date"
             value={searchDate?.endDate || ""}
             onChange={(e) =>
@@ -169,7 +166,7 @@ const Page = () => {
 
         <div className="w-full ">
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
+            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
             type="text"
             placeholder="ค้นหาชื่อหัวข้อประมูล"
             onChange={(e) => setSearch(e.target.value)}
@@ -195,9 +192,9 @@ const Page = () => {
       </div>
 
       {/* Table Data */}
-      <div className="mt-6 w-full bg-white px-4 py-4 rounded-md shadow-md">
+      <div className="mt-6 w-full bg-white px-4 py-4 rounded-md shadow-md  ">
         <div className="overflow-x-auto border border-gray-300 rounded-lg  shadow-lg ">
-          <table className="table-auto  w-full ">
+          <table className="table-auto  w-full text-sm ">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-300 ">
                 <th className="px-4 py-3 text-start font-medium ">ชื่อ</th>
@@ -232,12 +229,12 @@ const Page = () => {
                     </td>
                     <td className="px-4 py-3  flex flex-row gap-2 items-center">
                       <FaRegEdit
-                        size={18}
+                        size={16}
                         onClick={() => handleOpenAdd(item.id)}
                         className="cursor-pointer"
                       />
                       <FaRegTrashAlt
-                        size={18}
+                        size={16}
                         className="text-red-700 cursor-pointer"
                         onClick={() => handleDelete(item.id)}
                       />

@@ -108,19 +108,19 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   as="h3"
                   className="text-base font-semibold text-gray-900"
                 >
-                  เพิ่มหัวข้อประมูล test : {id}
+                   {!id ? "เพิ่มหัวข้อประมูล" : "แก้ไขหัวข้อประมูล"}
                 </DialogTitle>
                 <div className="py-4 flex flex-col lg:flex-row gap-4">
                   <input
                     type="date"
                     value={date || ""}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg shadow-lg px-4 py-1.5"
+                    className="w-full border border-gray-400 rounded-lg  px-4 py-1.5"
                     onChange={(e) => setDate(e.target.value)}
                   />
                   <input
                     type="text"
                     placeholder="หัวข้อประมูล"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg shadow-lg px-4 py-1.5"
+                    className="w-full b border border-gray-400 rounded-lg  px-4 py-1.5"
                     value={name || ""}
                     onChange={(e) => setName(e.target.value)}
                   />

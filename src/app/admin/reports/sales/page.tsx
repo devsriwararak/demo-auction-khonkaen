@@ -1,13 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import ReportSale from "./ReportSale";
 import ReportProduct from "./ReportProduct";
 
-interface PageProps {
-  //   setPath: (path: string) => void;
-}
 
-const Page: React.FC<PageProps> = () => {
+
+const Page = () => {
   const [path, setPath] = useState("1");
 
   // Functions

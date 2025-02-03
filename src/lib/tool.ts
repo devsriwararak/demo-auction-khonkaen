@@ -1,8 +1,8 @@
 import { AxiosError } from "axios";
 
 // import Swal from "sweetalert2";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+// import * as XLSX from "xlsx";
+// import { saveAs } from "file-saver";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
@@ -11,7 +11,7 @@ let socket: Socket  | null = null; // เก็บ instance ของ Socket
 
 
 
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || "default_key";
+const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || "";
 
 interface sendDataType {
   startDate?: string;
@@ -60,9 +60,7 @@ export const alertConfirmError = async (): Promise<boolean> => {
   });
 };
 
-// export const alertConfirmError  = async()=>{
-//   return true
-// }
+
 
 
 
@@ -130,7 +128,7 @@ export const dataUnitProduct = ()=>{
 export const getSocket = (): Socket => {
   if (!socket) {
       //  socket = io("http://192.168.1.7:5000"); 
-      socket = io("http://192.168.1.7:5000", {
+      socket = io(process.env.NEXT_PUBLIC_API_URL, {
         transports: ["websocket"], // ใช้ WebSocket เป็นโปรโตคอลหลัก
         reconnection: true, // เปิดการเชื่อมต่อใหม่อัตโนมัติ
         reconnectionAttempts: 5, // จำนวนครั้งสูงสุดที่พยายามเชื่อมต่อใหม่
@@ -141,3 +139,41 @@ export const getSocket = (): Socket => {
   return socket; // คืนค่า socket
 };
 
+
+export const convertNumberToThaiWords = (number: number): string => {
+  const thaiNumbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
+  const thaiPositions = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+
+  let result = ""
+  let numberString = number.toString()
+  // let isBaht = true
+
+  const decimalPart = numberString.split(".")[1]
+  numberString = numberString.split(".")[0]
+
+  for(let i = 0; i < numberString.length; i++){
+    const digit = parseInt(numberString.charAt(numberString.length - i - 1), 10)
+    if(digit !== 0){
+      if(i === 1 && digit === 1){
+        result = "สิบ" + result
+      }else if(i === 1 && digit === 2){
+        result = "ยี่สิบ" + result
+      }else if(i !== 0 || digit !== 1){
+        result = thaiNumbers[digit] + thaiPositions[i] + result
+      }
+    }
+  }
+
+  result += "บาท"
+
+  if(decimalPart && decimalPart !== "00"){
+    result += " " + convertNumberToThaiWords(parseInt(decimalPart)) + "สตางค์"
+
+  }else {
+    result += "ถ้วน"
+  }
+
+
+  return result
+ 
+};

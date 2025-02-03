@@ -25,7 +25,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, setPage , totalPage}) => 
 
 
   return (
-    <div className="mt-4 flex flex-row justify-end items-center">
+    <div className="mt-4 flex flex-row justify-end items-center ">
       <div className="w-10 flex justify-end cursor-pointer  ">
         <FcLeft
           size={30}
@@ -33,7 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, setPage , totalPage}) => 
           onClick={handlePreviousPage}
         />
       </div>
-      <div className="w-20 flex justify-center  text-sm cursor-pointer ">
+      <div className="w-32 flex justify-center  text-sm cursor-pointer ">
       หน้า {page} / {totalPage}
       </div>
       <div className="w-10  flex justify-start cursor-pointer ">

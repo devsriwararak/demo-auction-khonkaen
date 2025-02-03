@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import axios from "axios";
 import { encryptData, errorMessage } from "@/lib/tool";
-import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 

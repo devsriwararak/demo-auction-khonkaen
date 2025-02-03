@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { MdOutlineAddShoppingCart } from "react-icons/md";
-import Select, { SingleValue } from "react-select";
 import { TbHandClick } from "react-icons/tb";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -21,10 +20,10 @@ import Pagination from "@/app/components/Pagination";
 import { decryptToken } from "@/lib/tool";
 
 // -------------------- Types --------------------
-interface OptionType {
-  value: number | string;
-  label: string;
-}
+// interface OptionType {
+//   value: number | string;
+//   label: string;
+// }
 
 interface DataType {
   id: number;
@@ -47,13 +46,10 @@ const ModalAddCustomer: React.FC<ModalAddProductProps> = ({
   setOpen,
   onAddCustomer,
 }) => {
-  const [isClient, setIsClient] = useState(false);
+  // const [isClient, setIsClient] = useState(false);
 
   // ตัวเลือก Category ทั้งหมดจาก API (/api/product/category/all)
-  const [categoryData, setCategoryData] = useState<OptionType[]>([]);
 
-  // Category ที่ผู้ใช้เลือกขณะค้นหา
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
   // คำค้นหา
   const [search, setSearch] = useState("");
@@ -138,15 +134,12 @@ const ModalAddCustomer: React.FC<ModalAddProductProps> = ({
   };
 
 
-  // ---- useEffect: โหลด Category ครั้งแรก ----
   useEffect(() => {
-    setIsClient(true);
   }, []);
 
-  // ทุกครั้งที่ search, selectedCategory, page เปลี่ยน -> fetch ใหม่
   useEffect(() => {
     fetchData();
-  }, [search, selectedCategory, page]);
+  }, [search, page]);
 
   // -------------------------------------------------
   // Render

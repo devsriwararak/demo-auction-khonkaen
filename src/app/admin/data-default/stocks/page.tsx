@@ -1,14 +1,13 @@
 "use client";
 import Pagination from "@/app/components/Pagination";
 import React, { useEffect, useState } from "react";
-import { FiAirplay, FiCoffee, FiPlus } from "react-icons/fi";
+import { FiCoffee, FiPlus } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import ModalAdd from "./ModalAdd";
 import Swal from "sweetalert2";
 import { alertConfirmError, createExcel, decryptToken } from "@/lib/tool";
 import axios from "axios";
-import moment from "moment";
 import Select from "react-select";
 
 interface dataType {
@@ -171,14 +170,14 @@ const Page = () => {
       />
       <div className="flex flex-row gap-3 items-center">
         <FiCoffee size={20} />
-        <h1 className="text-xl">ข้อมูลสินค้า</h1>
+        <h1 className="text-lg">ข้อมูลสินค้า</h1>
       </div>
 
       {/* Filter */}
       <div className="flex flex-col lg:flex-row gap-3 justify-start items-center mt-4">
         <div className="w-full flex flex-row gap-2 items-center ">
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1.5 rounded-md shadow-md"
+            className="w-full lg:w-48 px-2 lg:px-4 py-1.5 rounded-md border border-gray-400"
             type="text"
             placeholder="ค้นหาชื่อผู้บริจาค"
             onChange={(e) => setSearch(e.target.value)}
@@ -191,7 +190,7 @@ const Page = () => {
             }
             placeholder="เลือกหมวดหมู่"
             isClearable
-            className="w-48"
+            className="w-48 border "
           />
         </div>
 
@@ -213,7 +212,7 @@ const Page = () => {
       {/* Table Data */}
       <div className="mt-4 w-full bg-white px-4 py-4 rounded-md shadow-md">
         <div className="overflow-x-auto border border-gray-300 rounded-lg  shadow-lg ">
-          <table className="table-auto  w-full ">
+          <table className="table-auto  w-full text-sm ">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-300 ">
                 <th className="px-4 py-3 text-start font-medium ">ชื่อ</th>
@@ -239,11 +238,11 @@ const Page = () => {
 
                     <td className="px-4 py-3  flex flex-row gap-2 items-center cursor-pointer">
                       <FaRegEdit
-                        size={18}
+                        size={16}
                         onClick={() => handleOpenAdd(item.id)}
                       />
                       <FaRegTrashAlt
-                        size={18}
+                        size={16}
                         className="text-red-700"
                         onClick={() => handleDelete(item.id)}
                       />

@@ -59,7 +59,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
 
       if (res.status === 200) {
         toast.success(res.data.message);
-        fetchData();
+        await fetchData();
         handleModalAdd();
         if (id === 0) {
           setDataObject({
@@ -150,7 +150,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   as="h3"
                   className="text-base font-semibold text-gray-900"
                 >
-                  เพิ่มผู้บริจาค : {id}
+                   {!id ? "เพิ่มผู้บริจาค " : "แก้ไขผู้บริจาค"}
                 </DialogTitle>
 
                 <div className="py-4 flex flex-col lg:flex-row gap-4">
@@ -158,7 +158,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="font-light text-sm">รหัสผู้บริจาค</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-300 border border-gray-400 rounded-lg shadow-lg px-4 py-1.5"
+                      className="w-full mt-1 bg-gray-100 border border-gray-400 rounded-lg px-4 py-1.5"
                       onChange={() => {}}
                       disabled
                       placeholder="รหัสผู้บริจาค Gen Auto"
@@ -168,7 +168,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="font-light text-sm">ชื่อ-สกุล</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                      className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                       name="name"
                       value={dataObject.name || ""}
                       onChange={(e) => handleSetValues(e)}
@@ -181,7 +181,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   <p className="font-light text-sm">ที่อยุ่</p>
                   <input
                     type="text"
-                    className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                    className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                     name="address_customer"
                     value={dataObject.address_customer || ""}
                     onChange={(e) => handleSetValues(e)}
@@ -193,7 +193,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   <p className="font-light text-sm">สถานที่จัดส่ง</p>
                   <input
                     type="text"
-                    className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                    className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                     name="address_send"
                     value={dataObject.address_send || ""}
                     onChange={(e) => handleSetValues(e)}
@@ -206,7 +206,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="font-light text-sm">ผู้ติดต่อ</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                      className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                       name="contact"
                       value={dataObject.contact || ""}
                       onChange={(e) => handleSetValues(e)}
@@ -217,7 +217,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="font-light text-sm">ออกฉลากในนาม</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                      className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                       name="noun"
                       value={dataObject.noun || ""}
                       onChange={(e) => handleSetValues(e)}
@@ -231,7 +231,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="font-light text-sm">เบอร๋โทร</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                      className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                       name="tel"
                       value={dataObject.tel || ""}
                       onChange={(e) => handleSetValues(e)}
@@ -242,7 +242,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="font-light text-sm">เลขอ้างอิง</p>
                     <input
                       type="text"
-                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-lg shadow-lg px-4 py-1.5"
+                      className="w-full mt-1  border border-gray-400 rounded-lg  px-4 py-1.5"
                       name="ref"
                       value={dataObject.ref || ""}
                       onChange={(e) => handleSetValues(e)}

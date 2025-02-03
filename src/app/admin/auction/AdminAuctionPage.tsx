@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 
 // Icons
 import {
@@ -26,9 +25,8 @@ import ModalAddProduct from "./ModalAddProduct";
 import ModalAddCustomer from "./ModalAddCustomer";
 import Swal from "sweetalert2";
 import ModalChangePrice from "./ModalChangePrice";
-import { io, Socket } from "socket.io-client";
 import Display from "@/app/display/page";
-// const socket: Socket = io(`${process.env.NEXT_PUBLIC_API_URL}`);
+
 
 interface OptionType {
   value: string | number;
@@ -51,6 +49,7 @@ interface SendDataType {
       quantity: number;
       category_name: string;
       product_id: number;
+      unit:string;
     }>;
   }[];
   customers: {
@@ -65,6 +64,7 @@ const Page = () => {
   const [dateSelectTitle, setDataSelectTitle] = useState<OptionType[]>([]);
   const [selectedOption, setSelectedOption] = useState<OptionType | null>(null);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [countNumber , setCountNumber] = useState<number>(1)
   const [selectedCusId, setSelectedCusId] = useState<{
     cusId: number | null;
     price: number | null;
@@ -218,8 +218,8 @@ const Page = () => {
 
   const handleClearChoice = () => {
     Swal.fire({
-      title: "จบประมูล / ยกเลิกห้องประมูล ?",
-      text: "กรุณาตรวจสอบให้แน่ใจก่อนยกเลิก !",
+      title: "ยกเลิกห้องประมูล ?",
+      text: "ถ้ายังไม่กด จบประมูล ระบบจะไม่บันทึกรายการให้",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "red",
@@ -295,7 +295,8 @@ const Page = () => {
     productName: string,
     quantity: number,
     category_name: string,
-    product_id: number
+    product_id: number,
+    unit: string
   ): boolean => {
     let isDuplicate = false;
     console.log({ catId });
@@ -318,7 +319,7 @@ const Page = () => {
             ...cat,
             results: [
               ...cat.results,
-              { name: productName, quantity, category_name, product_id },
+              { name: productName, quantity, category_name, product_id ,unit},
             ],
           };
         }
@@ -427,8 +428,8 @@ const Page = () => {
         cancelButtonText: "ยกเลิก",
       }).then(async (result) => {
         if (result.isConfirmed) {
-         await showWinner()
-         await switchDisplay(1)
+          await showWinner();
+          await handleSave()
         }
       });
     } catch (error) {
@@ -450,10 +451,16 @@ const Page = () => {
       if (res.status === 200) {
         toast.success("ทำรายการสำเร็จ");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err: unknown) {
+      console.log(err);
+      errorMessage(err);
     }
   };
+
+  const handleChangeNumber = (numb: number)=>{
+    setCountNumber(numb)
+    socket.emit("change_number_count", Number(numb));
+  }
 
   const handleSave = async () => {
     try {
@@ -486,7 +493,8 @@ const Page = () => {
         toast.success(res.data.message);
         fetchDataById(Number(id));
         socket.emit("step_2", Number(id));
-        await switchDisplay(1)
+        await switchDisplay(1);
+        setCountNumber(1)
       }
     } catch (error: unknown) {
       console.log(error);
@@ -548,8 +556,7 @@ const Page = () => {
         />
       )}
 
-      {/* test : {JSON.stringify(sendData)} */}
-
+ 
       {/* LEFT SECTION */}
       <div className="w-full lg:w-4/6">
         <div className="bg-white shadow-md rounded-md px-5 py-4">
@@ -612,7 +619,7 @@ const Page = () => {
 
           {/* Input ฉลากออมสิน / ล็อตเตอรี่ */}
           <div className="flex flex-row gap-4 mt-6">
-            <div className="w-full lg:w-1/3">
+            <div className="w-full lg:w-1/5">
               <p className="text-sm">ฉลากออมสิน / หน่วย</p>
               <input
                 type="text"
@@ -624,7 +631,7 @@ const Page = () => {
                 onChange={(e) => handleChangeInput(e)}
               />
             </div>
-            <div className="w-full lg:w-1/3">
+            <div className="w-full lg:w-1/5">
               <p className="text-sm">ล็อตเตอรี่ / ใบ</p>
               <input
                 type="text"
@@ -643,9 +650,9 @@ const Page = () => {
         <div className="bg-white h-[500px] shadow-md rounded-md px-5 py-4 mt-4 overflow-y-scroll">
           {/* หมวดวัตถุมงคล */}
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-1/4 flex flex-col justify-start items-center text-base">
+            <div className="w-1/4 flex flex-col justify-start items-center text-sm">
               <FaPrayingHands
-                className="bg-red-100 p-2 rounded-md mb-2"
+                className="bg-red-100 p-2 rounded-md mb-2 "
                 size={70}
               />
               หมวดหมู่ วัตถุมงคล
@@ -655,14 +662,14 @@ const Page = () => {
                 <table className="table-auto w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-300">
-                      <th className="px-4 py-3 text-start font-medium">ชื่อ</th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-start font-medium">ชื่อ</th>
+                      <th className="px-4 py-1 text-center font-medium ">
                         จำนวน
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-center font-medium">
                         หน่วยนับ
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">ลบ</th>
+                      <th className="px-4 py-1 text-center font-medium ">ลบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -670,19 +677,22 @@ const Page = () => {
                       productCat1.results.length > 0 &&
                       productCat1.results.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="border px-2 py-1">
-                            {item.name} | {item.product_id}
+                          <td className="border px-4 py-1 w-5/12 ">
+                            {item.name} 
                           </td>
-                          <td className="border px-2 py-1">{item.quantity}</td>
-                          <td className="border px-2 py-1">
-                            {item.category_name}
+                          <td className="border px-2 py-1 w-2/12 text-center">{item.quantity}</td>
+                          <td className="border px-2 py-1 w-3/12 text-center">
+                            {item.unit}
                           </td>
-                          <td className="px-4 py-3 font-light text-gray-600">
+                          <td className="px-4 py-3 font-light text-gray-600 w-2/12">
+                            <div className="flex justify-center">
                             <FaRegTrashAlt
                               onClick={() => handleDeleteProduct(1, idx)}
-                              size={18}
+                              size={16}
                               className="text-red-500 cursor-pointer"
                             />
+                            </div>
+                           
                           </td>
                         </tr>
                       ))}
@@ -696,7 +706,7 @@ const Page = () => {
 
           {/* หมวดโทรศัพท์ */}
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-1/4 flex flex-col justify-start items-center">
+            <div className="w-1/4 flex flex-col justify-start items-center text-sm">
               <FaMobileAlt
                 className="bg-red-100 p-2 rounded-md mb-2"
                 size={70}
@@ -708,14 +718,14 @@ const Page = () => {
                 <table className="table-auto w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-300">
-                      <th className="px-4 py-3 text-start font-medium">ชื่อ</th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-start font-medium">ชื่อ</th>
+                      <th className="px-4 py-1 text-center font-medium">
                         จำนวน
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-center font-medium">
                         หน่วยนับ
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">ลบ</th>
+                      <th className="px-4 py-1 text-center font-medium">ลบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -723,17 +733,19 @@ const Page = () => {
                       productCat2.results.length > 0 &&
                       productCat2.results.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="border px-2 py-1">{item.name}</td>
-                          <td className="border px-2 py-1">{item.quantity}</td>
-                          <td className="border px-2 py-1">
+                          <td className="border px-2 py-1 w-5/12">{item.name}</td>
+                          <td className="border px-2 py-1 text-center w-2/12">{item.quantity}</td>
+                          <td className="border px-2 py-1 text-center w-3/12">
                             {item.category_name}
                           </td>
-                          <td className="px-4 py-3 font-light text-gray-600">
-                            <FaRegTrashAlt
+                          <td className="px-4 py-3 font-light text-gray-600 w-2/12 ">
+                           <div className="flex justify-center">
+                           <FaRegTrashAlt
                               onClick={() => handleDeleteProduct(2, idx)}
-                              size={18}
+                              size={16}
                               className="text-red-500 cursor-pointer"
                             />
+                           </div>
                           </td>
                         </tr>
                       ))}
@@ -747,7 +759,7 @@ const Page = () => {
 
           {/* หมวดหมู่ เครื่องใช้สำนักงาน */}
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-1/4 flex flex-col justify-start items-center">
+            <div className="w-1/4 flex flex-col justify-start items-center text-sm">
               <FaBoxes className="bg-red-100 p-2 rounded-md mb-2" size={70} />
               หมวดหมู่ เครื่องใช้สำนักงาน
             </div>
@@ -756,14 +768,14 @@ const Page = () => {
                 <table className="table-auto w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-300">
-                      <th className="px-4 py-3 text-start font-medium">ชื่อ</th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-start font-medium">ชื่อ</th>
+                      <th className="px-4 py-1 text-center font-medium">
                         จำนวน
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-center font-medium">
                         หน่วยนับ
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">ลบ</th>
+                      <th className="px-4 py-1 text-center font-medium">ลบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -777,11 +789,13 @@ const Page = () => {
                             {item.category_name}
                           </td>
                           <td className="px-4 py-3 font-light text-gray-600">
-                            <FaRegTrashAlt
+                           <div className="flex justify-center">
+                           <FaRegTrashAlt
                               onClick={() => handleDeleteProduct(3, idx)}
-                              size={18}
+                              size={16}
                               className="text-red-500 cursor-pointer"
                             />
+                           </div>
                           </td>
                         </tr>
                       ))}
@@ -795,7 +809,7 @@ const Page = () => {
 
           {/* หมวดหมู่ เครื่องใช้ไฟฟ้า */}
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-1/4 flex flex-col justify-start items-center">
+            <div className="w-1/4 flex flex-col justify-start items-center text-sm">
               <FaPlug className="bg-red-100 p-2 rounded-md mb-2" size={70} />
               หมวดหมู่ เครื่องใช้ไฟฟ้า
             </div>
@@ -804,14 +818,14 @@ const Page = () => {
                 <table className="table-auto w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-300">
-                      <th className="px-4 py-3 text-start font-medium">ชื่อ</th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-start font-medium">ชื่อ</th>
+                      <th className="px-4 py-1 text-center font-medium">
                         จำนวน
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-center font-medium">
                         หน่วยนับ
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">ลบ</th>
+                      <th className="px-4 py-1 text-center font-medium">ลบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -819,17 +833,19 @@ const Page = () => {
                       productCat4.results.length > 0 &&
                       productCat4.results.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="border px-2 py-1">{item.name}</td>
-                          <td className="border px-2 py-1">{item.quantity}</td>
-                          <td className="border px-2 py-1">
+                          <td className="border px-2 py-1 w-5/12">{item.name}</td>
+                          <td className="border px-2 py-1 text-center w-2/12">{item.quantity}</td>
+                          <td className="border px-2 py-1 text-center w-3/12">
                             {item.category_name}
                           </td>
-                          <td className="px-4 py-3 font-light text-gray-600">
+                          <td className="px-4 py-3 font-light text-gray-600 text-center w-2/12">
+                            <div className="flex justify-center">
                             <FaRegTrashAlt
                               onClick={() => handleDeleteProduct(4, idx)}
-                              size={18}
+                              size={16}
                               className="text-red-500 cursor-pointer"
                             />
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -843,7 +859,7 @@ const Page = () => {
 
           {/* หมวดหมู่ อื่นๆ */}
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-1/4 flex flex-col justify-start items-center">
+            <div className="w-1/4 flex flex-col justify-start items-center text-sm">
               <FaDocker className="bg-red-100 p-2 rounded-md mb-2" size={70} />
               หมวดหมู่ อื่น ๆ
             </div>
@@ -852,14 +868,14 @@ const Page = () => {
                 <table className="table-auto w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-300">
-                      <th className="px-4 py-3 text-start font-medium">ชื่อ</th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-start font-medium">ชื่อ</th>
+                      <th className="px-4 py-1 text-start font-medium">
                         จำนวน
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">
+                      <th className="px-4 py-1 text-center font-medium">
                         หน่วยนับ
                       </th>
-                      <th className="px-4 py-3 text-start font-medium">ลบ</th>
+                      <th className="px-4 py-1 text-center font-medium">ลบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -867,17 +883,19 @@ const Page = () => {
                       productCat5.results.length > 0 &&
                       productCat5.results.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="border px-2 py-1">{item.name}</td>
-                          <td className="border px-2 py-1">{item.quantity}</td>
-                          <td className="border px-2 py-1">
+                          <td className="border px-2 py-1  w-5/12">{item.name}</td>
+                          <td className="border px-2 py-1 text-center w-2/12">{item.quantity}</td>
+                          <td className="border px-2 py-1 text-center w-3/12">
                             {item.category_name}
                           </td>
-                          <td className="px-4 py-3 font-light text-gray-600">
-                            <FaRegTrashAlt
+                          <td className="px-4 py-3 font-light text-gray-600 w-2/12" >
+                          <div className="flex justify-center">
+                          <FaRegTrashAlt
                               onClick={() => handleDeleteProduct(5, idx)}
-                              size={18}
+                              size={16}
                               className="text-red-500 cursor-pointer"
                             />
+                          </div>
                           </td>
                         </tr>
                       ))}
@@ -921,13 +939,14 @@ const Page = () => {
                       <td className="border-b px-4 py-3 font-light  text-gray-600 ">
                         {item.price}
                       </td>
+                      945:29  Error: Expected an assignment or function call and instead saw an expression.  @typescript-eslint/no-unused-expressions
                       <td className="border-b px-4 py-3 font-light  text-gray-600  ">
                         <FaRegEdit
                           onClick={() => {
-                            setOpenModalChangePrice(!openModalChangePrice),
+                            setOpenModalChangePrice(!openModalChangePrice);
                               setSelectedCusId({
-                                cusId: Number(item.customer_id),
-                                price: Number(item.price),
+                                cusId: Number(item.customer_id || 0),
+                                price: Number(item.price || 0),
                               });
                           }}
                           size={18}
@@ -943,27 +962,28 @@ const Page = () => {
             ต้องกดบันทึกก่อน จำนวนเงิน ถึงจะเลียงลำดับ
           </p>
           {/* เรียกโชว์ใน Component ทำไมไม่ แสดงข้อมูล Real Time  */}
-          <Display h={"h-72"} />
+          <Display  />
+
         </div>
 
         <div className="bg-white shadow-md rounded-md py-6 px-4 flex flex-col justify-center">
           <div className="flex flex-row gap-2 justify-center items-center px-20">
-            <div className="w-16 flex justify-center">
+            <div className="w-16 flex justify-center" onClick={()=>handleChangeNumber(1)}>
               <RiNumber1
                 size={45}
-                className="bg-red-700 hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer"
+                className={`${countNumber === 1 ? "bg-red-700" :"bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
               />
             </div>
-            <div className="w-16 flex justify-center">
+            <div className="w-16 flex justify-center" onClick={()=>handleChangeNumber(2)}>
               <RiNumber2
                 size={45}
-                className="bg-gray-300 hover:bg-gray-800 hover:text-white rounded-full p-2 cursor-pointer"
+                className={`${countNumber === 2 ? "bg-red-700" :"bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
               />
             </div>
-            <div className="w-16 flex justify-center">
+            <div className="w-16 flex justify-center" onClick={()=>handleChangeNumber(3)}>
               <RiNumber3
                 size={45}
-                className="bg-gray-300 hover:bg-gray-800 hover:text-white rounded-full p-2 cursor-pointer"
+                className={`${countNumber === 3 ? "bg-red-700" :"bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
               />
             </div>
           </div>
@@ -999,14 +1019,14 @@ const Page = () => {
           <div className="mt-4 flex flex-row gap-4">
             <button
               onClick={() => switchDisplay(1)}
-              className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1"
+              className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1 text-sm"
             >
               หน้าประมูล
             </button>
 
             <button
               onClick={() => switchDisplay(2)}
-              className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1"
+              className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1 text-sm"
             >
               โชว์คนชนะ
             </button>

@@ -1,14 +1,14 @@
 "use client";
 import Pagination from "@/app/components/Pagination";
 import React, { useEffect, useState } from "react";
-import { FiAirplay, FiCoffee, FiPlus } from "react-icons/fi";
+import {  FiCoffee, FiPlus } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import ModalAdd from "./ModalAdd";
 import Swal from "sweetalert2";
 import { alertConfirmError, createExcel, decryptToken } from "@/lib/tool";
 import axios from "axios";
-import moment from "moment";
+// import moment from "moment";
 
 interface dataType {
   id: number;
@@ -25,12 +25,9 @@ const Page = () => {
   const [id, setId] = useState(0);
 
   const token = decryptToken();
-  const dateNow = moment().format("YYYY-MM-DD");
+  // const dateNow = moment().format("YYYY-MM-DD");
 
-  const [searchDate, setSearchDate] = useState({
-    startDate: dateNow,
-    endDate: dateNow,
-  });
+
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -52,8 +49,8 @@ const Page = () => {
     try {
       const sendData = {
         page: page,
-        startDate: searchDate.startDate,
-        endDate: searchDate.endDate,
+        startDate: "",
+        endDate: "",
         search,
       };
 
@@ -101,8 +98,8 @@ const Page = () => {
   const sendExcel = async () => {
     try {
       const sendData = {
-        startDate: searchDate.startDate,
-        endDate: searchDate.endDate,
+        startDate: "",
+        endDate:"",
         search,
       };
       const res = await axios.get(
@@ -128,7 +125,7 @@ const Page = () => {
 
   useEffect(() => {
     fetchData();
-  }, [search, searchDate.startDate, searchDate.endDate, page]);
+  }, [search,  page]);
 
   return (
     <div>
@@ -141,14 +138,14 @@ const Page = () => {
       />
       <div className="flex flex-row gap-3 items-center">
         <FiCoffee size={20} />
-        <h1 className="text-xl">ข้อมูลผู้บริจาค</h1>
+        <h1 className="text-lg">ข้อมูลผู้บริจาค</h1>
       </div>
 
       {/* Filter */}
       <div className="flex flex-col lg:flex-row gap-3 justify-start items-center mt-4">
         <div className="w-full ">
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md shadow-md"
+            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
             type="text"
             placeholder="ค้นหาชื่อผู้บริจาค"
             onChange={(e) => setSearch(e.target.value)}
@@ -177,10 +174,10 @@ const Page = () => {
       <div className="mt-6 w-full bg-white px-4 py-4 rounded-md shadow-md">
         <div className="overflow-x-auto border border-gray-300 rounded-lg  shadow-lg ">
           <table className="table-auto  w-full ">
-            <thead>
+            <thead className="text-sm">
               <tr className="bg-gray-50 border-b border-gray-300 ">
                 <th className="px-4 py-3 text-start font-medium ">รหัส</th>
-                <th className="px-4 py-3 text-start font-medium ">ชื่อ-สกุล</th>
+                <th className="px-8 py-3 text-start font-medium ">ชื่อ-สกุล</th>
                 <th className="px-2 py-3 text-start font-medium ">เบอร์โทร</th>
                 <th className="px-4 py-3 text-start font-medium ">
                   แก้ไข / ลบ
@@ -188,25 +185,25 @@ const Page = () => {
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="text-sm">
               {data?.map((item) => (
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-100   ">
                     <td className="px-4 py-3 font-medium  ">{item.code}</td>
-                    <td className="px-4 py-3 font-extralight text-gray-800  ">
-                      <p className="w-32">{item.name}</p>
+                    <td className="px-8 py-3 font-extralight text-gray-800  ">
+                      <p className="">{item.name}</p>
                     </td>
                     <td className="px-4 py-3 font-extralight text-gray-800  ">
-                      <p className="w-32">{item.tel}</p>
+                      <p className="">{item.tel}</p>
                     </td>
 
                     <td className="px-4 py-3  flex flex-row gap-2 items-center">
                       <FaRegEdit
-                        size={18}
+                        size={16}
                         onClick={() => handleOpenAdd(item.id)}
                       />
                       <FaRegTrashAlt
-                        size={18}
+                        size={16}
                         className="text-red-700"
                         onClick={() => handleDelete(item.id)}
                       />

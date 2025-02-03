@@ -1,11 +1,7 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 
-interface PageProps {
-//   setPath: (path: string) => void;
-}
-
-const Page: React.FC<PageProps> = () => {
+const Page = () => {
 
   return <div>Page Login </div>;
 };

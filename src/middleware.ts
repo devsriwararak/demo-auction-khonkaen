@@ -1,23 +1,7 @@
-
-// middleware ได้
-// import { NextResponse } from 'next/server';
-// import type { NextRequest } from 'next/server';
-
-// export function middleware(request: NextRequest) {
-
-// return NextResponse.next();
-// }
-
-// export const config = {
-//   matcher: ['/:path*'], 
-// };
-
-
-// middleware ไม่ได้
-
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { decryptData } from './lib/tool';
+import CryptoJS from "crypto-js";
+
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -28,6 +12,13 @@ export function middleware(request: NextRequest) {
   let status = ""
   
   // ถอดรหัส
+  const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || "";
+
+   const decryptData = (ciphertext: string) => {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY)
+    return bytes.toString(CryptoJS.enc.Utf8)
+  }
+
   if (cookieAuth){
     token = decryptData(cookieAuth) 
   }
@@ -58,10 +49,6 @@ export function middleware(request: NextRequest) {
     url.pathname = '/member'
     return NextResponse.redirect(url)
   }
-
-
-
-
 
 
 

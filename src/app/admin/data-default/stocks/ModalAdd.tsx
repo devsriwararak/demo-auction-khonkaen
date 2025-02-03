@@ -8,7 +8,6 @@ import {
 } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import Select from "react-select/base";
 import { toast } from "react-toastify";
 
 type ModalAddProps = {
@@ -38,12 +37,12 @@ const ModalAdd: React.FC<ModalAddProps> = ({
   });
   // Select หมวดหมู่
   const [categoryData, setCategoryData] = useState<OptionType[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<OptionType | null>(
-    null
-  );
+  // const [selectedCategory, setSelectedCategory] = useState<OptionType | null>(
+  //   null
+  // );
 
   // Select หน่วยนับ
-  const [unitData, setUnitData] = useState(dataUnitProduct());
+  const [unitData] = useState(dataUnitProduct());
 
   const handleSave = async () => {
     try {
@@ -174,13 +173,13 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   as="h3"
                   className="text-base font-semibold text-gray-900"
                 >
-                  เพิ่มข้อมูลสินค้า : {id}
+                   {!id ? "เพิ่มข้อมูลสินค้า" : "แก้ไขข้อมูลสินค้า"}
                 </DialogTitle>
 
                 <div className="mt-4 w-2/3 pr-3">
                   <p className="text-sm">เลือกหมวดหมู่</p>
                   <select
-                    className="bg-gray-50 border border-gray-300 rounded-md px-4 py-1 mt-1.5 w-full "
+                    className=" border border-gray-400 rounded-md px-4 py-1 mt-1.5 w-full "
                     name="category_id"
                     onChange={(e) => handleSetValues(e)}
                     value={dataObject.category_id || ""}
@@ -196,7 +195,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="text-sm">ชื่อสินค้า</p>
                     <input
                       type="text"
-                      className="mt-1.5 bg-gray-50 border border-gray-300 shadow-sm rounded-md px-4 py-1 w-full "
+                      className="mt-1.5  border border-gray-400  rounded-md px-4 py-1 w-full "
                       placeholder="ชื่อสินค้า"
                       onChange={(e) => handleSetValues(e)}
                       value={dataObject.name || ""}
@@ -207,7 +206,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                     <p className="text-sm">เลือกหน่วยนับ</p>
                     
                     <select
-                      className="bg-gray-50 border border-gray-300 rounded-md px-4 py-1 mt-1.5 w-full"
+                      className=" border border-gray-400 rounded-md px-4 py-1 mt-1.5 w-full"
                       name="unit"
                       onChange={(e) => handleSetValues(e)}
                       value={dataObject.unit || ""}

@@ -1,6 +1,6 @@
 "use client";
-import { redirect, usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import {  useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 
 const Page = () => {

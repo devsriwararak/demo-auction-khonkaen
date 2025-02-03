@@ -35,30 +35,37 @@ interface DataType {
 }
 
 // ถ้าต้องการเก็บ quantity ด้วย
-interface ProductResult {
-  id: number;
-  name: string;
-  quantity?: number;
-}
+// interface ProductResult {
+//   id: number;
+//   name: string;
+//   quantity?: number;
+// }
 
-interface CategoryItem {
-  category_id: number;
-  results: ProductResult[];
-}
+// interface CategoryItem {
+//   category_id: number;
+//   results: ProductResult[];
+// }
 
-interface SendDataType {
-  id: string;
-  name: string;
-  government: number;
-  lottery: number;
-  results: CategoryItem[];
-}
+// interface SendDataType {
+//   id: string;
+//   name: string;
+//   government: number;
+//   lottery: number;
+//   results: CategoryItem[];
+// }
 
 // ---- Props ของโมดัล ----
 interface ModalAddProductProps {
   open: boolean; // หน้า parent จะกำหนด open/close
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>; 
-  onAddProduct: (catId: number, productName: string, quantity: number, category_name:string, product_id : number) => boolean; // เปลี่ยนเป็น void
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onAddProduct: (
+    catId: number,
+    productName: string,
+    quantity: number,
+    category_name: string,
+    product_id: number,
+    unit: string
+  ) => boolean; // เปลี่ยนเป็น void
 }
 
 const ModalAddProduct: React.FC<ModalAddProductProps> = ({
@@ -104,10 +111,12 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
         }
       );
       if (res.status === 200) {
-        const categories = res.data.map((item: { id: number; name: string }) => ({
-          value: item.id,
-          label: item.name,
-        }));
+        const categories = res.data.map(
+          (item: { id: number; name: string }) => ({
+            value: item.id,
+            label: item.name,
+          })
+        );
         // เพิ่มตัวเลือก "ทั้งหมด"
         const allOption = { value: 0, label: "ทั้งหมด" };
         setCategoryData([allOption, ...categories]);
@@ -150,7 +159,8 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
   };
 
   const handleSelectProduct = (categoryId: number, product: DataType) => {
-    
+    console.log({ product });
+
     // ดึงค่าจำนวน
     const enteredQty = inputs[product.id];
     if (!enteredQty || Number(enteredQty) <= 0) {
@@ -162,23 +172,30 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
       toast.error("กรุณากรอกจำนวนเป็นตัวเลขเท่านั้น!");
       return;
     }
-  
+
     // เรียกฟังก์ชัน parent
-    const success = onAddProduct(categoryId, product.name, quantityNumber , product.category_name, product.id);
-    console.log('success', success);
-    
-  
+    const success = onAddProduct(
+      categoryId,
+      product.name,
+      quantityNumber,
+      product.category_name,
+      product.id,
+      product.unit
+    );
+    console.log("success", success);
+
     // ตรวจค่า success (true=เพิ่มสำเร็จ, false=ซ้ำ)
     if (success) {
       // ถ้าสำเร็จ
-      toast.success(`บันทึกข้อมูล "${product.name}" จำนวน ${enteredQty} เรียบร้อย`);
+      toast.success(
+        `บันทึกข้อมูล "${product.name}" จำนวน ${enteredQty} เรียบร้อย`
+      );
     } else {
       // ถ้าซ้ำ
       toast.error(`เลือกสินค้านี้ไปแล้ว!`);
     }
-    setInputs({})
+    setInputs({});
   };
-
 
   // ---- useEffect: โหลด Category ครั้งแรก ----
   useEffect(() => {
@@ -195,7 +212,7 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
   // Render
   // -------------------------------------------------
   return (
-    <Dialog open={open} onClose={handleClose} className="relative z-10">
+    <Dialog open={open} onClose={handleClose} className="relative z-20">
       {/* Backdrop */}
       <DialogBackdrop
         transition
@@ -205,8 +222,10 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
       />
 
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 
-                        text-center sm:items-center sm:p-0">
+        <div
+          className="flex min-h-full items-end justify-center p-4 
+                        text-center sm:items-center sm:p-0"
+        >
           <DialogPanel
             transition
             className="relative transform overflow-hidden 
@@ -214,20 +233,19 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
                        data-[closed]:translate-y-4 data-[closed]:opacity-0 
                        data-[enter]:duration-300 data-[leave]:duration-200 
                        data-[enter]:ease-out data-[leave]:ease-in 
-                       sm:my-8 sm:w-full sm:max-w-xl 
+                       sm:my-8 sm:w-full sm:max-w-4xl 
                        data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
             {/* Header */}
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-              <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex h-12 w-12 shrink-0 
-                                items-center justify-center rounded-full bg-red-100 sm:mx-0">
+              <div className="flex flex-row gap-4">
+                <div>
                   <MdOutlineAddShoppingCart
                     aria-hidden="true"
                     className="h-6 w-6 text-red-600"
                   />
                 </div>
-                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <div>
                   <DialogTitle
                     as="h3"
                     className="text-base font-semibold text-gray-900"
@@ -316,9 +334,7 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
                             <td className="px-4 py-3 text-gray-800">
                               {item.unit}
                             </td>
-                            <td className="px-4 py-3">
-                              {item.category_name}
-                            </td>
+                            <td className="px-4 py-3">{item.category_name}</td>
                             <td className="px-4 py-3">
                               <input
                                 value={inputs[item.id] || ""}
@@ -355,13 +371,19 @@ const ModalAddProduct: React.FC<ModalAddProductProps> = ({
                 </div>
 
                 {/* Pagination */}
-                <Pagination page={page} setPage={setPage} totalPage={totalPage} />
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalPage={totalPage}
+                />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-50 px-4 py-3 
-                            sm:flex sm:flex-row-reverse sm:px-6">
+            <div
+              className="bg-gray-50 px-4 py-3 
+                            sm:flex sm:flex-row-reverse sm:px-6"
+            >
               <button
                 type="button"
                 onClick={handleClose}

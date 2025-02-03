@@ -1,7 +1,7 @@
 // ModalChangePrice.tsx
 // ต้องการแก้ไขจำนวนเงินที่ส่งมาจาก ID นั้นๆ
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
