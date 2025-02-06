@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { FiList } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegMoneyBillAlt, FaRegTimesCircle } from "react-icons/fa";
-import { IoPrintOutline } from "react-icons/io5";
 
 import Swal from "sweetalert2";
 
@@ -14,7 +13,8 @@ import moment from "moment";
 import ModalById from "./ModalById";
 import { toast } from "react-toastify";
 import ModalEditAuction from "./ModalEditAuction";
-import ModalPdfAuction from "./ModalPdfAuction";
+import ModalPdf from "@/app/components/modals/ModalPdf";
+
 
 interface dataType {
   id: number;
@@ -34,12 +34,8 @@ const PageAuctionLst = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState<dataType[]>([]);
   const [id, setId] = useState(0);
-  const [header, setHeader] = useState<string>("")
+  const [header, setHeader] = useState<string>("");
 
-  // Menu list Prints
-  const [showOptions, setShowOptions] = useState<number | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null); // สำหรับเมนู
-  const iconRef = useRef<HTMLTableCellElement>(null); // สำหรับไอคอน
 
   // Systems
   const token = decryptToken();
@@ -63,12 +59,12 @@ const PageAuctionLst = () => {
       setOpenModalEdit(!openModalEdit);
     } else if (numb === 3) {
       setOpenModalPdf(!openModalPdf);
-    } 
+    }
   };
 
-  const handleSetModal = async (id: number, numb: number, header:string) => {
+  const handleSetModal = async (id: number, numb: number, header: string) => {
     setId(id);
-    setHeader(header)
+    setHeader(header);
     await handleOpenModal(numb);
   };
 
@@ -193,36 +189,12 @@ const PageAuctionLst = () => {
     });
   };
 
-  const handleToggleOptions = (id: number) => {
-    setShowOptions((prev) => (prev === id ? null : id));
-  };
+
 
   useEffect(() => {
     fetchData();
   }, [search, searchDate.startDate, searchDate.endDate, page]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node) &&
-        iconRef.current &&
-        !iconRef.current.contains(event.target as Node)
-      ) {
-        setShowOptions(null); // ปิดเมนูถ้าคลิกนอกเมนูและไอคอน
-      }
-    };
-
-    if (showOptions !== null) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showOptions]);
 
   return (
     <div>
@@ -247,15 +219,17 @@ const PageAuctionLst = () => {
           fetchData={fetchData}
           handlePay={handlePay}
           handleCancel={handleCancel}
+          handleSetModal={handleSetModal}
         />
       )}
 
       {openModalPdf && (
-        <ModalPdfAuction
+        <ModalPdf
           handleOpenModal={handleOpenModal}
           open={openModalPdf}
           id={id}
           header={header}
+          type={"auction"}
         />
       )}
 
@@ -304,19 +278,18 @@ const PageAuctionLst = () => {
           <table className="table-auto  w-full ">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-300 ">
-                <th className="px-2 py-3 text-start font-medium ">รหัส</th>
-                <th className="px-10 py-3 text-start font-medium ">
+                <th className="px-4 py-2 text-start font-medium ">รหัส</th>
+                <th className="px-4 py-2 text-start font-medium ">
                   หัวข้อประมูล
                 </th>
-                <th className="px-10 py-3 text-start font-medium ">ผู้ชนะ</th>
-                <th className="px-2 py-3 text-start font-medium ">วันที่</th>
-                <th className="px-2 py-3 text-start font-medium ">จำนวนเงิน</th>
-                <th className="px-1 py-1 text-center font-medium  ">
+                <th className="px-4 py-2 text-start font-medium ">ผู้ชนะ</th>
+                <th className="px-4 py-2 text-start font-medium ">วันที่</th>
+                <th className="px-4 py-2 text-end font-medium ">จำนวนเงิน</th>
+                <th className="px-4 py-2 text-center font-medium  ">
                   ชำระเงิน
                 </th>
-                <th className="px-1 py-1 text-center font-medium ">แก้ไข</th>
-                <th className="px-1 py-1 text-center font-medium ">พิมพ์</th>
-                <th className="px-1 py-1 text-center font-medium ">ยกเลิก</th>
+                <th className="px-2 py-2 text-center font-medium ">แก้ไข</th>
+                <th className="px-2 py-2 text-center font-medium ">ยกเลิก</th>
               </tr>
             </thead>
 
@@ -325,7 +298,7 @@ const PageAuctionLst = () => {
                 <React.Fragment key={item.id}>
                   <tr className="hover:bg-gray-100   ">
                     <td
-                      className="px-2 py-3 font-medium  "
+                      className="px-4 py-3 font-medium w-1/12  "
                       onClick={() => handleSetModal(item.id, 1, "")}
                     >
                       <p
@@ -338,23 +311,23 @@ const PageAuctionLst = () => {
                         {item.code}
                       </p>
                     </td>
-                    <td className="px-10 py-3 font-extralight text-gray-800   ">
+                    <td className="px-4 py-3 font-extralight text-gray-800 w-3/12   ">
                       <p className="">{item.title}</p>
                     </td>
-                    <td className="px-10 py-3 font-extralight text-gray-800  ">
+                    <td className="px-4 py-3 font-extralight text-gray-800  w-4/12 ">
                       <p className="">{item.name}</p>
                     </td>
-                    <td className="px-4 py-3 font-extralight text-gray-800  ">
+                    <td className="px-3 py-3 font-extralight text-gray-800 w-1/12  ">
                       <p className="">{item.date}</p>
                     </td>
 
-                    <td className="px-4 py-3 font-extralight text-gray-800  ">
+                    <td className="px-3 py-3 text-end font-extralight text-gray-800  w-2/12 ">
                       <p className="">
                         {Number(item.price || 0).toLocaleString()}
                       </p>
                     </td>
 
-                    <td className="px-1 py-1 font-extralight text-gray-800  ">
+                    <td className="px-2 py-3 font-extralight text-gray-800 w-1/12  ">
                       <div className="flex justify-center">
                         {item.status === 1 && (
                           <FaRegMoneyBillAlt
@@ -364,14 +337,14 @@ const PageAuctionLst = () => {
                           />
                         )}
                         {item.status === 2 && (
-                          <span className="bg-green-100 text-green-700 px-2 rounded-md">
+                          <span className="bg-green-100 text-green-700 px-1 rounded-md text-sm">
                             ชำระแล้ว
                           </span>
                         )}
                         {item.status === 3 && " - "}
                       </div>
                     </td>
-                    <td className="px-1 py-1 font-extralight text-gray-800  ">
+                    <td className="px-2 py-3 font-extralight text-gray-800  w-1/12 ">
                       <div className="flex justify-center">
                         <FaRegEdit
                           onClick={() => handleSetModal(item.id, 2, "")}
@@ -380,51 +353,10 @@ const PageAuctionLst = () => {
                         />
                       </div>
                     </td>
-                    {/* <td className="px-1 py-1 font-extralight text-gray-800  ">
-                      <div className="flex justify-center">
-                        <IoPrintOutline
-                          onClick={() => handleSetModal(item.id, 3)}
-                          size={20}
-                          className="text-red-700 cursor-pointer "
-                        />
-                      </div>
-                    </td> */}
-                    <td
-                      ref={iconRef}
-                      className="px-1 py-1 font-extralight text-gray-800 relative"
-                    >
-                      <div className="flex justify-center">
-                        <IoPrintOutline
-                          onClick={() => handleToggleOptions(item.id)}
-                          size={20}
-                          className="text-red-700 cursor-pointer"
-                        />
-                      </div>
 
-                      {showOptions === item.id && (
-                        <div
-                          ref={menuRef}
-                          className="absolute top-14 right-0  bg-white border rounded shadow-md text-sm w-32 z-10"
-                        >
-                          <button
-                            onClick={() =>
-                              handleSetModal(item.id, 3, "ใบรับของ")
-                            }
-                            className="w-full px-2 py-1 hover:bg-gray-100 text-left"
-                          >
-                            ปริ้นใบรับของ
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleSetModal(item.id, 3, "ใบเสร็จ")
-                            }
-                            className="w-full px-2 py-1 hover:bg-gray-100 text-left"
-                          >
-                            ปริ้นใบเสร็จ
-                          </button>
-                        </div>
-                      )}
-                    </td>
+            
+
+               
 
                     <td className="px-1 py-1 font-extralight text-gray-800 ">
                       <div className="flex justify-center">

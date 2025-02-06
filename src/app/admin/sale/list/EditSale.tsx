@@ -1,30 +1,34 @@
-'use client'
-import React, { useEffect, useState } from "react";
+"use client";
+import React from "react";
 import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import Page from "../page";
-import PageSaleList from "./page";
+import ModalEditSale from "@/app/components/modals/ModalEditSale";
+// import { useRouter } from "next/navigation";
+// import PageSaleList from "./page";
 
 type ModalByIdType = {
-    open: boolean;
-    handleOpenModal: (numb: number) => void;
-    id: number;
-    fetchData: () => Promise<void>;
-    handlePay: (id: number) => void;
-    handleCancel : (id:number, code:string) => Promise<void>
-  };
+  open: boolean;
+  handleOpenModal: (numb: number) => void;
+  id: number;
+  fetchData: () => Promise<void>;
+  handlePay: (id: number) => Promise<void>;
+  handleCancel: (id: number, code: string) => Promise<void>;
+  handleSetModal: (id: number, numb: number, header: string) => Promise<void>;
 
-const ModalEditSale :React.FC<ModalByIdType>=({
-    open,
-    handleOpenModal,
-    id,
-    fetchData,
-    handlePay,
-    handleCancel
+};
+
+const EditSale: React.FC<ModalByIdType> = ({
+  open,
+  handleOpenModal,
+  id,
+  fetchData,
+  handlePay,
+  handleCancel,
+  handleSetModal
 }) => {
   return (
     <Dialog
@@ -32,7 +36,6 @@ const ModalEditSale :React.FC<ModalByIdType>=({
       onClose={() => handleOpenModal(2)}
       className="relative z-10"
     >
-
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -56,17 +59,22 @@ const ModalEditSale :React.FC<ModalByIdType>=({
             </div>
 
             {/* Start Main */}
-           <div className="px-4 py-4">
-           <Page id={id} />
-           </div>
-         
+            <div className="px-4 py-4">
+              <ModalEditSale
+                fetchData={fetchData}
+                id={id ? Number(id) : undefined}
+                handlePay={handlePay}
+                handleCancel={handleCancel}
+                handleSetModal={handleSetModal}
+              />
+            </div>
 
             {/* END Main */}
           </DialogPanel>
         </div>
       </div>
     </Dialog>
-  )
-}
+  );
+};
 
-export default ModalEditSale
+export default EditSale;

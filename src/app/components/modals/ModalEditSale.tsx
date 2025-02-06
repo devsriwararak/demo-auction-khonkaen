@@ -3,20 +3,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { decryptToken, errorMessage } from "@/lib/tool";
-import { FiCoffee, FiPlus, FiSave } from "react-icons/fi";
+import { FiCoffee, FiPlus, FiPrinter, FiSave, FiSlash } from "react-icons/fi";
 import { LuClipboardList } from "react-icons/lu";
 import { GoAlert } from "react-icons/go";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { BsCartPlus } from "react-icons/bs";
+import { BsCartPlus, BsCashCoin } from "react-icons/bs";
 import Select from "react-select";
-import ModalAddProduct from "./ModalAddProduct";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import ModalAddProduct from "@/app/admin/sale/ModalAddProduct";
+import ModalAdd from "@/app/admin/data-default/customer/ModalAdd";
 
-// interface ModalByIdType  {
-//   id?: number ;
-// };
+interface PropsType {
+  id?: number | null;
+  fetchData: () => Promise<void>;
+  handlePay: (id: number) => Promise<void>;
+  handleCancel : (id:number, code:string) => Promise<void>
+  handleSetModal: (id: number, numb: number, header: string) => Promise<void>;
+
+}
 
 interface optionType {
   id: number;
@@ -31,9 +37,9 @@ interface CategoryData {
     name: string;
     category_name: string;
     product_id: number;
-    quantity: number ;
+    quantity: number;
     price: number;
-    total : number;
+    total: number;
     unit: string;
   }[];
 }
@@ -59,10 +65,11 @@ interface SendDataType {
   products: CategoryData[];
 }
 
-const Page = () => {
+const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleCancel, handleSetModal}) => {
   // States
   const [optionCustomer, setOptionCustomer] = useState<optionType[]>([]);
   const [openModalProduct, setOpenModalProduct] = useState(false);
+  const [openEditCustomer, setOpenEditCustomer] = useState(false);
 
   const [sendData, setSendData] = useState<SendDataType>({
     id: 0,
@@ -119,66 +126,66 @@ const Page = () => {
     }
   };
 
-  // const fetchDataSaleProductList = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/api/sale/${id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     if (res.status === 200) {
-  //       setSendData((prev) => ({
-  //         ...prev,
-  //         products: res.data.products,
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const fetchDataSaleProductList = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sale/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setSendData((prev) => ({
+          ...prev,
+          products: res.data.products,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // const fetchDataAll = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/api/sale/all/${id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     if (res.status === 200) {
-  //       setSendData((prev) => ({
-  //         ...prev,
-  //         id: res.data.id,
-  //         code: res.data.code,
-  //         title: res.data.title,
-  //         date: res.data.date,
-  //         government: res.data.government,
-  //         lottery: res.data.lottery,
-  //         name: res.data.name,
-  //         price: res.data.price,
-  //         status: res.data.status,
-  //         noun: res.data.noun,
-  //         ref: res.data.ref,
-  //         tel: res.data.tel,
-  //         address_customer: res.data.address_customer,
-  //         address_send: res.data.address_send,
-  //         contact: res.data.contact,
-  //         note: res.data.note,
-  //         customer_id: res.data.customer_id,
-  //         auction_title_id: res.data.auction_id,
-  //       }));
+  const fetchDataAll = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sale/all/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setSendData((prev) => ({
+          ...prev,
+          id: res.data.id,
+          code: res.data.code,
+          title: res.data.title,
+          date: res.data.date,
+          government: res.data.government,
+          lottery: res.data.lottery,
+          name: res.data.name,
+          price: res.data.price,
+          status: res.data.status,
+          noun: res.data.noun,
+          ref: res.data.ref,
+          tel: res.data.tel,
+          address_customer: res.data.address_customer,
+          address_send: res.data.address_send,
+          contact: res.data.contact,
+          note: res.data.note,
+          customer_id: res.data.customer_id,
+          auction_title_id: res.data.auction_id,
+        }));
 
-  //       console.log(res.data);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChangeSelectCustomer = async (id: optionType | null) => {
     if (!id) return null;
@@ -229,7 +236,7 @@ const Page = () => {
     productName: string,
     quantity: number,
     price: number,
-    total : number,
+    total: number,
     category_name: string,
     product_id: number,
     unit: string
@@ -259,7 +266,7 @@ const Page = () => {
                 name: productName,
                 quantity,
                 price,
-                total ,
+                total,
                 category_name,
                 product_id,
                 unit,
@@ -303,12 +310,29 @@ const Page = () => {
     });
   };
 
+  const handlePlayInModal = async (id: number) => {
+    await handlePay(id);
+    setTimeout(async () => {
+      await fetchDataAll();
+    }, 1500);
+  };
+
+  const handleCancelForModal = async (id: number, code: string) => {
+    
+    await handleCancel(id, code);
+    setTimeout(async () => {
+      await fetchDataAll();
+    }, 1500);
+  };
+
+
+
   const handleSave = async () => {
     try {
       if (!sendData.customer_id) return toast.error("กรุณาเลือกผู้บริจาค !");
 
       const data = {
-        // id,
+        id,
         date: dateNowEn,
         government: sendData.government || 0,
         lottery: sendData.lottery || 0,
@@ -319,6 +343,11 @@ const Page = () => {
         products: sendData.products,
       };
 
+      const checkProductNull = data.products.some(
+        (item) => item.results.length > 0
+      );
+
+      if (!checkProductNull) return toast.error("กรุณาเพิ่มสินค้าก่อนบันทึก");
 
       // API
       const res = await axios.post(
@@ -333,7 +362,8 @@ const Page = () => {
 
       if (res.status === 200) {
         toast.success(res.data.message);
-        // await fetchDataAll()
+        if (id) await fetchDataAll();
+        if (id) await fetchData();
         setTimeout(() => {
           router.push("/admin/sale/list");
         }, 1500);
@@ -344,16 +374,27 @@ const Page = () => {
     }
   };
 
-  // const handleCancelForModal = async (id: number, code: string) => {
-  //   // await handleCancel(id, code);
-  // };
+  // สำหรับแก้ไขผู้ประมูล
+  const handleModalAddCustomer = async () => {
+    setOpenEditCustomer(!openEditCustomer);
+  };
+
+  const fetchBeforChangeCustomer = async () => {
+    const selectOption: optionType | null = {
+      id: id || 0,
+      value: sendData.customer_id,
+      label: sendData.name,
+      name: sendData.name,
+    };
+    await handleChangeSelectCustomer(selectOption);
+    await fetchDataCustomer();
+  };
 
   useEffect(() => {
     fetchDataCustomer();
-    // fetchDataSaleProductList();
-    // if (id) fetchDataAll();
-  }, []);
-
+    fetchDataSaleProductList();
+    if (id) fetchDataAll();
+  }, [id]);
 
   return (
     <div>
@@ -365,6 +406,17 @@ const Page = () => {
         />
       )}
 
+      {openEditCustomer && sendData.customer_id ? (
+        <ModalAdd
+          open={openEditCustomer}
+          handleModalAdd={handleModalAddCustomer}
+          fetchData={fetchBeforChangeCustomer}
+          id={sendData.customer_id}
+        />
+      ) : (
+        openEditCustomer && toast.error("ไม่พบผู้บริจาค")
+      )}
+
       {/* Start Main */}
       <div className="flex flex-col lg:flex-row gap-4  ">
         {/* Left Section */}
@@ -374,15 +426,14 @@ const Page = () => {
               <div className="flex flex-row gap-2 items-center">
                 <FiCoffee size={16} />
                 <p className=" font-medium text-sm">
-                  รายละเอียดบิล (เลือกผู้บริจาค) 
+                  รายละเอียดบิล (เลือกผู้บริจาค)
                 </p>
               </div>
             </div>
 
             {/* data : {JSON.stringify(sendData)} */}
 
-
-            <div className="mt-3 flex flex-col lg:flex-row gap-4">
+            <div className="mt-3 flex flex-col lg:flex-row gap-4 items-center">
               {optionCustomer.length > 0 && (
                 <Select
                   options={optionCustomer}
@@ -391,13 +442,22 @@ const Page = () => {
                   )}
                   onChange={handleChangeSelectCustomer}
                   placeholder="เลือกลูกค้าใหม่"
-                  className="text-sm w-2/3"
+                  className="text-sm w-2/3 "
                 />
               )}
 
-              <button className="w-1/3 bg-blue-500 text-white rounded-md">
-                แก้ไขผู้ประมูล
-              </button>
+              <div className="w-40  ">
+                {sendData?.customer_id ? (
+                  <button
+                    onClick={() => handleModalAddCustomer()}
+                    className=" bg-blue-500 text-white rounded-md text-sm px-4 py-1 "
+                  >
+                    แก้ไขผู้ประมูล
+                  </button>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
             <div className="mt-5 text-sm">
               <div className="flex flex-row gap-4">
@@ -617,46 +677,76 @@ const Page = () => {
                   <button
                     onClick={handleSave}
                     disabled={sendData.status === 3}
-                    className={`bg-gradient-to-r from-green-600 to-green-500 px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                    className={`${
+                      sendData.status === 0 || sendData.status === 1 || sendData.status === 2
+                        ? "bg-gradient-to-r from-green-600 to-green-500"
+                        : "bg-gray-400"
+                    } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                   >
+                
                     <FiSave size={18} />
-                    บันทึก
+                    {!id ? "บันทึก" : "อัพเดท"}
                   </button>
-                  {/* <button
-                    disabled={sendData.status === 3}
-                    onClick={() =>
-                      handleCancelForModal(sendData.id, sendData.code)
-                    }
-                    className={`${
-                      sendData.status === 1 || sendData.status === 2
-                        ? "bg-gradient-to-r from-red-500 to-red-400"
-                        : "bg-gray-400"
-                    } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
-                  >
-                    <FiSlash size={18} />
-                    ยกเลิกบิล
-                  </button> */}
 
-                  {/* <button
-                    disabled={sendData.status === 2 || sendData.status === 3}
-                    onClick={() => handlePay(id)}
-                    className={`${
-                      sendData.status === 1
-                        ? "bg-gradient-to-r from-sky-500 to-sky-400"
-                        : "bg-gray-400"
-                    } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
-                  >
-                    <BsCashCoin size={18} />
-                    ชำระเงิน
-                  </button> */}
-                  {/* <button className="  px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500">
-                    <FiPrinter size={18} />
-                    ใบรับของ
-                  </button>
-                  <button className="   px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500">
-                    <FiPrinter size={18} />
-                    ใบเสร็จ
-                  </button> */}
+                  {id && (
+                    <button
+                      disabled={sendData.status === 2 || sendData.status === 3}
+                      onClick={() => handlePlayInModal(id)}
+                      className={`${
+                        sendData.status === 1
+                          ? "bg-gradient-to-r from-sky-500 to-sky-400"
+                          : "bg-gray-400"
+                      } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                    >
+                      <BsCashCoin size={18} />
+                      ชำระเงิน
+                    </button>
+                  )}
+
+                  {id && (
+                    <button
+                      disabled={sendData.status === 2 || sendData.status === 3}
+                      onClick={() =>
+                        handleCancelForModal(sendData.id, sendData.code)
+                      }
+                      className={`${
+                        sendData.status === 1
+                          ? "bg-gradient-to-r from-red-500 to-red-400"
+                          : "bg-gray-400"
+                      } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                    >
+                      <FiSlash
+                        
+                        size={18}
+                      />
+                      ยกเลิกบิล
+                    </button>
+                  )}
+
+                  {id && (
+                    <button
+                      onClick={() => handleSetModal(sendData.id, 3, "ใบรับของ")}
+                      className="  px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500"
+                    >
+                      <FiPrinter size={18} />
+                      ใบรับของ
+                    </button>
+                  )}
+
+                  {id && (
+                    <button
+                      disabled={sendData.status === 1 || sendData.status === 3}
+                       onClick={() => handleSetModal(sendData.id, 3, "ใบเสร็จ")}
+                      className={`${
+                        sendData.status === 1 || sendData.status === 3
+                          ? "bg-gray-200"
+                          : ""
+                      } px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500`}
+                    >
+                      <FiPrinter size={18} />
+                      ใบเสร็จ
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -667,8 +757,11 @@ const Page = () => {
                 </div>
 
                 <div className="flex flex-row gap-2 mt-4 items-end">
-                  <p>วันที่ :  </p>
-                  <p className="font-light text-sm"> {dateNowTh} </p>
+                  <p>วันที่ : </p>
+                  <p className="font-light text-sm">
+                    {" "}
+                    {!id ? dateNowTh : sendData?.date}{" "}
+                  </p>
                 </div>
 
                 <div className="flex flex-row gap-2 mt-2 items-end">
@@ -709,4 +802,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ModalEditSale;

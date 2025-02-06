@@ -150,7 +150,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   as="h3"
                   className="text-base font-semibold text-gray-900"
                 >
-                   {!id ? "เพิ่มผู้บริจาค " : "แก้ไขผู้บริจาค"}
+                   {!id ? "เพิ่มผู้บริจาค " : "แก้ไขผู้บริจาค (ข้อมูลกลาง)"}
                 </DialogTitle>
 
                 <div className="py-4 flex flex-col lg:flex-row gap-4">

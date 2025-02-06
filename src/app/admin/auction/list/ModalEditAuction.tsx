@@ -18,14 +18,16 @@ import Select from "react-select";
 import ModalAddProduct from "../ModalAddProduct";
 import { toast } from "react-toastify";
 import moment from "moment";
+import ModalAdd from "../../data-default/customer/ModalAdd";
 
 type ModalByIdType = {
   open: boolean;
   handleOpenModal: (numb: number) => void;
   id: number;
   fetchData: () => Promise<void>;
-  handlePay: (id: number) => void;
-  handleCancel : (id:number, code:string) => Promise<void>
+  handlePay: (id: number) => Promise<void>;
+  handleCancel: (id: number, code: string) => Promise<void>;
+  handleSetModal: (id: number, numb: number, header: string) => Promise<void>;
 };
 
 interface optionType {
@@ -75,7 +77,8 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
   id,
   fetchData,
   handlePay,
-  handleCancel
+  handleCancel,
+  handleSetModal,
 }) => {
   // States
   const [optionCustomer, setOptionCustomer] = useState<optionType[]>([]);
@@ -83,6 +86,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
     []
   );
   const [openModalProduct, setOpenModalProduct] = useState(false);
+  const [openEditCustomer, setOpenEditCustomer] = useState(false);
 
   const [sendData, setSendData] = useState<SendDataType>({
     id: 0,
@@ -296,7 +300,6 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
     }));
   };
 
-  // Encountered two children with the same key, ``. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
   const handleAddProduct = (
     catId: number,
     productName: string,
@@ -378,6 +381,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
         ref: sendData.ref,
         note: sendData.note,
         customer_id: sendData.customer_id,
+        customer_name: sendData.name,
         auction_title_id: sendData.auction_title_id,
         products: sendData.products,
       };
@@ -406,12 +410,35 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
     }
   };
 
-  const handleCancelForModal = async(id:number, code:string)=>{
-    await handleCancel(id, code)
-   setTimeout(async() => {
-    await fetchDataAll() 
-   }, 1500);
-  }
+  const handleCancelForModal = async (id: number, code: string) => {
+    await handleCancel(id, code);
+    setTimeout(async () => {
+      await fetchDataAll();
+    }, 1500);
+  };
+
+  const handlePlayInModal = async (id: number) => {
+    await handlePay(id);
+    setTimeout(async () => {
+      await fetchDataAll();
+    }, 1500);
+  };
+
+  // สำหรับแก้ไขผู้ประมูล
+  const handleModalAddCustomer = async () => {
+    setOpenEditCustomer(!openEditCustomer);
+  };
+
+  const fetchBeforChangeCustomer = async () => {
+    const selectOption: optionType | null = {
+      id: id,
+      value: sendData.customer_id,
+      label: sendData.name,
+      name: sendData.name,
+    };
+    await handleChangeSelectCustomer(selectOption);
+    await fetchDataCustomer();
+  };
 
   useEffect(() => {
     fetchDataCustomer();
@@ -432,6 +459,17 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
           setOpen={setOpenModalProduct}
           onAddProduct={handleAddProduct}
         />
+      )}
+
+      {openEditCustomer && sendData.customer_id ? (
+        <ModalAdd
+          open={open}
+          handleModalAdd={handleModalAddCustomer}
+          fetchData={fetchBeforChangeCustomer}
+          id={sendData.customer_id}
+        />
+      ) : (
+        openEditCustomer && toast.error("ไม่พบผู้บริจาค")
       )}
 
       <DialogBackdrop
@@ -466,6 +504,12 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       <FiCoffee size={16} />
                       <p className=" font-medium text-sm">รายละเอียดบิล</p>
                     </div>
+                    <button
+                      onClick={() => handleModalAddCustomer()}
+                      className="text-sm bg-blue-500 text-white px-2 py-1 rounded-md"
+                    >
+                      แก้ไขผู้บริจาค
+                    </button>
                   </div>
 
                   {/* data : {JSON.stringify(sendData)} */}
@@ -519,7 +563,9 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                     <div className="flex flex-row gap-4 mt-3">
                       <div className="w-full">
                         <p className="">เบอร์โทรศัพท์</p>
-                        <p className=" text-sm font-light">{sendData?.tel || "-"}</p>
+                        <p className=" text-sm font-light">
+                          {sendData?.tel || "-"}
+                        </p>
                       </div>
 
                       <div className="w-full">
@@ -540,7 +586,9 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
 
                       <div className="w-full">
                         <p>ออกสลากในนาม</p>
-                        <p className=" text-sm font-light">{sendData.noun || "-"}</p>
+                        <p className=" text-sm font-light">
+                          {sendData.noun || "-"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -736,24 +784,13 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                           <FiSave size={18} />
                           บันทึก
                         </button>
-                        <button
-                          disabled={sendData.status === 3}
-                          onClick={()=>handleCancelForModal(sendData.id, sendData.code)}
-                          className={`${
-                            sendData.status === 1 || sendData.status === 2  
-                              ? "bg-gradient-to-r from-red-500 to-red-400"
-                              : "bg-gray-400"
-                          } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
-                        >
-                          <FiSlash   size={18} />
-                          ยกเลิกบิล
-                        </button>
+                       
 
                         <button
                           disabled={
                             sendData.status === 2 || sendData.status === 3
                           }
-                          onClick={() => handlePay(id)}
+                          onClick={() => handlePlayInModal(id)}
                           className={`${
                             sendData.status === 1
                               ? "bg-gradient-to-r from-sky-500 to-sky-400"
@@ -763,11 +800,46 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                           <BsCashCoin size={18} />
                           ชำระเงิน
                         </button>
-                        <button className="  px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500">
+
+                        <button
+                          disabled={sendData.status === 2 ||sendData.status === 3}
+                          className={`${
+                            sendData.status === 1
+                              ? "bg-gradient-to-r from-red-500 to-red-400"
+                              : "bg-gray-400"
+                          } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                        >
+                          <FiSlash
+                            onClick={() =>
+                              handleCancelForModal(sendData.id, sendData.code)
+                            }
+                            size={18}
+                          />
+                          ยกเลิกบิล
+                        </button>
+                        
+                        <button
+                          onClick={() =>
+                            handleSetModal(sendData.id, 3, "ใบรับของ")
+                          }
+                          className="  px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500"
+                        >
                           <FiPrinter size={18} />
                           ใบรับของ
                         </button>
-                        <button className="   px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500">
+                        <button
+                          disabled={
+                            sendData.status === 1 || sendData.status === 3
+                          }
+                          onClick={() =>
+                            handleSetModal(sendData.id, 3, "ใบเสร็จ")
+                          }
+                          className={`${
+                            sendData.status === 1 || sendData.status === 3
+                              ? "bg-gray-200"
+                              : ""
+                          } px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500`}
+                        >
                           <FiPrinter size={18} />
                           ใบเสร็จ
                         </button>
@@ -786,7 +858,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       </div>
 
                       <div className="flex flex-row gap-2 mt-2 items-end">
-                        <p>ช่องทางชำระเงิน : </p>
+                        <p>ชำระเงิน : </p>
                         <p className="font-light text-sm">
                           {sendData?.status === 1 && "ยังไม่ชำระเงิน"}
                           {sendData?.status === 2 && "ชำระเงินแล้ว"}
@@ -798,10 +870,10 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                         <p>
                           จำนวนทั้งหมด :{" "}
                           <span className="font-light text-sm">
-                            {sendData.products.reduce((total, item)=> {
-                              return total + item.results.length
-                            },0)}{" "}
-                             รายการ{" "}
+                            {sendData.products.reduce((total, item) => {
+                              return total + item.results.length;
+                            }, 0)}{" "}
+                            รายการ{" "}
                           </span>{" "}
                         </p>
                       </div>

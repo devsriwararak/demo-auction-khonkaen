@@ -1,10 +1,8 @@
 "use client";
-// import { getSocket } from "@/lib/tool";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import Image from "next/image";
-import React, { useEffect, useRef, useState, forwardRef, MutableRefObject } from "react";
-// import { Socket } from "socket.io-client";
+import React, { useEffect, useRef, useState } from "react";
 
 interface WinnerScreenPropType {
   id: number | null;
