@@ -91,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
           id: 1,
           name: "รายการขายสินค้า",
           icon: <FiList size={18} />,
-          path: "",
+          path: "/admin/sale/list",
           status: 0,
         },
       ],

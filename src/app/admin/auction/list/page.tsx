@@ -1,22 +1,14 @@
 "use client";
 import Pagination from "@/app/components/Pagination";
-import React, { useEffect, useState } from "react";
-import {  FiList } from "react-icons/fi";
+import React, { useEffect, useState, useRef } from "react";
+import { FiList } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
-import {
-  FaRegEdit,
-  FaRegMoneyBillAlt,
-  FaRegTimesCircle,
-} from "react-icons/fa";
+import { FaRegEdit, FaRegMoneyBillAlt, FaRegTimesCircle } from "react-icons/fa";
 import { IoPrintOutline } from "react-icons/io5";
 
 import Swal from "sweetalert2";
 
-import {
-  createExcel,
-  decryptToken,
-  errorMessage,
-} from "@/lib/tool";
+import { createExcel, decryptToken, errorMessage } from "@/lib/tool";
 import axios from "axios";
 import moment from "moment";
 import ModalById from "./ModalById";
@@ -42,6 +34,12 @@ const PageAuctionLst = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState<dataType[]>([]);
   const [id, setId] = useState(0);
+  const [header, setHeader] = useState<string>("")
+
+  // Menu list Prints
+  const [showOptions, setShowOptions] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null); // สำหรับเมนู
+  const iconRef = useRef<HTMLTableCellElement>(null); // สำหรับไอคอน
 
   // Systems
   const token = decryptToken();
@@ -58,19 +56,19 @@ const PageAuctionLst = () => {
 
   // modal Add Action
 
-  
   const handleOpenModal = async (numb: number) => {
-    if(numb === 1){
-      setOpenModalById(!openModalById)
-    } else if (numb === 2){
-      setOpenModalEdit(!openModalEdit)
+    if (numb === 1) {
+      setOpenModalById(!openModalById);
+    } else if (numb === 2) {
+      setOpenModalEdit(!openModalEdit);
     } else if (numb === 3) {
-      setOpenModalPdf(!openModalPdf)
-    }
+      setOpenModalPdf(!openModalPdf);
+    } 
   };
 
-  const handleSetModal = async (id: number, numb: number) => {
+  const handleSetModal = async (id: number, numb: number, header:string) => {
     setId(id);
+    setHeader(header)
     await handleOpenModal(numb);
   };
 
@@ -102,29 +100,6 @@ const PageAuctionLst = () => {
       console.log(error);
     }
   };
-
-  // const handleDelete = async (id: number) => {
-  //   try {
-  //     const confirm = await alertConfirmError();
-  //     if (confirm) {
-  //       const res = await axios.delete(
-  //         `${process.env.NEXT_PUBLIC_API_URL}/api/customer/${id}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-
-  //       if (res.status === 200) {
-  //         Swal.fire(`ลบเสร็จ !`, "", "success");
-  //         await fetchData();
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const sendExcel = async () => {
     try {
@@ -218,9 +193,36 @@ const PageAuctionLst = () => {
     });
   };
 
+  const handleToggleOptions = (id: number) => {
+    setShowOptions((prev) => (prev === id ? null : id));
+  };
+
   useEffect(() => {
     fetchData();
   }, [search, searchDate.startDate, searchDate.endDate, page]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        iconRef.current &&
+        !iconRef.current.contains(event.target as Node)
+      ) {
+        setShowOptions(null); // ปิดเมนูถ้าคลิกนอกเมนูและไอคอน
+      }
+    };
+
+    if (showOptions !== null) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showOptions]);
 
   return (
     <div>
@@ -253,7 +255,7 @@ const PageAuctionLst = () => {
           handleOpenModal={handleOpenModal}
           open={openModalPdf}
           id={id}
-          
+          header={header}
         />
       )}
 
@@ -263,7 +265,7 @@ const PageAuctionLst = () => {
           <input
             className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
             type="text"
-            placeholder="ค้นหาชื่อผู้บริจาค"
+            placeholder="ค้นหาเลขที่บิล"
             onChange={(e) => setSearch(e.target.value)}
           />
 
@@ -324,7 +326,7 @@ const PageAuctionLst = () => {
                   <tr className="hover:bg-gray-100   ">
                     <td
                       className="px-2 py-3 font-medium  "
-                      onClick={() => handleSetModal(item.id, 1)}
+                      onClick={() => handleSetModal(item.id, 1, "")}
                     >
                       <p
                         className={`cursor-pointer border-l-4 px-2   ${
@@ -372,13 +374,13 @@ const PageAuctionLst = () => {
                     <td className="px-1 py-1 font-extralight text-gray-800  ">
                       <div className="flex justify-center">
                         <FaRegEdit
-                          onClick={() => handleSetModal(item.id, 2)}
+                          onClick={() => handleSetModal(item.id, 2, "")}
                           size={16}
                           className="text-red-700 cursor-pointer "
                         />
                       </div>
                     </td>
-                    <td className="px-1 py-1 font-extralight text-gray-800  ">
+                    {/* <td className="px-1 py-1 font-extralight text-gray-800  ">
                       <div className="flex justify-center">
                         <IoPrintOutline
                           onClick={() => handleSetModal(item.id, 3)}
@@ -386,7 +388,44 @@ const PageAuctionLst = () => {
                           className="text-red-700 cursor-pointer "
                         />
                       </div>
+                    </td> */}
+                    <td
+                      ref={iconRef}
+                      className="px-1 py-1 font-extralight text-gray-800 relative"
+                    >
+                      <div className="flex justify-center">
+                        <IoPrintOutline
+                          onClick={() => handleToggleOptions(item.id)}
+                          size={20}
+                          className="text-red-700 cursor-pointer"
+                        />
+                      </div>
+
+                      {showOptions === item.id && (
+                        <div
+                          ref={menuRef}
+                          className="absolute top-14 right-0  bg-white border rounded shadow-md text-sm w-32 z-10"
+                        >
+                          <button
+                            onClick={() =>
+                              handleSetModal(item.id, 3, "ใบรับของ")
+                            }
+                            className="w-full px-2 py-1 hover:bg-gray-100 text-left"
+                          >
+                            ปริ้นใบรับของ
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleSetModal(item.id, 3, "ใบเสร็จ")
+                            }
+                            className="w-full px-2 py-1 hover:bg-gray-100 text-left"
+                          >
+                            ปริ้นใบเสร็จ
+                          </button>
+                        </div>
+                      )}
                     </td>
+
                     <td className="px-1 py-1 font-extralight text-gray-800 ">
                       <div className="flex justify-center">
                         <FaRegTimesCircle

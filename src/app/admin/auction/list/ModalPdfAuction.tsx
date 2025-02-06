@@ -12,6 +12,7 @@ type ModalPropsType = {
   open: boolean;
   handleOpenModal: (numb: number) => void;
   id: number;
+  header: string
 };
 
 interface CategoryData {
@@ -52,9 +53,8 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
   open,
   handleOpenModal,
   id,
+  header
 }) => {
-
-
   const [sendData, setSendData] = useState<SendDataType>({
     id: 0,
     code: "",
@@ -266,14 +266,14 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
               </div>
 
               <div className="mt-3 text-center text-xl">
-                <h1>ใบรับของ</h1>
+                <h1> {header || ""}</h1>
                 <h2 className="mt-2">
                   คณะกรรมการจัดงานศาลเจ้าปึงเถ่ากงม่า ขอนแก่น (ประจำปี 2568)
                 </h2>
               </div>
 
-              <div className="flex flex-row gap-1 justify-between mt-8">
-                <div className="w-9/12 flex flex-col gap-2 ">
+              <div className="flex flex-row gap-32 justify-between mt-8">
+                <div className="w-8/12 flex flex-col gap-2 ">
                   <div>
                     ชื่อผู้บริจาค :{" "}
                     <span className=" font-extralight">
@@ -303,35 +303,33 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                   </div>
                 </div>
 
-                <div className="w-3/12">
-                  <div className="w-full flex flex-col  gap-2">
-                    <div>
-                      วันที่ :{" "}
-                      <span className=" font-extralight">
-                        {sendData?.date || "-"}
-                      </span>
-                    </div>
+                <div className="w-4/12  flex flex-col gap-2  ">
+                  <div>
+                    วันที่ :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.date || "-"}
+                    </span>
+                  </div>
 
-                    <div>
-                      เลขที่ใบเสร็จ :{" "}
-                      <span className=" font-extralight">
-                        {sendData?.code || "-"}
-                      </span>
-                    </div>
+                  <div>
+                    เลขที่ใบเสร็จ :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.code || "-"}
+                    </span>
+                  </div>
 
-                    <div>
-                      เบอร์โทรศัพท์ :{" "}
-                      <span className=" font-extralight">
-                        {sendData?.tel || "-"}
-                      </span>
-                    </div>
+                  <div>
+                    เบอร์โทรศัพท์ :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.tel || "-"}
+                    </span>
+                  </div>
 
-                    <div>
-                      บิลอ้างอิง :{" "}
-                      <span className=" font-extralight">
-                        {sendData?.ref || "-"}
-                      </span>
-                    </div>
+                  <div>
+                    บิลอ้างอิง :{" "}
+                    <span className=" font-extralight">
+                      {sendData?.ref || "-"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -366,14 +364,45 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                     </th>
                   </tr>
                 </thead>
+
                 <tbody>
-            
-                  {Array.from({ length: 10 }).map((_, index) => {
+                
+                  {
+                    [
+                      {id:1, name:"สลากออมสิน", quantity : sendData.government || 0},
+                      {id:2, name:"ล็อตเตอรี่", quantity : sendData.lottery || 0},
+                      ...Array.from({length:8}, (_, index)=> ({
+                        id: index + 3,
+                        name : productItems[index]?.name || "",
+                        quantity : Number(productItems[index]?.quantity || 0).toLocaleString() || 0
+                      }))
+                    ].map((item, index)=> (
+                      <tr key={index}>
+                      <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                        {index + 1}{" "}
+                      </td>
+                      <td className="px-4 py-2 border border-black w-6/12 font-light">
+                        {item?.name || ""}{" "}
+                      </td>
+                      <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                        {Number(item?.quantity || 0).toLocaleString() || ""}{" "}
+                      </td>
+                      <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
+                        -{" "}
+                      </td>
+                      <td className="px-4 border border-black w-2/12 font-light text-center">
+                        {" "}
+                      </td>
+                    </tr>
+                    ))
+                  }
+                  {/* {
+                  Array.from({ length: 8 }).map((_, index) => {
                     const item = productItems[index];
                     return (
                       <tr key={index}>
                         <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                          {index + 1}{" "}
+                          {index + 3}{" "}
                         </td>
                         <td className="px-4 py-2 border border-black w-6/12 font-light">
                           {item?.name || ""}{" "}
@@ -386,29 +415,6 @@ const ModalPdfAuction: React.FC<ModalPropsType> = ({
                         </td>
                         <td className="px-4 border border-black w-2/12 font-light text-center">
                           {" "}
-                        </td>
-                      </tr>
-                    );
-                  })}
-
-                  {/* {Array.from({ length: 10 }).map((_, index) => {
-                    const product = contentData.products[index];
-                    return (
-                      <tr key={index}>
-                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                          {index + 1}
-                        </td>
-                        <td className="px-4 py-2 border border-black w-6/12 font-light">
-                          {product?.name || ""}
-                        </td>
-                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                          {product?.qty || ""}
-                        </td>
-                        <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
-                          {product?.price.toFixed(2)}
-                        </td>
-                        <td className="px-4 border border-black w-2/12 font-light text-center">
-                          {product?.total.toFixed(2)}
                         </td>
                       </tr>
                     );

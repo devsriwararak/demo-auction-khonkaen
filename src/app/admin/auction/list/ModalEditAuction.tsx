@@ -426,7 +426,6 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
       onClose={() => handleOpenModal(2)}
       className="relative z-10"
     >
-      {/* ตอนนี้ฉันอยู่ที่ modal ModalEditAuction และต้องการเปิด ModalAddProduct ดูเหมือนจะเปิดไม่ได้   */}
       {openModalProduct && (
         <ModalAddProduct
           open={openModalProduct}
@@ -799,7 +798,10 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                         <p>
                           จำนวนทั้งหมด :{" "}
                           <span className="font-light text-sm">
-                            xxx รายการ{" "}
+                            {sendData.products.reduce((total, item)=> {
+                              return total + item.results.length
+                            },0)}{" "}
+                             รายการ{" "}
                           </span>{" "}
                         </p>
                       </div>

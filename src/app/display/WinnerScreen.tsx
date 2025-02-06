@@ -3,7 +3,7 @@
 import axios from "axios";
 import html2canvas from "html2canvas";
 import Image from "next/image";
-import React, { useEffect, useRef, useState, forwardRef } from "react";
+import React, { useEffect, useRef, useState, forwardRef, MutableRefObject } from "react";
 // import { Socket } from "socket.io-client";
 
 interface WinnerScreenPropType {
@@ -22,7 +22,7 @@ interface dataType {
 
 
 
-const WinnerScreen = forwardRef<HTMLDivElement, WinnerScreenPropType>(
+const WinnerScreen :React.FC<WinnerScreenPropType>=(
   ({ id }) => {
     // State
     const [data, setData] = useState<dataType | null>(null);
@@ -32,7 +32,8 @@ const WinnerScreen = forwardRef<HTMLDivElement, WinnerScreenPropType>(
 
     // System
     const hasFetched = useRef(false);
-    // const socket: Socket = getSocket();
+
+
 
     const fetchData = async () => {
       if (id === null) {
@@ -187,5 +188,5 @@ const WinnerScreen = forwardRef<HTMLDivElement, WinnerScreenPropType>(
   }
 );
 
-WinnerScreen.displayName = "WinnerScreen"
+// WinnerScreen.displayName = "WinnerScreen"
 export default WinnerScreen;

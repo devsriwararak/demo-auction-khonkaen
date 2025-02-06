@@ -1,227 +1,502 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { BsCartPlus, BsCashCoin } from "react-icons/bs";
-import {  FaRegTrashAlt } from "react-icons/fa";
-import { FiCoffee, FiPlus, FiPrinter, FiSave, FiSlash } from "react-icons/fi";
-import { GoAlert } from "react-icons/go";
-import { LuClipboardList } from "react-icons/lu";
-import Select from "react-select";
 
-const Page = () => {
-  const [isClient, setIsClient] = useState(false);
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { decryptToken, errorMessage } from "@/lib/tool";
+import { FiCoffee, FiPlus, FiPrinter, FiSave, FiSlash } from "react-icons/fi";
+import { LuClipboardList } from "react-icons/lu";
+import { GoAlert } from "react-icons/go";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { BsCartPlus, BsCashCoin } from "react-icons/bs";
+import Select from "react-select";
+import ModalAddProduct from "./ModalAddProduct";
+import { toast } from "react-toastify";
+import moment from "moment";
+import { useRouter } from "next/navigation";
+
+type ModalByIdType = {
+  id: number;
+};
+
+interface optionType {
+  id: number;
+  value: number;
+  label: string;
+  name: string;
+}
+
+interface CategoryData {
+  category_id: number;
+  results: {
+    name: string;
+    category_name: string;
+    product_id: number;
+    quantity: number;
+    price: number;
+    total : number;
+    unit: string;
+  }[];
+}
+
+interface SendDataType {
+  id: number;
+  code: string;
+  title: string;
+  date: string;
+  government: number;
+  lottery: number;
+  name: string;
+  price: number;
+  status: number;
+  noun: string;
+  ref: string;
+  tel: string;
+  address_customer: string;
+  address_send: string;
+  contact: string;
+  note: string;
+  customer_id: number;
+  products: CategoryData[];
+}
+
+const Page: React.FC<ModalByIdType> = ({ id }) => {
+  // States
+  const [optionCustomer, setOptionCustomer] = useState<optionType[]>([]);
+  const [openModalProduct, setOpenModalProduct] = useState(false);
+
+  const [sendData, setSendData] = useState<SendDataType>({
+    id: 0,
+    code: "",
+    title: "",
+    date: "",
+    government: 0,
+    lottery: 0,
+    name: "",
+    price: 0,
+    status: 0,
+    noun: "",
+    ref: "",
+    tel: "",
+    address_customer: "",
+    address_send: "",
+    contact: "",
+    note: "",
+    customer_id: 0,
+    products: [],
+  });
+  // Systems
+  const token = decryptToken();
+  const router = useRouter();
+  const dateNowEn = moment().format("YYYY-MM-DD");
+  const dateNowTh = moment().format("DD-MM-YYYY");
+
+  const fetchDataCustomer = async () => {
+    try {
+      const sendData = {
+        page: 0,
+      };
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/customer/all/`,
+        sendData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        const newData: optionType[] = res.data.result.map(
+          (item: optionType) => ({
+            value: item.id,
+            label: item.name,
+          })
+        );
+
+        setOptionCustomer(newData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDataSaleProductList = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sale/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setSendData((prev) => ({
+          ...prev,
+          products: res.data.products,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDataAll = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sale/all/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setSendData((prev) => ({
+          ...prev,
+          id: res.data.id,
+          code: res.data.code,
+          title: res.data.title,
+          date: res.data.date,
+          government: res.data.government,
+          lottery: res.data.lottery,
+          name: res.data.name,
+          price: res.data.price,
+          status: res.data.status,
+          noun: res.data.noun,
+          ref: res.data.ref,
+          tel: res.data.tel,
+          address_customer: res.data.address_customer,
+          address_send: res.data.address_send,
+          contact: res.data.contact,
+          note: res.data.note,
+          customer_id: res.data.customer_id,
+          auction_title_id: res.data.auction_id,
+        }));
+
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChangeSelectCustomer = async (id: optionType | null) => {
+    if (!id) return null;
+    const newId = id?.value;
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/customer/${newId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        console.log(res.data);
+
+        setSendData((prev) => ({
+          ...prev,
+          customer_id: res.data.id,
+          name: res.data.name,
+          noun: res.data.noun,
+          ref: res.data.ref,
+          tel: res.data.tel,
+          address_customer: res.data.address_customer,
+          address_send: res.data.address_send,
+          contact: res.data.contact,
+        }));
+      }
+    } catch (error: unknown) {
+      console.log(error);
+      errorMessage(error);
+    }
+  };
+
+  const handleInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setSendData((prev) => ({
+      ...prev!,
+      [name]: value,
+    }));
+  };
+
+  // ต้องการเก็บค่า sendData.sum ที่มาจาก price * quantity ของรายการทั้งหมด
+  const handleAddProduct = (
+    catId: number,
+    productName: string,
+    quantity: number,
+    price: number,
+    total : number,
+    category_name: string,
+    product_id: number,
+    unit: string
+  ): boolean => {
+    let isDuplicate = false;
+
+    setSendData((prev) => {
+      if (!prev) return prev;
+      const updated = prev.products.map((cat) => {
+        if (cat.category_id === catId) {
+          // เช็คซ้ำ
+          const found = cat.results.some((item) => item.name === productName);
+          if (found) {
+            // ถ้าเจอซ้ำ
+            isDuplicate = true;
+            return cat; // ไม่เพิ่ม
+          }
+
+          // ไม่ซ้ำ -> เพิ่ม
+          console.log({ cat });
+
+          return {
+            ...cat,
+            results: [
+              ...cat.results,
+              {
+                name: productName,
+                quantity,
+                price,
+                total ,
+                category_name,
+                product_id,
+                unit,
+              },
+            ],
+          };
+        }
+        return cat;
+      });
+
+      // คำนวณหา ราคาทั้งหมด จากรายการทั้งหมด
+      const newSum = updated.reduce((total, category) => {
+        const categorySum = category.results.reduce((catTotal, item) => {
+          return catTotal + item.price * item.quantity;
+        }, 0);
+        return total + categorySum;
+      }, 0);
+
+      return { ...prev, products: updated, price: newSum };
+    });
+
+    // สุดท้าย return !isDuplicate
+    // (ถ้าไม่ซ้ำ => true, ถ้าซ้ำ => false)
+    return !isDuplicate;
+  };
+
+  const handleDeleteProduct = (categoryId: number, productIndex: number) => {
+    setSendData((prev) => {
+      if (!prev) return prev;
+      const updatedProducts = prev.products.map((cat) => {
+        if (cat.category_id === categoryId) {
+          // ลบสินค้าตาม index
+          const newResults = cat.results.filter(
+            (_, idx) => idx !== productIndex
+          );
+          return { ...cat, results: newResults };
+        }
+        return cat;
+      });
+      return { ...prev, products: updatedProducts };
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!sendData.customer_id) return toast.error("กรุณาเลือกผู้บริจาค !");
+
+      const data = {
+        id,
+        date: dateNowEn,
+        government: sendData.government || 0,
+        lottery: sendData.lottery || 0,
+        price: sendData.price || 0,
+        note: sendData.note,
+        customer_id: sendData.customer_id,
+        customer_name: sendData.name,
+        products: sendData.products,
+      };
+
+
+      // API
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sale/add`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        await fetchDataAll()
+        setTimeout(() => {
+          router.push("/admin/sale/list");
+        }, 1500);
+      }
+    } catch (error: unknown) {
+      console.log(error);
+      errorMessage(error);
+    }
+  };
+
+  const handleCancelForModal = async (id: number, code: string) => {
+    // await handleCancel(id, code);
+  };
 
   useEffect(() => {
-    setIsClient(true);
+    fetchDataCustomer();
+    fetchDataSaleProductList();
+    if (id) fetchDataAll();
   }, []);
 
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
-      {/* Left Section */}
-      <section className="w-5/12 ">
-        <div className="bg-white rounded-md shadow-lg px-6 py-4">
-          <div className="flex flex-row gap-2 justify-between ">
-            <div className="flex flex-row gap-2 items-center">
-              <FiCoffee size={18} />
-              <p className=" font-medium">เลือกผู้บริจาค</p>
+    <div>
+      {openModalProduct && (
+        <ModalAddProduct
+          open={openModalProduct}
+          setOpen={setOpenModalProduct}
+          onAddProduct={handleAddProduct}
+        />
+      )}
+
+      {/* Start Main */}
+      <div className="flex flex-col lg:flex-row gap-4  ">
+        {/* Left Section */}
+        <section className="w-6/12 ">
+          <div className="bg-white rounded-md shadow-lg px-6 py-4">
+            <div className="flex flex-row gap-2 justify-between ">
+              <div className="flex flex-row gap-2 items-center">
+                <FiCoffee size={16} />
+                <p className=" font-medium text-sm">
+                  รายละเอียดบิล (เลือกผู้บริจาค)
+                </p>
+              </div>
             </div>
 
-            <button className=" bg-gradient-to-r from-blue-600 to-blue-500 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-              <FiPlus size={18} />
-              เพิ่มผู้บริจาค
-            </button>
-          </div>
+            {/* data : {JSON.stringify(sendData)} */}
 
-          <div className="mt-3">
-            {isClient ? <Select options={options} /> : null}
-          </div>
 
-          <div className="mt-6">
-            <p>ชื่อ-สกุล</p>
-            <p className=" text-sm font-light">นาย ณัฐวุฒิ ศรีน้ำเงินเข้ม</p>
+            <div className="mt-3 flex flex-col lg:flex-row gap-4">
+              {optionCustomer.length > 0 && (
+                <Select
+                  options={optionCustomer}
+                  value={optionCustomer.find(
+                    (item) => item.value === sendData?.customer_id
+                  )}
+                  onChange={handleChangeSelectCustomer}
+                  placeholder="เลือกลูกค้าใหม่"
+                  className="text-sm w-2/3"
+                />
+              )}
 
-            <p className="mt-4">สถานที่จัดส่ง</p>
-            <p className=" text-sm font-light">
-              11/11 ต.คนในเมือง อ.เมือง จ.ขอนแก่น 40000
-            </p>
-
-            <p className="mt-4">ผู้ติดต่อ</p>
-            <p className=" text-sm font-light">นาย ทดสอบระบบ โดยเทสเตอร์ </p>
-
-            <p className="mt-4">เบอร์โทร</p>
-            <p className=" text-sm font-light">0850032649</p>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-col lg:flex-row gap-2">
-          <div className="bg-white rounded-md shadow-lg w-1/3 px-4 py-2 flex flex-col items-center justify-center">
-            <h2 className="text-xl text-center text-gray-700 font-light">ฟีเจอร์ใหม่</h2>
-            <h2 className="text-4xl mt-2 text-center">เร็วๆ นี้</h2>
-
-          </div>
-          <div className="bg-white rounded-md shadow-lg w-2/3 px-4 py-4">
-            <ul className=" font-light text-gray-700 text-base">
-              <li>- ชำระเงินผ่านพร้อมเพย์ / โมบายแบงก์กิ้ง</li>
-              <li>- ระบบวิเคราะห์ยอดขายอัจฉริยะ</li>
-              <li>- สร้างบิลแบบ Dynamic QR Code</li>
-              <li>- แจ้งเตือนผ่านหลายช่องทาง ในเวลาเดียวกัน</li>
-              <li>- ระบบบันทึกภาษีและ e-Tax Invoice</li>
-              <li>- สร้างบิลอัตโนมัติจากคำสั่งซื้อออนไลน์ จากทุกที่</li>
-              <li>- ระบบป้องกันการทุจริต</li>
-            </ul>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Right Section */}
-      <section className="w-7/12 ">
-        <div className="bg-white rounded-md shadow-lg px-6 py-4  ">
-          <div className="flex flex-row gap-2 items-center justify-between">
-            <div className="flex flex-row gap-2 items-center w-full">
-              <BsCartPlus size={18} />
-              <p className=" font-medium">รายการสินค้า</p>
-            </div>
-
-            <div className="w-full flex justify-end">
-              <button className=" bg-gradient-to-r from-blue-600 to-blue-500 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-                <FiPlus size={18} /> เพิ่มสินค้า
+              <button className="w-1/3 bg-blue-500 text-white rounded-md">
+                แก้ไขผู้ประมูล
               </button>
             </div>
+            <div className="mt-5 text-sm">
+              <div className="flex flex-row gap-4">
+                <div className="w-full">
+                  <p>ชื่อ-สกุล</p>
+                  <p className=" text-sm font-light">{sendData?.name}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-row gap-4 mt-3">
+                <div className="w-full">
+                  <p>ที่อยู่</p>
+                  <p className=" text-sm font-light">
+                    {sendData?.address_customer || "-"}
+                  </p>
+                </div>
+                <div className="w-full">
+                  <p className="">เลขที่ใบเสร็จ</p>
+                  <p className=" text-sm font-light">{sendData?.code || "-"}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-row gap-4 mt-3">
+                <div className="w-full">
+                  <p className="">เบอร์โทรศัพท์</p>
+                  <p className=" text-sm font-light">{sendData?.tel || "-"}</p>
+                </div>
+
+                <div className="w-full">
+                  <p className="">สถานที่จัดส่ง</p>
+                  <p className=" text-sm font-light">
+                    {sendData?.address_send || "-"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-row gap-4 mt-3">
+                <div className="w-full">
+                  <p>ผู้ติดต่อ</p>
+                  <p className=" text-sm font-light">
+                    {sendData?.contact || "-"}
+                  </p>
+                </div>
+
+                <div className="w-full">
+                  <p>ออกสลากในนาม</p>
+                  <p className=" text-sm font-light">{sendData.noun || "-"}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="overflow-x-auto border rounded-lg  mt-4  h-80">
-            <table className="table-auto text-sm w-full ">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-300   ">
-                  <th className="px-4 py-3 text-start font-medium ">ชื่อ</th>
-                  <th className="px-4 py-3 text-start font-medium ">จำนวน</th>
-                  <th className="px-4 py-3 text-start font-medium ">
-                    หน่วยนับ
-                  </th>
-                  <th className="px-4 py-3 text-start font-medium ">
-                    ราคา/หน่วย
-                  </th>
-                  <th className="px-4 py-3 text-start font-medium ">ราคารวม</th>
+          <div className="bg-white rounded-md shadow-lg px-6 py-4 mt-4 text-sm">
+            <div className="flex flex-row gap-2 items-center">
+              <FiCoffee size={16} />
+              <p className=" font-medium ">อื่น ๆ</p>
+            </div>
 
-                  <th className="px-4 py-3 text-start font-medium ">ลบ</th>
-                </tr>
-              </thead>
-
-              <tbody className="">
-                <tr className="">
-                  <td className="px-4 py-3">แอปเปิ้ลแดง</td>
-                  <td className="px-4 py-3 font-light text-gray-600">10</td>
-                  <td className="px-4 py-3 font-light text-gray-600">ลูก</td>
-                  <td className="px-4 py-3 font-light text-gray-600">5</td>
-                  <td className="px-4 py-3 font-light text-gray-600">50</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-3">โทรศัพท์มือถือ</td>
-                  <td className="px-4 py-3 font-light text-gray-600">2</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    เครื่อง
-                  </td>
-                  <td className="px-4 py-3 font-light text-gray-600">5</td>
-                  <td className="px-4 py-3 font-light text-gray-600">50</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-3">แตงโมสุกสีเขียว</td>
-                  <td className="px-4 py-3 font-light text-gray-600">20</td>
-                  <td className="px-4 py-3 font-light text-gray-600">ลูก</td>
-                  <td className="px-4 py-3 font-light text-gray-600">15</td>
-                  <td className="px-4 py-3 font-light text-gray-600">300</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="px-4 py-3">น้ำยาล้างจาน</td>
-                  <td className="px-4 py-3 font-light text-gray-600">6</td>
-                  <td className="px-4 py-3 font-light text-gray-600">ขวด</td>
-                  <td className="px-4 py-3 font-light text-gray-600">28</td>
-                  <td className="px-4 py-3 font-light text-gray-600">168</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-3">คอมพิวเตอร์ตั้งโต๊ะ</td>
-                  <td className="px-4 py-3 font-light text-gray-600">1</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    เครื่อง
-                  </td>
-                  <td className="px-4 py-3 font-light text-gray-600">14,000</td>
-                  <td className="px-4 py-3 font-light text-gray-600">14,000</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-3">ปลั๊กไฟอย่างดีย์</td>
-                  <td className="px-4 py-3 font-light text-gray-600">2</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    เครื่อง
-                  </td>
-                  <td className="px-4 py-3 font-light text-gray-600">350</td>
-                  <td className="px-4 py-3 font-light text-gray-600">700</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-3">กางเกงยีนส์</td>
-                  <td className="px-4 py-3 font-light text-gray-600">20</td>
-                  <td className="px-4 py-3 font-light text-gray-600">ตัว</td>
-                  <td className="px-4 py-3 font-light text-gray-600">1,000</td>
-                  <td className="px-4 py-3 font-light text-gray-600">20,000</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-                <tr className="">
-                  <td className="px-4 py-3">ชาวนากับงูเห่า</td>
-                  <td className="px-4 py-3 font-light text-gray-600">4</td>
-                  <td className="px-4 py-3 font-light text-gray-600">ตัว</td>
-                  <td className="px-4 py-3 font-light text-gray-600">500</td>
-                  <td className="px-4 py-3 font-light text-gray-600">2,000</td>
-                  <td className="px-4 py-3 font-light text-gray-600">
-                    <FaRegTrashAlt size={18} className="text-red-500" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-row gap-8 mt-5 ">
-            <div className="w-2/3">
-              <div className="flex flex-row gap-2  justify-end items-end w-full   ">
-                <div className="w-full flex flex-col lg:flex-row gap-2">
-                  <p>บิลอ้างอิงเลขที่</p>
-                  <input
-                    type="text"
-                    className="bg-gray-50 w-24 rounded-md border border-gray-300 px-4"
-                    placeholder="0"
-                  />
+            <div className="w-full">
+              <div className="flex flex-row gap-4  justify-end items-end w-full mt-4   ">
+                <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+                  <div className="flex flex-col gap-2">
+                    <p className="">สลากออมสิน</p>
+                    <input
+                      type="text"
+                      className=" w-full  rounded-md border border-gray-400 px-4 py-0.5"
+                      placeholder="0"
+                      value={sendData?.government || ""}
+                      name="government"
+                      onChange={(e) => handleInputChange(e)}
+                    />
+                  </div>
                 </div>
-                <div className="w-full flex flex-col lg:flex-row gap-2">
-                  <p>เล่มที่</p>
-                  <input
-                    type="text"
-                    className="bg-gray-50 w-24 rounded-md border border-gray-300 px-4"
-                    placeholder="0"
-                  />
+                <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+                  <div className="flex flex-col gap-2">
+                    <p className="">ล็อตเตอรี่</p>
+                    <input
+                      type="text"
+                      className="w-full  rounded-md border border-gray-400 px-4 py-0.5"
+                      placeholder="0"
+                      value={sendData?.lottery || ""}
+                      name="lottery"
+                      onChange={(e) => handleInputChange(e)}
+                    />
+                  </div>
                 </div>
+
+                {/* <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+                  <div className="flex flex-col gap-2">
+                    <p className="">บิลอ้างอิงเลขที่</p>
+                    <input
+                      type="text"
+                      className=" w-full rounded-md border border-gray-400 px-4 py-0.5"
+                      placeholder="0"
+                      value={sendData?.ref || ""}
+                      name="ref"
+                      onChange={(e) => handleInputChange(e)}
+                    />
+                  </div>
+                </div> */}
               </div>
 
               <div className="flex flex-row gap-2 items-center w-1/3 mt-6 ">
@@ -229,64 +504,206 @@ const Page = () => {
                 <p className=" font-medium">หมายเหตุ</p>
               </div>
               <textarea
-                name=""
                 className="w-full  mt-3 bg-gray-100 rounded-md px-4 py-2.5 border border-gray-300"
-                id=""
                 placeholder="กรอกหมายเหตุ"
+                value={sendData?.note || ""}
+                name="note"
+                onChange={(e) => handleInputChange(e)}
               ></textarea>
             </div>
-            <div className="w-1/3">
-              <div className="flex flex-row gap-2 items-center">
-                <LuClipboardList size={18} />
-                <p className=" font-medium">รายละเอียด</p>
+          </div>
+        </section>
+
+        {/* Right Section */}
+        <section className="w-6/12 ">
+          <div className="bg-white rounded-md shadow-lg px-6 py-4  ">
+            <div className="flex flex-row gap-2 items-center justify-between">
+              <div className="flex flex-row gap-2 items-center w-full">
+                <BsCartPlus size={18} />
+                <p className=" text-sm font-medium">รายการสินค้า</p>
               </div>
 
-              <div className="flex flex-row gap-2 mt-4 items-end">
-                <p>วันที่ : </p>
-                <p className="font-light text-sm">26/12/2567 </p>
+              <div className="w-full flex gap-2 justify-end ">
+                <button
+                  onClick={() => setOpenModalProduct(!openModalProduct)}
+                  className=" bg-gradient-to-r from-blue-600 to-blue-500 px-2 py-1.5 rounded-md text-white flex gap-1 items-center text-sm"
+                >
+                  <FiPlus size={18} /> เพิ่มสินค้า
+                </button>
+              </div>
+            </div>
+            <div className="overflow-x-auto border border-gray-300 rounded-lg  shadow-lg h-80  mt-4">
+              <table className="table-auto  w-full ">
+                <thead className="">
+                  <tr className="bg-gray-50  top-0 sticky border-b border-gray-300  text-sm  ">
+                    <th className="px-3 py-1 text-start font-medium    ">
+                      สินค้า
+                    </th>
+                    <th className="px-3 py-1 text-start font-medium ">จำนวน</th>
+                    <th className="px-3 py-1 text-start font-medium ">
+                      หน่วยนับ
+                    </th>
+                    <th className="px-3 py-1 text-start font-medium ">
+                      ราคา/หน่วย
+                    </th>
+                    <th className="px-3 py-1 text-start font-medium ">รวม</th>
+                    <th className="px-3 py-1 text-start font-medium ">ลบ</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {sendData.products?.map((item) => (
+                    <React.Fragment key={item.category_id}>
+                      <tr className="bg-gray-100">
+                        <td
+                          colSpan={6}
+                          className="px-3 py-1 font-medium text-gray-700 border-b border-gray-300 text-sm"
+                        >
+                          {item.category_id === 1 && "วัตถุมงคล"}
+                          {item.category_id === 2 && "โทรศัพท์"}
+                          {item.category_id === 3 && "เครื่องใช้สำนักงาน"}
+                          {item.category_id === 4 && "เครื่องใช้ไฟฟ้า"}
+                          {item.category_id === 5 && "อื่นๆ"}
+                        </td>
+                      </tr>
+                      {item.results.map((items, idx) => (
+                        <tr
+                          className="hover:bg-gray-50  text-sm  "
+                          key={items.product_id}
+                        >
+                          <td className="px-3 py-1 font-extralight text-gray-800  ">
+                            <p className="">{items.name}</p>
+                          </td>
+                          <td className="px-3 py-1 font-extralight text-gray-800  ">
+                            <p className="">{items.quantity}</p>
+                          </td>
+                          <td className="px-3 py-1 font-extralight text-gray-800  ">
+                            <p className="">{items.unit}</p>
+                          </td>
+                          <td className="px-3 py-1 font-extralight text-gray-800  ">
+                            <p className="">
+                              {" "}
+                              {Number(items.price || 0).toLocaleString()}{" "}
+                            </p>
+                          </td>
+                          <td className="px-3 py-1 font-extralight text-gray-800  ">
+                            <p className="">
+                              {" "}
+                              {Number(
+                                items.price * items.quantity || 0
+                              ).toLocaleString()}{" "}
+                            </p>
+                          </td>
+                          <td className="px-3 py-1 font-extralight text-gray-800  ">
+                            <FaRegTrashAlt
+                              size={16}
+                              className="text-red-500"
+                              onClick={() =>
+                                handleDeleteProduct(item.category_id, idx)
+                              }
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex flex-row   gap-8 mt-5 text-sm ">
+              <div className="w-7/12">
+                <div className="flex flex-wrap gap-3 mt-4 justify-start items-end">
+                  <button
+                    onClick={handleSave}
+                    disabled={sendData.status === 3}
+                    className={`bg-gradient-to-r from-green-600 to-green-500 px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                  >
+                    <FiSave size={18} />
+                    {!id ? "บันทึก":"อัพเดท"}
+                  </button>
+                  {/* <button
+                    disabled={sendData.status === 3}
+                    onClick={() =>
+                      handleCancelForModal(sendData.id, sendData.code)
+                    }
+                    className={`${
+                      sendData.status === 1 || sendData.status === 2
+                        ? "bg-gradient-to-r from-red-500 to-red-400"
+                        : "bg-gray-400"
+                    } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                  >
+                    <FiSlash size={18} />
+                    ยกเลิกบิล
+                  </button> */}
+
+                  {/* <button
+                    disabled={sendData.status === 2 || sendData.status === 3}
+                    onClick={() => handlePay(id)}
+                    className={`${
+                      sendData.status === 1
+                        ? "bg-gradient-to-r from-sky-500 to-sky-400"
+                        : "bg-gray-400"
+                    } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                  >
+                    <BsCashCoin size={18} />
+                    ชำระเงิน
+                  </button> */}
+                  {/* <button className="  px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500">
+                    <FiPrinter size={18} />
+                    ใบรับของ
+                  </button>
+                  <button className="   px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500">
+                    <FiPrinter size={18} />
+                    ใบเสร็จ
+                  </button> */}
+                </div>
               </div>
 
-              <div className="flex flex-row gap-2 mt-2 items-end justify-between">
-                <p>ออกสลากในนาม : </p>
-                <p className="font-light text-sm">คุณนาย ชัยภูมิ </p>
-              </div>
+              <div className=" w-5/12  ">
+                <div className="flex flex-row gap-2 items-center">
+                  <LuClipboardList size={18} />
+                  <p className=" font-medium">รายละเอียด</p>
+                </div>
 
-              <div className="flex flex-row gap-2 mt-2 items-end justify-between">
-                <p>จำนวนทั้งหมด : </p>
-                <p className="font-light text-sm">60 รายการ </p>
-              </div>
+                <div className="flex flex-row gap-2 mt-4 items-end">
+                  <p>วันที่ :  </p>
+                  <p className="font-light text-sm"> {!id ? dateNowTh : sendData?.date} </p>
+                </div>
 
-              <div className="flex flex-row gap-2 mt-2 items-end justify-between">
-                <p>ราคาทั้งหมด : </p>
-                <p className="font-light text-sm">4,000 บาท </p>
+                <div className="flex flex-row gap-2 mt-2 items-end">
+                  <p>ชำระเงิน : </p>
+                  <p className="font-light text-sm">
+                    {sendData?.status === 1 && "ยังไม่ชำระเงิน"}
+                    {sendData?.status === 2 && "ชำระเงินแล้ว"}
+                    {sendData?.status === 3 && "ยกเลิกบิล"}
+                    {!sendData?.status && "-"}
+                  </p>
+                </div>
+
+                <div className="flex flex-row gap-2 mt-2 items-end justify-between">
+                  <p>
+                    สินค้าทั้งหมด :{" "}
+                    {sendData.products.reduce((total, category) => {
+                      return total + category.results.length;
+                    }, 0)}{" "}
+                    <span className="font-light text-sm"> รายการ </span>{" "}
+                  </p>
+                </div>
+
+                <div className="flex flex-row gap-2 mt-2 items-end justify-between">
+                  <p>
+                    ราคาทั้งหมด :{" "}
+                    <span className="font-light text-sm">
+                      {" "}
+                      {Number(sendData?.price || 0).toLocaleString()} บาท{" "}
+                    </span>{" "}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex flex-row gap-2 mt-4 justify-end items-end">
-          <button className=" bg-gradient-to-r from-green-600 to-green-500 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-            <FiSave size={18} />
-            บันทึก
-          </button>
-          <button className=" bg-gradient-to-r from-red-500 to-red-400 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-            <FiSlash size={18} />
-            ยกเลิกบิล
-          </button>
-
-          <button className=" bg-gradient-to-r from-blue-500 to-blue-400 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-            <BsCashCoin size={18} />
-            ชำระเงิน
-          </button>
-          <button className=" bg-gradient-to-r from-yellow-500 to-yellow-400 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-            <FiPrinter size={18} />
-            ใบรับของ
-          </button>
-          <button className=" bg-gradient-to-r from-yellow-500 to-yellow-300 px-2 py-1.5 rounded-md text-white flex gap-1 items-center">
-            <FiPrinter  size={18} />
-            ใบเสร็จ
-          </button>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };
