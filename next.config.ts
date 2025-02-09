@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
   images : {
     domains: ["localhost", "192.168.1.7"],
   },
-  reactStrictMode : false
+  reactStrictMode : false,
+  output: "standalone"
 };
 
 export default nextConfig;
