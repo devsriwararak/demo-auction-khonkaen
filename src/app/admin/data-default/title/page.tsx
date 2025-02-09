@@ -116,7 +116,7 @@ const Page = () => {
         }
       );
 
-      await createExcel(res.data, sendData)
+      await createExcel(res.data, sendData, "หัวข้อประมูล")
 
 
 

@@ -8,6 +8,8 @@ import ReportProduct from "./ReportProduct";
 const Page = () => {
   const [path, setPath] = useState("1");
 
+  
+
   // Functions
 
   return (

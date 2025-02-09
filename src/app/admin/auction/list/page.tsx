@@ -1,6 +1,6 @@
 "use client";
 import Pagination from "@/app/components/Pagination";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { FiList } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegMoneyBillAlt, FaRegTimesCircle } from "react-icons/fa";
@@ -115,7 +115,7 @@ const PageAuctionLst = () => {
         }
       );
 
-      await createExcel(res.data, sendData);
+      await createExcel(res.data, sendData, "รายการประมูล");
     } catch (error) {
       console.log(error);
     }

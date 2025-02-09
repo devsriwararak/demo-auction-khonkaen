@@ -66,7 +66,7 @@ export const alertConfirmError = async (): Promise<boolean> => {
 
 
 // ต้องการใส่ type ให้ data และ sendData
-export const createExcel = async (data: BlobPart, sendData: sendDataType) => {
+export const createExcel = async (data: BlobPart, sendData: sendDataType, name : string) => {
   // สร้าง Blob จาก Response
   const blob = new Blob([data], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -80,8 +80,7 @@ export const createExcel = async (data: BlobPart, sendData: sendDataType) => {
   // ตั้งชื่อไฟล์ที่ต้องการดาวน์โหลด
   link.setAttribute(
     "download",
-    `Auction_Titles_${sendData.startDate || "all"}_${sendData.endDate || "all"
-    }.xlsx`
+    `${name || "no name"}_${sendData.startDate || "all"}.xlsx`
   );
 
   // คลิกลิงก์เพื่อดาวน์โหลด

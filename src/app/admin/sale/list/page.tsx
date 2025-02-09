@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { FiList } from "react-icons/fi";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { FaRegEdit, FaRegMoneyBillAlt, FaRegTimesCircle } from "react-icons/fa";
-import { IoPrintOutline } from "react-icons/io5";
 
 import Swal from "sweetalert2";
 
@@ -105,7 +104,7 @@ const PageSaleList = () => {
         search,
       };
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auction/send/excel`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sale/send/excel`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,7 +114,7 @@ const PageSaleList = () => {
         }
       );
 
-      await createExcel(res.data, sendData);
+      await createExcel(res.data, sendData, "รายการขายสินค้า");
     } catch (error) {
       console.log(error);
     }

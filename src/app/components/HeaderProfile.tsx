@@ -5,8 +5,14 @@ import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { SlLock, SlLogout, SlSettings, SlUser, SlWallet } from 'react-icons/sl';
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { decryptData } from '@/lib/tool';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
-
+interface CustomJwtPayload {
+  id: string;
+  status: string;
+}
 
 const HeaderProfile = () => {
     const router = useRouter();
@@ -27,15 +33,42 @@ const HeaderProfile = () => {
             cancelButtonText: "ยกเลิก",
           }).then((result) => {
             if (result.isConfirmed) {
-              Cookies.remove("auth_token");
-              Cookies.remove("status");
-              router.refresh();
+              logout()
+              
             }
           });
         } catch (error) {
           console.log(error);
         }
       };
+
+      const logout = async()=>{
+        try {
+          const cookieAuth = Cookies.get('auth_token')
+          if(!cookieAuth) return false
+          
+          const token = decryptData(cookieAuth) 
+          const decodedToken = jwtDecode<CustomJwtPayload>(token);
+          const user_id = decodedToken.id || 0
+
+          const res = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+            {user_id}
+         
+          );
+
+          if(res.status === 200){
+            Cookies.remove("auth_token");
+            Cookies.remove("status");
+            router.refresh();
+          }
+          
+          
+        } catch (error) {
+          console.log(error);
+          
+        }
+      }
 
       const solutions = [
         { name: 'จัดการข้อมูลส่วนตัว',  href: '#', icon: SlUser  },

@@ -3,9 +3,10 @@ import ModalEditSale from '@/app/components/modals/ModalEditSale'
 import React from 'react'
 
 const page = () => {
+
   return (
     <div>
-      <ModalEditSale fetchData={async()=>{}} />
+      <ModalEditSale  />
     </div>
   )
 }

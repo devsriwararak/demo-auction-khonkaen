@@ -142,7 +142,7 @@ const Page = () => {
         }
       );
 
-      await createExcel(res.data, sendData)
+      await createExcel(res.data, sendData, "ข้อมูลสินค้า")
 
     } catch (error) {
       console.log(error);

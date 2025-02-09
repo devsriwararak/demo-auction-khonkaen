@@ -113,7 +113,7 @@ const Page = () => {
         }
       );
 
-      await createExcel(res.data, sendData)
+      await createExcel(res.data, sendData, "ข้อมูลผู้บริจาค")
 
 
 

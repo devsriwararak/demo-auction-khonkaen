@@ -17,11 +17,10 @@ import ModalAdd from "@/app/admin/data-default/customer/ModalAdd";
 
 interface PropsType {
   id?: number | null;
-  fetchData: () => Promise<void>;
-  handlePay: (id: number) => Promise<void>;
-  handleCancel : (id:number, code:string) => Promise<void>
-  handleSetModal: (id: number, numb: number, header: string) => Promise<void>;
-
+  fetchData?: () => Promise<void>;
+  handlePay?: (id: number) => Promise<void>;
+  handleCancel?: (id: number, code: string) => Promise<void>;
+  handleSetModal?: (id: number, numb: number, header: string) => Promise<void>;
 }
 
 interface optionType {
@@ -65,7 +64,13 @@ interface SendDataType {
   products: CategoryData[];
 }
 
-const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleCancel, handleSetModal}) => {
+const ModalEditSale: React.FC<PropsType> = ({
+  id,
+  fetchData,
+  handlePay = async () => {},
+  handleCancel = async () => {},
+  handleSetModal = async () => {},
+}) => {
   // States
   const [optionCustomer, setOptionCustomer] = useState<optionType[]>([]);
   const [openModalProduct, setOpenModalProduct] = useState(false);
@@ -318,14 +323,13 @@ const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleC
   };
 
   const handleCancelForModal = async (id: number, code: string) => {
-    
+    if (!handleCancel) return false;
+
     await handleCancel(id, code);
     setTimeout(async () => {
       await fetchDataAll();
     }, 1500);
   };
-
-
 
   const handleSave = async () => {
     try {
@@ -363,7 +367,9 @@ const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleC
       if (res.status === 200) {
         toast.success(res.data.message);
         if (id) await fetchDataAll();
-        if (id) await fetchData();
+        if (id && fetchData) {
+          await fetchData();
+        }
         setTimeout(() => {
           router.push("/admin/sale/list");
         }, 1500);
@@ -678,12 +684,13 @@ const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleC
                     onClick={handleSave}
                     disabled={sendData.status === 3}
                     className={`${
-                      sendData.status === 0 || sendData.status === 1 || sendData.status === 2
+                      sendData.status === 0 ||
+                      sendData.status === 1 ||
+                      sendData.status === 2
                         ? "bg-gradient-to-r from-green-600 to-green-500"
                         : "bg-gray-400"
                     } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                   >
-                
                     <FiSave size={18} />
                     {!id ? "บันทึก" : "อัพเดท"}
                   </button>
@@ -715,10 +722,7 @@ const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleC
                           : "bg-gray-400"
                       } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                     >
-                      <FiSlash
-                        
-                        size={18}
-                      />
+                      <FiSlash size={18} />
                       ยกเลิกบิล
                     </button>
                   )}
@@ -736,7 +740,7 @@ const ModalEditSale: React.FC<PropsType> = ({ id, fetchData , handlePay, handleC
                   {id && (
                     <button
                       disabled={sendData.status === 1 || sendData.status === 3}
-                       onClick={() => handleSetModal(sendData.id, 3, "ใบเสร็จ")}
+                      onClick={() => handleSetModal(sendData.id, 3, "ใบเสร็จ")}
                       className={`${
                         sendData.status === 1 || sendData.status === 3
                           ? "bg-gray-200"

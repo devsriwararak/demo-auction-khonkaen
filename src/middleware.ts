@@ -45,8 +45,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   } 
 
-  else if (status === '0' && !path.startsWith('/member')) {
-    url.pathname = '/member'
+  else if (status === '2' && !path.startsWith('/admin')) {
+    url.pathname = '/admin'
+    return NextResponse.redirect(url)
+  }
+
+  else if (status === '1' && !path.startsWith('/admin')) {
+    url.pathname = '/admin'
+    return NextResponse.redirect(url)
+  }
+
+  else if (status === '0' && !path.startsWith('/admin')) {
+    url.pathname = '/admin'
     return NextResponse.redirect(url)
   }
 

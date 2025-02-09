@@ -7,27 +7,34 @@ interface MenuItemsProps {
     id: number;
     name: string;
     icon: React.ReactNode;
-    path: string;
-    status: number;
+    path: string[];
+    status : number[];
+    
   };
   pathname: string;
   toggleNavbar: () => void;
+  checkStatus: number | null ;
+
 }
 
 const Menuitems: React.FC<MenuItemsProps> = memo(
-  ({ item, pathname, toggleNavbar }) => {
+  ({ item, pathname, toggleNavbar, checkStatus }) => {
+    
+    if(!item.status.includes(checkStatus as number)){
+      return null
+    }
     
     return (
       <li
         className={`${
-            pathname === item.path
+            item.path.includes(pathname)
             ? "bg-gradient-to-r from-red-700 to-red-500 text-white"
             : ""
         } px-4 py-1.5 hover:bg-red-100 rounded-md cursor-pointer text-sm`}
       >
         <a
           className="flex flex-row gap-2 items-center"
-          href={item.path}
+          href={item.path[0]}
           onClick={toggleNavbar}
         >
           {item.icon}
