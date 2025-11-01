@@ -19,6 +19,7 @@ import ModalAddProduct from "../ModalAddProduct";
 import { toast } from "react-toastify";
 import moment from "moment";
 import ModalAdd from "../../data-default/customer/ModalAdd";
+import { useRouter } from "next/navigation";
 
 type ModalByIdType = {
   open: boolean;
@@ -28,6 +29,7 @@ type ModalByIdType = {
   handlePay: (id: number) => Promise<void>;
   handleCancel: (id: number, code: string) => Promise<void>;
   handleSetModal: (id: number, numb: number, header: string) => Promise<void>;
+  status: number | null
 };
 
 interface optionType {
@@ -79,6 +81,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
   handlePay,
   handleCancel,
   handleSetModal,
+  status
 }) => {
   // States
   const [optionCustomer, setOptionCustomer] = useState<optionType[]>([]);
@@ -111,6 +114,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
   });
   // Systems
   const token = decryptToken();
+  const router = useRouter()
 
   const fetchDataCustomer = async () => {
     try {
@@ -402,7 +406,9 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
       if (res.status === 200) {
         toast.success(res.data.message);
         await fetchDataAll();
+        router.push(`/display/screen/${id}`)
         await fetchData();
+
       }
     } catch (error: unknown) {
       console.log(error);
@@ -414,14 +420,14 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
     await handleCancel(id, code);
     setTimeout(async () => {
       await fetchDataAll();
-    }, 1500);
+    }, 3000);
   };
 
   const handlePlayInModal = async (id: number) => {
     await handlePay(id);
     setTimeout(async () => {
       await fetchDataAll();
-    }, 1500);
+    }, 3000);
   };
 
   // สำหรับแก้ไขผู้ประมูล
@@ -460,6 +466,8 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
           onAddProduct={handleAddProduct}
         />
       )}
+
+
 
       {openEditCustomer && sendData.customer_id ? (
         <ModalAdd
@@ -511,6 +519,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       แก้ไขผู้บริจาค
                     </button>
                   </div>
+                  SSS : {status}
 
                   {/* data : {JSON.stringify(sendData)} */}
 
@@ -604,7 +613,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                     <div className="flex flex-row gap-4  justify-end items-end w-full mt-4   ">
                       <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
                         <div className="flex flex-col gap-2">
-                          <p className="">สลากออมสิน</p>
+                          <p className="">สลากออมสิน </p>
                           <input
                             type="text"
                             className=" w-full  rounded-md border border-gray-400 px-4 py-0.5"
@@ -775,36 +784,35 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                         <button
                           onClick={handleSave}
                           disabled={sendData.status === 3}
-                          className={`${
-                            sendData.status === 1 || sendData.status === 2
+                          className={`${sendData.status === 1 || sendData.status === 2
                               ? "bg-gradient-to-r from-green-600 to-green-500"
                               : "bg-gray-400"
-                          } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                            } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                         >
                           <FiSave size={18} />
                           บันทึก
                         </button>
-                       
+
 
                         <button
                           disabled={
                             sendData.status === 2 || sendData.status === 3
                           }
                           onClick={() => handlePlayInModal(id)}
-                          className={`${
-                            sendData.status === 1
+                          className={`${sendData.status === 1
                               ? "bg-gradient-to-r from-sky-500 to-sky-400"
                               : "bg-gray-400"
-                          } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                            } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                         >
                           <BsCashCoin size={18} />
                           ชำระเงิน
                         </button>
 
-                        <button
-                          disabled={sendData.status === 2 ||sendData.status === 3}
+                        {/* ฉันมี Props Status ส่งมา */}
+                        {/* <button 
+                          disabled={sendData.status === 2 ||sendData.status === 3  }
                           className={`${
-                            sendData.status === 1
+                            sendData.status === 1 
                               ? "bg-gradient-to-r from-red-500 to-red-400"
                               : "bg-gray-400"
                           } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
@@ -816,8 +824,25 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                             size={18}
                           />
                           ยกเลิกบิล
+                        </button> */}
+
+                        <button
+                          disabled={
+                            status === 3
+                              ? false // ถ้า props status เป็น 3 → ให้กดได้ตลอด
+                              : sendData.status === 2 || sendData.status === 3 // เงื่อนไขเดิม
+                          }
+                          className={`${(sendData.status === 1 || status === 3)
+                              ? "bg-gradient-to-r from-red-500 to-red-400"
+                              : "bg-gray-400"
+                            } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                          onClick={() => handleCancelForModal(sendData.id, sendData.code)}
+                        >
+                          <FiSlash size={18} />
+                          ยกเลิกบิล
                         </button>
-                        
+
+
                         <button
                           onClick={() =>
                             handleSetModal(sendData.id, 3, "ใบรับของ")
@@ -834,11 +859,10 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                           onClick={() =>
                             handleSetModal(sendData.id, 3, "ใบเสร็จ")
                           }
-                          className={`${
-                            sendData.status === 1 || sendData.status === 3
+                          className={`${sendData.status === 1 || sendData.status === 3
                               ? "bg-gray-200"
                               : ""
-                          } px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500`}
+                            } px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500`}
                         >
                           <FiPrinter size={18} />
                           ใบเสร็จ

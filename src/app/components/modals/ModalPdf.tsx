@@ -4,8 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { convertNumberToThaiWords, decryptToken } from "@/lib/tool";
-import Image from "next/image";
+import { convertNumberToThaiWords, decryptToken, getThaiFiscalYear } from "@/lib/tool";
 import axios from "axios";
 
 type ModalPropsType = {
@@ -25,7 +24,7 @@ interface CategoryData {
     product_id: number;
     quantity: number;
     unit: string;
-    price : number | null;
+    price: number | null;
   }[];
 }
 
@@ -137,7 +136,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
       if (res.status === 200) {
         // setProductsData(res.data.products);
         console.log(res.data);
-        
+
         setSendData((prev) => ({
           ...prev,
           products: res.data.products,
@@ -148,72 +147,211 @@ const ModalPdf: React.FC<ModalPropsType> = ({
     }
   };
 
+  // const handlePreviewPDF = async () => {
+  //   if (!pdfContentRef.current) return;
+
+  //   // ✅ 1. ฟังก์ชันรอให้รูปทั้งหมดโหลดเสร็จ
+  //   const waitForImagesToLoad = async (element: HTMLElement) => {
+  //     const images = element.querySelectorAll("img");
+  //     const promises = Array.from(images).map(
+  //       (img) =>
+  //         new Promise<void>((resolve) => {
+  //           if (img.complete) resolve();
+  //           else {
+  //             img.onload = () => resolve();
+  //             img.onerror = () => resolve();
+  //           }
+  //         })
+  //     );
+  //     await Promise.all(promises);
+  //   };
+
+  //   // ✅ 2. รอให้รูปทั้งหมดโหลดเสร็จก่อนเริ่มแคปเจอร์
+  //   await waitForImagesToLoad(pdfContentRef.current);
+
+  //   // ✅ 3. ปรับขนาดให้ html2canvas จับครบทุกส่วน
+  //   const canvasContent = await html2canvas(pdfContentRef.current, {
+  //     scale: 2,
+  //     useCORS: true,
+  //     allowTaint: true,
+  //     scrollX: 0,
+  //     scrollY: -window.scrollY,
+  //     windowWidth: pdfContentRef.current.scrollWidth,
+  //     windowHeight: pdfContentRef.current.scrollHeight,
+  //   });
+
+
+  //   const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"]; // ข้อความภาษาไทย
+  //   const pdf = new jsPDF();
+
+  //   for (const title of titles) {
+  //     // สร้าง <div> ชั่วคราวสำหรับข้อความภาษาไทย
+  //     const tempDiv = document.createElement("div");
+  //     tempDiv.style.fontSize = "18px"; // ขนาดฟอนต์ที่ใหญ่พอ
+  //     tempDiv.style.fontFamily = "Arial, sans-serif"; // ฟอนต์ที่รองรับ
+  //     tempDiv.style.lineHeight = "1.2"; // เพิ่ม line-height ป้องกันการตัดส่วนท้าย
+  //     tempDiv.style.padding = "10px"; // เพิ่ม padding เพื่อไม่ให้ข้อความถูกตัด
+  //     tempDiv.style.position = "absolute";
+  //     tempDiv.style.top = "-9999px"; // ซ่อน <div> ออกจากหน้าจอ
+  //     tempDiv.innerHTML = title;
+
+  //     document.body.appendChild(tempDiv); // เพิ่ม <div> ลงใน DOM
+
+  //     // แปลง <div> เป็น Canvas
+  //     const canvas = await html2canvas(tempDiv);
+  //     const imgData = canvas.toDataURL("image/png");
+
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+  //     const imgX = 10; // ระยะห่างจากขอบซ้าย
+  //     const imgY = 5; // ระยะห่างจากขอบบน
+  //     const imgWidth = 25; // กำหนดความกว้างของภาพข้อความ
+  //     const imgHeight = (canvas.height / canvas.width) * imgWidth; // คำนวณอัตราส่วนความสูง
+
+  //     // เพิ่มภาพข้อความภาษาไทยลงใน PDF
+  //     pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
+
+  //     document.body.removeChild(tempDiv); // ลบ <div> หลังใช้งาน
+
+
+  //     // เพิ่มเนื้อหาอื่นจาก HTML
+  //     const canvasContent = await html2canvas(pdfContentRef.current);
+  //     const contentImgData = canvasContent.toDataURL("image/png");
+
+  //     const contentX = 10; // ระยะห่างจากขอบซ้าย
+  //     const contentY = imgY + imgHeight + 1; // ระยะห่างจากข้อความภาษาไทย
+  //     const contentWidth = pageWidth - 20; // ลดขอบซ้าย-ขวา
+  //     const contentHeight =
+  //       (canvasContent.height / canvasContent.width) * contentWidth; // คำนวณอัตราส่วน
+
+  //     // เพิ่มเนื้อหาในหน้า PDF
+  //     pdf.addImage(
+  //       contentImgData,
+  //       "PNG",
+  //       contentX,
+  //       contentY,
+  //       contentWidth,
+  //       contentHeight
+  //     );
+
+  //     // เพิ่มหน้าถัดไป (ยกเว้นหน้าสุดท้าย)
+  //     if (title !== titles[titles.length - 1]) {
+  //       pdf.addPage();
+  //     }
+  //   }
+
+  //   const pdfBlob = pdf.output("blob");
+  //   const url = URL.createObjectURL(pdfBlob);
+
+  //   // เปิดหน้าต่างใหม่เพื่อแสดง PDF Preview
+  //   const previewWindow = window.open(url, "_blank");
+  //   previewWindow?.focus();
+  // };
+
   const handlePreviewPDF = async () => {
     if (!pdfContentRef.current) return;
 
-    const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"]; // ข้อความภาษาไทย
-    const pdf = new jsPDF();
+    // ✅ 1. ฟังก์ชันรอให้รูปทั้งหมดโหลดเสร็จ
+    const waitForImagesToLoad = async (element: HTMLElement) => {
+      const images = element.querySelectorAll("img");
+      const promises = Array.from(images).map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete) resolve();
+            else {
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+            }
+          })
+      );
+      await Promise.all(promises);
+    };
 
-    for (const title of titles) {
+    // ✅ 2. รอให้รูปทั้งหมดโหลดเสร็จก่อนเริ่มแคปเจอร์
+    await waitForImagesToLoad(pdfContentRef.current);
+
+    // ✅ titles (ชื่อชุด)
+    const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"];
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    // ✅ เก็บขนาดหน้า A4
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // ✅ เตรียม Canvas ของเนื้อหา (จับครั้งเดียว)
+    const canvasContent = await html2canvas(pdfContentRef.current, {
+      scale: 2, // เพิ่มความละเอียด
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      windowWidth: pdfContentRef.current.scrollWidth,
+      windowHeight: pdfContentRef.current.scrollHeight,
+    });
+    const contentImgData = canvasContent.toDataURL("image/png");
+
+    const contentWidth = pageWidth - 20;
+    const contentHeight =
+      (canvasContent.height / canvasContent.width) * contentWidth;
+
+    // ✅ 3. สร้างหน้า PDF สำหรับแต่ละ title
+    for (let i = 0; i < titles.length; i++) {
+      const title = titles[i];
+
       // สร้าง <div> ชั่วคราวสำหรับข้อความภาษาไทย
       const tempDiv = document.createElement("div");
-      tempDiv.style.fontSize = "18px"; // ขนาดฟอนต์ที่ใหญ่พอ
-      tempDiv.style.fontFamily = "Arial, sans-serif"; // ฟอนต์ที่รองรับ
-      tempDiv.style.lineHeight = "1.2"; // เพิ่ม line-height ป้องกันการตัดส่วนท้าย
-      tempDiv.style.padding = "10px"; // เพิ่ม padding เพื่อไม่ให้ข้อความถูกตัด
+      tempDiv.style.fontSize = "18px";
+      tempDiv.style.fontFamily = "Arial, sans-serif";
+      tempDiv.style.lineHeight = "1.2";
+      tempDiv.style.padding = "10px";
       tempDiv.style.position = "absolute";
-      tempDiv.style.top = "-9999px"; // ซ่อน <div> ออกจากหน้าจอ
+      tempDiv.style.top = "-9999px";
       tempDiv.innerHTML = title;
 
-      document.body.appendChild(tempDiv); // เพิ่ม <div> ลงใน DOM
+      document.body.appendChild(tempDiv);
 
-      // แปลง <div> เป็น Canvas
-      const canvas = await html2canvas(tempDiv);
-      const imgData = canvas.toDataURL("image/png");
+      // แปลง <div> เป็นภาพ
+      const canvasTitle = await html2canvas(tempDiv, {
+        scale: 2,
+        useCORS: true,
+      });
+      const imgData = canvasTitle.toDataURL("image/png");
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const imgX = 10; // ระยะห่างจากขอบซ้าย
-      const imgY = 5; // ระยะห่างจากขอบบน
-      const imgWidth = 25; // กำหนดความกว้างของภาพข้อความ
-      const imgHeight = (canvas.height / canvas.width) * imgWidth; // คำนวณอัตราส่วนความสูง
+      document.body.removeChild(tempDiv); // ลบหลังใช้งาน
 
-      // เพิ่มภาพข้อความภาษาไทยลงใน PDF
+      // ✅ วาด title ที่ด้านบน
+      const imgX = 10;
+      const imgY = 5;
+      const imgWidth = 30;
+      const imgHeight = (canvasTitle.height / canvasTitle.width) * imgWidth;
+
       pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
 
-      document.body.removeChild(tempDiv); // ลบ <div> หลังใช้งาน
+      // ✅ วาดเนื้อหาหลักต่อจาก title
+      const contentX = 10;
+      const contentY = imgY + imgHeight + 5;
 
-      // เพิ่มเนื้อหาอื่นจาก HTML
-      const canvasContent = await html2canvas(pdfContentRef.current);
-      const contentImgData = canvasContent.toDataURL("image/png");
+      // ถ้าเนื้อหายาวเกินหน้า — แบ่งหลายหน้า
+      let position = contentY;
+      let heightLeft = contentHeight;
 
-      const contentX = 10; // ระยะห่างจากขอบซ้าย
-      const contentY = imgY + imgHeight + 1; // ระยะห่างจากข้อความภาษาไทย
-      const contentWidth = pageWidth - 20; // ลดขอบซ้าย-ขวา
-      const contentHeight =
-        (canvasContent.height / canvasContent.width) * contentWidth; // คำนวณอัตราส่วน
+      pdf.addImage(contentImgData, "PNG", contentX, position, contentWidth, contentHeight);
+      heightLeft -= pageHeight - position;
 
-      // เพิ่มเนื้อหาในหน้า PDF
-      pdf.addImage(
-        contentImgData,
-        "PNG",
-        contentX,
-        contentY,
-        contentWidth,
-        contentHeight
-      );
-
-      // เพิ่มหน้าถัดไป (ยกเว้นหน้าสุดท้าย)
-      if (title !== titles[titles.length - 1]) {
+      while (heightLeft > 0) {
         pdf.addPage();
+        position = 0;
+        pdf.addImage(contentImgData, "PNG", contentX, position - (contentHeight - heightLeft), contentWidth, contentHeight);
+        heightLeft -= pageHeight;
       }
+
+      // ✅ เพิ่มหน้าใหม่ถ้าไม่ใช่หน้าสุดท้าย
+      if (i < titles.length - 1) pdf.addPage();
     }
 
+    // ✅ 4. แสดงผล PDF
     const pdfBlob = pdf.output("blob");
     const url = URL.createObjectURL(pdfBlob);
-
-    // เปิดหน้าต่างใหม่เพื่อแสดง PDF Preview
-    const previewWindow = window.open(url, "_blank");
-    previewWindow?.focus();
+    window.open(url, "_blank");
   };
 
   const productItems = sendData.products.flatMap(
@@ -241,7 +379,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                   onClick={handlePreviewPDF}
                   className="px-4 py-2 bg-blue-500 text-white rounded"
                 >
-                  พิมพ์เอกสาร 
+                  พิมพ์เอกสาร
                 </button>
               </div>
             </div>
@@ -254,12 +392,14 @@ const ModalPdf: React.FC<ModalPropsType> = ({
               {/* Header */}
 
               <div className="flex flex-row gap-4 justify-center w-full">
-                <Image
+                {/* <Image
                   src="/images/admin-home-01.png"
                   alt="Login Image"
                   width={200}
                   height={200}
                   className=" w-36 h-36 "
+                  loading="eager"
+                  priority
                 />
                 <Image
                   src="/images/admin-home-02.png"
@@ -267,13 +407,18 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                   width={200}
                   height={200}
                   className="w-36 h-36 "
-                />
+                  loading="eager"
+                  priority
+
+                /> */}
+                <img src="/images/admin-home-01.png" alt="" className=" w-36 h-36" />
+                <img src="/images/admin-home-02.png" alt="" className=" w-36 h-36" />
               </div>
 
               <div className="mt-3 text-center text-xl">
                 <h1> {header || ""}</h1>
                 <h2 className="mt-2">
-                  คณะกรรมการจัดงานศาลเจ้าปึงเถ่ากงม่า ขอนแก่น (ประจำปี 2568)
+                  คณะกรรมการจัดงานศาลเจ้าปึงเถ่ากงม่า ขอนแก่น (ประจำปี {getThaiFiscalYear()})
                 </h2>
               </div>
 
@@ -371,38 +516,76 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                 </thead>
 
                 <tbody>
-                
+
+                  {/* {
+                    [
+                      // { id: 1, name: "สลากออมสิน", quantity: sendData.government || 0, price: 0 },
+                      // { id: 2, name: "ล็อตเตอรี่", quantity: sendData.lottery || 0, price: 0 },
+                      ...Array.from({ length: 8 }, (_, index) => ({
+                        id: index + 3,
+                        name: productItems[index]?.name || "",
+                        quantity: Number(productItems[index]?.quantity || 0).toLocaleString() || 0,
+                        price: Number(productItems[index]?.price || 0).toLocaleString() || 0
+                      }))
+                    ].map((item, index) => (
+                      <tr key={index}>
+                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                          {index + 1}{" "}
+                        </td>
+                        <td className="px-4 py-2 border border-black w-6/12 font-light">
+                          {item?.name || ""}{" "}
+                        </td>
+                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                          {Number(item?.quantity || 0).toLocaleString() || ""}{" "}
+                        </td>
+                        <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
+                          {Number(item?.price) || ""}{" "}{" "}
+                        </td>
+                        <td className="px-4 border border-black w-2/12 font-light text-center">
+                          {" "}
+                        </td>
+                      </tr>
+                    ))
+                  } */}
+
                   {
                     [
-                      {id:1, name:"สลากออมสิน", quantity : sendData.government || 0, price: 0},
-                      {id:2, name:"ล็อตเตอรี่", quantity : sendData.lottery || 0, price: 0},
-                      ...Array.from({length:8}, (_, index)=> ({
+                      // ✅ แสดงเฉพาะเมื่อค่ามากกว่า 0
+                      sendData.government > 0 && { id: 1, name: "สลากออมสิน", quantity: sendData.government, price: 0 },
+                      sendData.lottery > 0 && { id: 2, name: "ล็อตเตอรี่", quantity: sendData.lottery, price: 0 },
+
+                      // ✅ 8 รายการต่อท้าย
+                      ...Array.from({ length: 8 }, (_, index) => ({
                         id: index + 3,
-                        name : productItems[index]?.name || "",
-                        quantity : Number(productItems[index]?.quantity || 0).toLocaleString() || 0 ,
-                        price :Number(productItems[index]?.price || 0).toLocaleString() || 0
+                        name: productItems[index]?.name || "",
+                        quantity: productItems[index]?.quantity || 0,
+                        price: productItems[index]?.price || 0
                       }))
-                    ].map((item, index)=> (
-                      <tr key={index}>
-                      <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                        {index + 1}{" "}
-                      </td>
-                      <td className="px-4 py-2 border border-black w-6/12 font-light">
-                        {item?.name || ""}{" "}
-                      </td>
-                      <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                        {Number(item?.quantity || 0).toLocaleString() || ""}{" "}
-                      </td>
-                      <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
-                      {Number(item?.price || 0).toLocaleString() || ""}{" "}{" "}
-                      </td>
-                      <td className="px-4 border border-black w-2/12 font-light text-center">
-                        {" "}
-                      </td>
-                    </tr>
-                    ))
+                    ]
+                      .filter(
+                        (item): item is { id: number; name: string; quantity: number; price: number } =>
+                          !!item && item.quantity > 0
+                      )
+                      .map((item, index) => (
+                        <tr key={index}>
+                          <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                            {index + 1}
+                          </td>
+                          <td className="px-4 py-2 border border-black w-6/12 font-light">
+                            {item.name}
+                          </td>
+                          <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
+                            {Number(item.quantity).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
+                            {Number(item.price).toLocaleString()}
+                          </td>
+                          <td className="px-4 border border-black w-2/12 font-light text-center"></td>
+                        </tr>
+                      ))
                   }
-           
+
+
 
                   <tr>
                     <td></td>
@@ -443,7 +626,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
 
               <div className="mt-8 flex flex-row justify-center gap-4 font-light">
                 <div className="w-full flex flex-col justify-center items-center">
-                  <span> ผู้รับเงิน</span>
+                  <span> ผู้ออกบิล</span>
                   <span className="mt-2">
                     ( ........................................................ )
                   </span>

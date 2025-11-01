@@ -1,13 +1,15 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
 // import Swal from "sweetalert2";
 // import * as XLSX from "xlsx";
 // import { saveAs } from "file-saver";
 import CryptoJS from "crypto-js";
+import html2canvas from "html2canvas";
 import Cookies from "js-cookie";
+import { RefObject } from "react";
 import { toast } from "react-toastify";
 import { io, Socket } from "socket.io-client";
-let socket: Socket  | null = null; // เก็บ instance ของ Socket
+let socket: Socket | null = null; // เก็บ instance ของ Socket
 
 
 
@@ -66,7 +68,7 @@ export const alertConfirmError = async (): Promise<boolean> => {
 
 
 // ต้องการใส่ type ให้ data และ sendData
-export const createExcel = async (data: BlobPart, sendData: sendDataType, name : string) => {
+export const createExcel = async (data: BlobPart, sendData: sendDataType, name: string) => {
   // สร้าง Blob จาก Response
   const blob = new Blob([data], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -112,27 +114,27 @@ export const decryptToken = () => {
 }
 
 // Data
-export const dataUnitProduct = ()=>{
+export const dataUnitProduct = () => {
   const data = [
-    {id:0, name: "ชิ้น"},
-    {id:1, name: "อัน"},
-    {id:2, name: "เครื่อง"},
-    {id:3, name: "ถาด"},
-    {id:4, name: "องค์"},
-    {id:5, name: "อื่นๆ "},
+    { id: 0, name: "ชิ้น" },
+    { id: 1, name: "อัน" },
+    { id: 2, name: "เครื่อง" },
+    { id: 3, name: "ถาด" },
+    { id: 4, name: "องค์" },
+    { id: 5, name: "อื่นๆ " },
   ]
   return data
 }
 
 export const getSocket = (): Socket => {
   if (!socket) {
-      //  socket = io("http://192.168.1.7:5000"); 
-      socket = io(process.env.NEXT_PUBLIC_API_URL, {
-        transports: ["websocket"], // ใช้ WebSocket เป็นโปรโตคอลหลัก
-        reconnection: true, // เปิดการเชื่อมต่อใหม่อัตโนมัติ
-        reconnectionAttempts: 5, // จำนวนครั้งสูงสุดที่พยายามเชื่อมต่อใหม่
-        timeout: 10000, // เวลา timeout ในการเชื่อมต่อ (ms)
-      });
+    //  socket = io("http://192.168.1.7:5000"); 
+    socket = io(process.env.NEXT_PUBLIC_API_URL, {
+      transports: ["websocket"], // ใช้ WebSocket เป็นโปรโตคอลหลัก
+      reconnection: true, // เปิดการเชื่อมต่อใหม่อัตโนมัติ
+      reconnectionAttempts: 5, // จำนวนครั้งสูงสุดที่พยายามเชื่อมต่อใหม่
+      timeout: 10000, // เวลา timeout ในการเชื่อมต่อ (ms)
+    });
     console.log("Socket.IO instance created.");
   }
   return socket; // คืนค่า socket
@@ -150,14 +152,14 @@ export const convertNumberToThaiWords = (number: number): string => {
   const decimalPart = numberString.split(".")[1]
   numberString = numberString.split(".")[0]
 
-  for(let i = 0; i < numberString.length; i++){
+  for (let i = 0; i < numberString.length; i++) {
     const digit = parseInt(numberString.charAt(numberString.length - i - 1), 10)
-    if(digit !== 0){
-      if(i === 1 && digit === 1){
+    if (digit !== 0) {
+      if (i === 1 && digit === 1) {
         result = "สิบ" + result
-      }else if(i === 1 && digit === 2){
+      } else if (i === 1 && digit === 2) {
         result = "ยี่สิบ" + result
-      }else if(i !== 0 || digit !== 1){
+      } else if (i !== 0 || digit !== 1) {
         result = thaiNumbers[digit] + thaiPositions[i] + result
       }
     }
@@ -165,14 +167,60 @@ export const convertNumberToThaiWords = (number: number): string => {
 
   result += "บาท"
 
-  if(decimalPart && decimalPart !== "00"){
+  if (decimalPart && decimalPart !== "00") {
     result += " " + convertNumberToThaiWords(parseInt(decimalPart)) + "สตางค์"
 
-  }else {
+  } else {
     result += "ถ้วน"
   }
 
 
   return result
- 
+
 };
+
+
+export const handleCaptureScreen = async (id: number, winnerRef: RefObject<HTMLDivElement | null>) => {
+  if (window.innerWidth < 1024) {
+    // กำหนด 1024px เป็นเกณฑ์สำหรับ Desktop
+    console.log("แคปหน้าจอได้เฉพาะในจอคอมพิวเตอร์");
+    return;
+  }
+
+  if (winnerRef.current) {
+    const canvas = await html2canvas(winnerRef.current); // แคปหน้าจอจาก WinnerScreen
+    const imgData = canvas.toDataURL("image/png");
+    // setCapturedImage(imgData); 
+
+    if (id) {
+      console.log("Screen captured successfully.");
+      try {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auction/save_image`,
+          { image: imgData, id }
+        );
+        if (res.status === 200) {
+          console.log(res.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+};
+
+
+export function getThaiFiscalYear(): number {
+  const date = new Date();
+  const year = date.getFullYear(); // ค.ศ.
+  const month = date.getMonth() + 1; // เดือน (0-11 → บวก 1 ให้เป็น 1-12)
+
+  const buddhistYear = year + 543; // แปลงเป็น พ.ศ.
+
+  // ถ้าเดือนเป็น ต.ค. - ธ.ค. → บวกปีเพิ่มอีก 1
+  if (month >= 10) {
+    return buddhistYear + 1;
+  }
+
+  return buddhistYear;
+}

@@ -179,7 +179,7 @@ const Page = () => {
           <input
             className="w-full lg:w-48 px-2 lg:px-4 py-1.5 rounded-md border border-gray-400"
             type="text"
-            placeholder="ค้นหาชื่อผู้บริจาค"
+            placeholder="ค้นหาชื่อสินค้า"
             onChange={(e) => setSearch(e.target.value)}
           />
 
@@ -197,10 +197,10 @@ const Page = () => {
         <div className="w-full flex flex-row justify-end gap-4">
           <button
             onClick={() => handleOpenAdd(0)}
-            className="bg-red-700 hover:bg-red-800 w-full lg:w-40  text-white px-4 py-1 rounded-md flex justify-center items-center gap-2"
+            className="bg-red-700 hover:bg-red-800 w-full lg:w-52  text-white px-4 py-1 rounded-md flex justify-center items-center gap-2"
           >
             {" "}
-            <FiPlus size={20} /> เพิ่มข้อมูล
+            <FiPlus size={20} /> เพิ่มข้อมูลสินค้า
           </button>
           <button onClick={() => sendExcel()} className="bg-green-600 hover:bg-green-700 w-full lg:w-40 text-white px-4 rounded-md flex justify-center items-center gap-2">
             {" "}

@@ -1,6 +1,9 @@
 
 "use client";
+import Link from "next/link";
 import React, { memo } from "react";
+import { usePathname } from "next/navigation";
+
 
 interface MenuItemsProps {
   item: {
@@ -11,15 +14,16 @@ interface MenuItemsProps {
     status : number[];
     
   };
-  pathname: string;
   toggleNavbar: () => void;
   checkStatus: number | null ;
 
 }
 
 const Menuitems: React.FC<MenuItemsProps> = memo(
-  ({ item, pathname, toggleNavbar, checkStatus }) => {
+  ({ item, toggleNavbar, checkStatus }) => {
     
+    const pathname = usePathname();
+
     if(!item.status.includes(checkStatus as number)){
       return null
     }
@@ -32,14 +36,14 @@ const Menuitems: React.FC<MenuItemsProps> = memo(
             : ""
         } px-4 py-1.5 hover:bg-red-100 rounded-md cursor-pointer text-sm`}
       >
-        <a
+        <Link
           className="flex flex-row gap-2 items-center"
           href={item.path[0]}
           onClick={toggleNavbar}
         >
           {item.icon}
           {item.name}
-        </a>
+        </Link>
       </li>
     );
   }

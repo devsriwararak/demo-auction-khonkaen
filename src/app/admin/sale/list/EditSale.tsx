@@ -18,6 +18,7 @@ type ModalByIdType = {
   handlePay: (id: number) => Promise<void>;
   handleCancel: (id: number, code: string) => Promise<void>;
   handleSetModal: (id: number, numb: number, header: string) => Promise<void>;
+  status : number | null
 
 };
 
@@ -28,7 +29,7 @@ const EditSale: React.FC<ModalByIdType> = ({
   fetchData,
   handlePay,
   handleCancel,
-  handleSetModal
+  handleSetModal, status
 }) => {
   return (
     <Dialog
@@ -66,6 +67,7 @@ const EditSale: React.FC<ModalByIdType> = ({
                 handlePay={handlePay}
                 handleCancel={handleCancel}
                 handleSetModal={handleSetModal}
+                status={status}
               />
             </div>
 

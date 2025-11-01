@@ -163,7 +163,7 @@ const ModalById: React.FC<ModalByIdType> = ({ open, handleOpenModal, id }) => {
                 </div>
 
                 <div className="w-full mt-4 bg-gray-100 px-4 py-1 rounded-md border border-gray-400">
-                  <p className="text-gray-700 text-base font-medium">ผู้ชนะ</p>
+                  <p className="text-gray-700 text-base font-medium">ผู้บริจาค</p>
                   <p className="text-sm font-light mt-1">{auctionData?.name}</p>
                 </div>
 

@@ -6,7 +6,7 @@ const page = () => {
 
   return (
     <div>
-      <ModalEditSale  />
+      <ModalEditSale  status={null} />
     </div>
   )
 }

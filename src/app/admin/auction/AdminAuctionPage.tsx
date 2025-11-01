@@ -42,6 +42,7 @@ interface SendDataType {
   id: number;
   government: number;
   lottery: number;
+  status: number | string
   products: {
     category_id: number;
     results: Array<{
@@ -49,7 +50,7 @@ interface SendDataType {
       quantity: number;
       category_name: string;
       product_id: number;
-      unit:string;
+      unit: string;
     }>;
   }[];
   customers: {
@@ -64,7 +65,7 @@ const Page = () => {
   const [dateSelectTitle, setDataSelectTitle] = useState<OptionType[]>([]);
   const [selectedOption, setSelectedOption] = useState<OptionType | null>(null);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [countNumber , setCountNumber] = useState<number>(1)
+  const [countNumber, setCountNumber] = useState<number>(1)
   const [selectedCusId, setSelectedCusId] = useState<{
     cusId: number | null;
     price: number | null;
@@ -90,6 +91,7 @@ const Page = () => {
     id: 0,
     government: 0,
     lottery: 0,
+    status: 0,
     products: [
       { category_id: 1, results: [] },
       { category_id: 2, results: [] },
@@ -154,6 +156,7 @@ const Page = () => {
         id: 0,
         government: 0,
         lottery: 0,
+        status: 0,
         products: [
           { category_id: 1, results: [] },
           { category_id: 2, results: [] },
@@ -237,6 +240,7 @@ const Page = () => {
           id: 0,
           government: 0,
           lottery: 0,
+          status: 0,
           products: [
             { category_id: 1, results: [] },
             { category_id: 2, results: [] },
@@ -319,7 +323,7 @@ const Page = () => {
             ...cat,
             results: [
               ...cat.results,
-              { name: productName, quantity, category_name, product_id ,unit},
+              { name: productName, quantity, category_name, product_id, unit },
             ],
           };
         }
@@ -430,6 +434,7 @@ const Page = () => {
         if (result.isConfirmed) {
           await showWinner();
           await handleSave()
+          setIsDisabled(false)
         }
       });
     } catch (error) {
@@ -457,7 +462,7 @@ const Page = () => {
     }
   };
 
-  const handleChangeNumber = (numb: number)=>{
+  const handleChangeNumber = (numb: number) => {
     setCountNumber(numb)
     socket.emit("change_number_count", Number(numb));
   }
@@ -556,7 +561,7 @@ const Page = () => {
         />
       )}
 
- 
+
       {/* LEFT SECTION */}
       <div className="w-full lg:w-4/6">
         <div className="bg-white shadow-md rounded-md px-5 py-4">
@@ -584,33 +589,28 @@ const Page = () => {
               <button
                 disabled={!isDisabled}
                 onClick={() => setOpenModalProduct(!openModalProduct)}
-                className={`text-sm bg-gradient-to-r ${
-                  isDisabled
-                    ? "from-blue-600 to-blue-500"
-                    : "from-blue-400 to-blue-300"
-                } text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center`}
+                className={`text-sm bg-gradient-to-r ${isDisabled
+                  ? "from-blue-600 to-blue-500"
+                  : "from-blue-400 to-blue-300"
+                  } text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center`}
               >
-                <MdOutlineAddShoppingCart size={18} /> เพิ่มสินค้าใหม่
+                <MdOutlineAddShoppingCart size={18} /> เลือกสินค้า
               </button>
               <button
                 disabled={!isDisabled}
                 onClick={() => setOpenModalCustomer(!openModalCustomer)}
-                className={`text-sm bg-gradient-to-r ${
-                  isDisabled
-                    ? "from-green-600 to-green-500"
-                    : "from-green-400 to-green-300"
-                } text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center`}
+                className={`text-sm bg-gradient-to-r ${isDisabled
+                  ? "from-green-600 to-green-500"
+                  : "from-green-400 to-green-300"
+                  } text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center`}
               >
-                <FiUserPlus size={18} /> เพิ่มผู้บริจาคใหม่
+                <FiUserPlus size={18} /> เลือกผู้บริจาค
               </button>
               <button
-                disabled={!isDisabled}
+                // disabled={!isDisabled}
                 onClick={handleClearChoice}
-                className={`text-sm bg-gradient-to-r ${
-                  isDisabled
-                    ? "from-red-600 to-red-500"
-                    : "from-red-400 to-red-300"
-                } text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center`}
+                className={`text-sm bg-gradient-to-r  from-red-600 to-red-500
+                   text-white px-3 py-2 rounded-md flex flex-row gap-2 items-center`}
               >
                 <TbWorldCancel size={18} /> เคลียห้องประมูล
               </button>
@@ -647,7 +647,7 @@ const Page = () => {
         </div>
 
         {/* ตารางสินค้า */}
-        <div className="bg-white h-[500px] shadow-md rounded-md px-5 py-4 mt-4 overflow-y-scroll">
+        <div className="bg-white  shadow-md rounded-md px-5 py-4 mt-4 overflow-y-scroll">
           {/* หมวดวัตถุมงคล */}
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="w-1/4 flex flex-col justify-start items-center text-sm">
@@ -678,7 +678,7 @@ const Page = () => {
                       productCat1.results.map((item, idx) => (
                         <tr key={idx}>
                           <td className="border px-4 py-1 w-5/12 ">
-                            {item.name} 
+                            {item.name}
                           </td>
                           <td className="border px-2 py-1 w-2/12 text-center">{item.quantity}</td>
                           <td className="border px-2 py-1 w-3/12 text-center">
@@ -686,13 +686,13 @@ const Page = () => {
                           </td>
                           <td className="px-4 py-3 font-light text-gray-600 w-2/12">
                             <div className="flex justify-center">
-                            <FaRegTrashAlt
-                              onClick={() => handleDeleteProduct(1, idx)}
-                              size={16}
-                              className="text-red-500 cursor-pointer"
-                            />
+                              <FaRegTrashAlt
+                                onClick={() => handleDeleteProduct(1, idx)}
+                                size={16}
+                                className="text-red-500 cursor-pointer"
+                              />
                             </div>
-                           
+
                           </td>
                         </tr>
                       ))}
@@ -739,13 +739,13 @@ const Page = () => {
                             {item.category_name}
                           </td>
                           <td className="px-4 py-3 font-light text-gray-600 w-2/12 ">
-                           <div className="flex justify-center">
-                           <FaRegTrashAlt
-                              onClick={() => handleDeleteProduct(2, idx)}
-                              size={16}
-                              className="text-red-500 cursor-pointer"
-                            />
-                           </div>
+                            <div className="flex justify-center">
+                              <FaRegTrashAlt
+                                onClick={() => handleDeleteProduct(2, idx)}
+                                size={16}
+                                className="text-red-500 cursor-pointer"
+                              />
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -789,13 +789,13 @@ const Page = () => {
                             {item.category_name}
                           </td>
                           <td className="px-4 py-3 font-light text-gray-600">
-                           <div className="flex justify-center">
-                           <FaRegTrashAlt
-                              onClick={() => handleDeleteProduct(3, idx)}
-                              size={16}
-                              className="text-red-500 cursor-pointer"
-                            />
-                           </div>
+                            <div className="flex justify-center">
+                              <FaRegTrashAlt
+                                onClick={() => handleDeleteProduct(3, idx)}
+                                size={16}
+                                className="text-red-500 cursor-pointer"
+                              />
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -840,11 +840,11 @@ const Page = () => {
                           </td>
                           <td className="px-4 py-3 font-light text-gray-600 text-center w-2/12">
                             <div className="flex justify-center">
-                            <FaRegTrashAlt
-                              onClick={() => handleDeleteProduct(4, idx)}
-                              size={16}
-                              className="text-red-500 cursor-pointer"
-                            />
+                              <FaRegTrashAlt
+                                onClick={() => handleDeleteProduct(4, idx)}
+                                size={16}
+                                className="text-red-500 cursor-pointer"
+                              />
                             </div>
                           </td>
                         </tr>
@@ -889,13 +889,13 @@ const Page = () => {
                             {item.category_name}
                           </td>
                           <td className="px-4 py-3 font-light text-gray-600 w-2/12" >
-                          <div className="flex justify-center">
-                          <FaRegTrashAlt
-                              onClick={() => handleDeleteProduct(5, idx)}
-                              size={16}
-                              className="text-red-500 cursor-pointer"
-                            />
-                          </div>
+                            <div className="flex justify-center">
+                              <FaRegTrashAlt
+                                onClick={() => handleDeleteProduct(5, idx)}
+                                size={16}
+                                className="text-red-500 cursor-pointer"
+                              />
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -943,10 +943,10 @@ const Page = () => {
                         <FaRegEdit
                           onClick={() => {
                             setOpenModalChangePrice(!openModalChangePrice);
-                              setSelectedCusId({
-                                cusId: Number(item.customer_id || 0),
-                                price: Number(item.price || 0),
-                              });
+                            setSelectedCusId({
+                              cusId: Number(item.customer_id || 0),
+                              price: Number(item.price || 0),
+                            });
                           }}
                           size={18}
                           className="text-blue-700 cursor-pointer"
@@ -967,35 +967,34 @@ const Page = () => {
 
         <div className="bg-white shadow-md rounded-md py-6 px-4 flex flex-col justify-center">
           <div className="flex flex-row gap-2 justify-center items-center px-20">
-            <div className="w-16 flex justify-center" onClick={()=>handleChangeNumber(1)}>
+            <div className="w-16 flex justify-center" onClick={() => handleChangeNumber(1)}>
               <RiNumber1
                 size={45}
-                className={`${countNumber === 1 ? "bg-red-700" :"bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
+                className={`${countNumber === 1 ? "bg-red-700" : "bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
               />
             </div>
-            <div className="w-16 flex justify-center" onClick={()=>handleChangeNumber(2)}>
+            <div className="w-16 flex justify-center" onClick={() => handleChangeNumber(2)}>
               <RiNumber2
                 size={45}
-                className={`${countNumber === 2 ? "bg-red-700" :"bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
+                className={`${countNumber === 2 ? "bg-red-700" : "bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
               />
             </div>
-            <div className="w-16 flex justify-center" onClick={()=>handleChangeNumber(3)}>
+            <div className="w-16 flex justify-center" onClick={() => handleChangeNumber(3)}>
               <RiNumber3
                 size={45}
-                className={`${countNumber === 3 ? "bg-red-700" :"bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
+                className={`${countNumber === 3 ? "bg-red-700" : "bg-gray-300"} hover:bg-gray-800 hover:text-white rounded-full p-2 text-white cursor-pointer`}
               />
             </div>
           </div>
 
           <div className="flex flex-row gap-4 mt-6">
             <button
-              disabled={!isDisabled}
+              disabled={!isDisabled || sendData.status == 1}
               onClick={handleSave}
-              className={` bg-gradient-to-r ${
-                isDisabled
-                  ? "from-green-600 to-green-500"
-                  : "from-green-400 to-green-300"
-              } rounded-md py-2 text-white w-full flex flex-row gap-2 items-center justify-center`}
+              className={` bg-gradient-to-r ${isDisabled && sendData.status === 0
+                ? "from-green-600 to-green-500"
+                : "from-green-400 to-green-300"
+                } rounded-md py-2 text-white w-full flex flex-row gap-2 items-center justify-center`}
             >
               <FaRegSave size={18} />
               บันทึก / อัพเดท
@@ -1004,11 +1003,10 @@ const Page = () => {
             <button
               disabled={!isDisabled}
               onClick={handleWinner}
-              className={` bg-gradient-to-r ${
-                isDisabled
-                  ? "from-red-600 to-red-500"
-                  : "from-red-400 to-red-300"
-              } rounded-md py-2 text-white w-full flex flex-row gap-2 items-center justify-center`}
+              className={` bg-gradient-to-r ${isDisabled
+                ? "from-red-600 to-red-500"
+                : "from-red-400 to-red-300"
+                } rounded-md py-2 text-white w-full flex flex-row gap-2 items-center justify-center`}
             >
               <TbWorldCancel size={18} />
               จบการประมูล
@@ -1018,14 +1016,17 @@ const Page = () => {
           <div className="mt-4 flex flex-row gap-4">
             <button
               onClick={() => switchDisplay(1)}
-              className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1 text-sm"
+              className={`w-full border border-red-700  ${sendData.status === 1 ? " bg-gray-200" : "hover:bg-red-100"} rounded-md py-1 text-sm`}
+              disabled={sendData.status == 1}
             >
               หน้าประมูล
             </button>
 
             <button
               onClick={() => switchDisplay(2)}
-              className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1 text-sm"
+              // className="w-full border border-red-700 hover:bg-red-100 rounded-md py-1 text-sm"
+              className={`w-full border border-red-700  ${sendData.status !== 1 ? " bg-gray-200" : "hover:bg-red-100"} rounded-md py-1 text-sm`}
+              disabled={sendData.status !== 1}
             >
               โชว์คนชนะ
             </button>

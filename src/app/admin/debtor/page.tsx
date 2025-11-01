@@ -38,6 +38,7 @@ const Page = () => {
   const [searchType, setSearchType] = useState({
     billType: 1,
     statusType: "",
+    payType: ""
   });
 
   // Pagination
@@ -56,7 +57,7 @@ const Page = () => {
     }
   };
 
-  const handleSetModal = async ( numb: number) => {
+  const handleSetModal = async (numb: number) => {
     // setId(id);
     await handleOpenModal(numb);
   };
@@ -69,6 +70,7 @@ const Page = () => {
         page: page,
         billType: searchType.billType,
         statusType: searchType.statusType,
+        payType: searchType.payType,
         search,
       };
 
@@ -116,18 +118,61 @@ const Page = () => {
 
   const handlePay = async (id: number) => {
     let sqlSelect = ""
-    if(searchType.billType === 1) {
+    if (searchType.billType === 1) {
       sqlSelect = "auction"
     }
-    if( searchType.billType === 2) {
+    if (searchType.billType === 2) {
       sqlSelect = "sale"
     }
 
 
+    // Swal.fire({
+    //   title: "ชำระเงิน ?",
+    //   text: "กรุณาตรวจสอบให้แน่ใจก่อนชำระเงิน  !",
+    //   icon: "warning",
+    //   showCancelButton: true,
+    //   confirmButtonColor: "green",
+    //   cancelButtonColor: "gray",
+    //   confirmButtonText: "ตกลง",
+    //   cancelButtonText: "ยกเลิก",
+    // }).then(async (result) => {
+    //   if (result.isConfirmed) {
+    //     try {
+    //       const res = await axios.post(
+    //         `${process.env.NEXT_PUBLIC_API_URL}/api/${sqlSelect}/add_pay`,
+    //         { id },
+    //         {
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }
+    //       );
+    //       if (res.status === 200) {
+    //         toast.success(res.data.message);
+    //         await fetchData();
+    //       }
+    //     } catch (error: unknown) {
+    //       console.log(error);
+    //       errorMessage(error);
+    //     }
+    //   }
+    // });
+
     Swal.fire({
       title: "ชำระเงิน ?",
-      text: "กรุณาตรวจสอบให้แน่ใจก่อนชำระเงิน  !",
+      text: "กรุณาตรวจสอบให้แน่ใจก่อนชำระเงิน !",
       icon: "warning",
+      input: "radio",
+      inputOptions: {
+        1: "เงินสด",
+        2: "เงินโอน",
+      },
+      inputValue: "1",
+      inputValidator: (value) => {
+        if (!value) {
+          return "กรุณาเลือกวิธีชำระเงิน!";
+        }
+      },
       showCancelButton: true,
       confirmButtonColor: "green",
       cancelButtonColor: "gray",
@@ -135,10 +180,11 @@ const Page = () => {
       cancelButtonText: "ยกเลิก",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        const paymentMethod = result.value;
         try {
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/api/${sqlSelect}/add_pay`,
-            { id },
+            { id, paymentMethod },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -148,6 +194,7 @@ const Page = () => {
           if (res.status === 200) {
             toast.success(res.data.message);
             await fetchData();
+            return true
           }
         } catch (error: unknown) {
           console.log(error);
@@ -155,30 +202,33 @@ const Page = () => {
         }
       }
     });
+
+
+
   };
 
 
 
   useEffect(() => {
     fetchData();
-  }, [search, searchType.billType, searchType.statusType, page]);
+  }, [search, searchType.billType, searchType.statusType, page, searchType.payType]);
 
   return (
     <div>
       <div className="flex flex-row gap-3 items-center">
         <FiHardDrive size={20} />
-        <h1 className="text-lg">บัญชีลูกหนี้</h1>
+        <h1 className="text-lg">บัญชีผู้บริจาค</h1>
       </div>
 
       {/* Filter */}
       <div className="flex flex-col lg:flex-row gap-3 justify-start items-center mt-4">
         <div className="w-full flex flex-col lg:flex-row gap-3 ">
           <div className="flex flex-col">
-            <p className="text-sm text-gray-600">ค้นหาเลขที่บิล</p>
+            <p className="text-sm text-gray-600">ค้นหาเลขที่บิล ชื่อผู้บริจาค</p>
             <input
               className="w-full lg:w-48 px-2 lg:px-4 py-1 mt-1 rounded-md border border-gray-400"
               type="text"
-              placeholder="ค้นหาเลขที่บิล"
+              placeholder="ค้นหาเลขที่บิล ชื่อผู้บริจาค"
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
@@ -186,9 +236,9 @@ const Page = () => {
           <div className="flex flex-col ">
             <p className="text-sm text-gray-600">เลือกประเภทบิล</p>
             <select
-            value={searchType.billType || 1}
+              value={searchType.billType || 1}
               className="w-48 px-4 mt-1 py-1 border border-gray-400 rounded-md"
-              onChange={(e) => setSearchType((prev)=> ({
+              onChange={(e) => setSearchType((prev) => ({
                 ...prev,
                 billType: Number(e.target.value)
               }))}
@@ -199,9 +249,9 @@ const Page = () => {
           </div>
 
           <div className="flex flex-col ">
-            <p className="text-sm text-gray-600">ประเภทลูกหนี้</p>
+            <p className="text-sm text-gray-600">ประเภทผู้บริจาค</p>
             <select
-               onChange={(e) => setSearchType((prev)=> ({
+              onChange={(e) => setSearchType((prev) => ({
                 ...prev,
                 statusType: e.target.value
               }))}
@@ -212,6 +262,22 @@ const Page = () => {
               <option value="2">ชำระแล้ว</option>
             </select>
           </div>
+
+          <div className="flex flex-col ">
+            <p className="text-sm text-gray-600">ประเภทชำระเงิน</p>
+            <select
+              onChange={(e) => setSearchType((prev) => ({
+                ...prev,
+                payType: e.target.value
+              }))}
+              className="w-48 px-4 mt-1 py-1 border border-gray-400 rounded-md"
+            >
+              <option value="">ทั้งหมด</option>
+              <option value="1">เงินสด</option>
+              <option value="2">เงินโอน</option>
+            </select>
+          </div>
+
         </div>
 
         <div className="w-full flex flex-row justify-end gap-4">
@@ -232,8 +298,7 @@ const Page = () => {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-300 ">
                 <th className="px-4 py-2 text-start font-medium ">รหัส</th>
-           
-                <th className="px-4 py-2 text-start font-medium ">ผู้ชนะ</th>
+                <th className="px-4 py-2 text-start font-medium ">ผู้บริจาค</th>
                 <th className="px-4 py-2 text-start font-medium ">วันที่</th>
                 <th className="px-4 py-2 text-end font-medium ">จำนวนเงิน</th>
                 <th className="px-4 py-2 text-center font-medium  ">
@@ -251,16 +316,15 @@ const Page = () => {
                       onClick={() => handleSetModal(1)}
                     >
                       <p
-                        className={`cursor-pointer border-l-4 px-2   ${
-                          item.status === 1 || item.status === 3
-                            ? "bg-red-100 hover:bg-red-300 border-red-700"
-                            : "bg-green-100 hover:bg-green-300 border-green-700"
-                        }`}
+                        className={`cursor-pointer border-l-4 px-2   ${item.status === 1 || item.status === 3
+                          ? "bg-red-100 hover:bg-red-300 border-red-700"
+                          : "bg-green-100 hover:bg-green-300 border-green-700"
+                          }`}
                       >
                         {item.code}
                       </p>
                     </td>
-               
+
                     <td className="px-4 py-3 font-extralight text-gray-800  w-4/12 ">
                       <p className="">{item.name}</p>
                     </td>
@@ -291,9 +355,9 @@ const Page = () => {
                         {item.status === 3 && " - "}
                       </div>
                     </td>
-             
 
-               
+
+
                   </tr>
                   <tr key={`${item.id}-divider`}>
                     <td colSpan={10}>

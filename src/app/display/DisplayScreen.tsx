@@ -82,25 +82,19 @@ const DisplayScreen: React.FC<displayProp> = ({ h, data, countNumber }) => {
             <div className={`py-10 lg:py-20`}>
               <div className="flex flex-row gap-4 justify-center">
                 <Image
-                  src="/images/admin-home-01.png"
+                  src="/images/auction_logo_1.png"
                   alt="Login Image"
                   width={300}
                   height={200}
                   className="w-40 h-40 lg:w-72 lg:h-72"
                 />
-                <Image
-                  src="/images/admin-home-02.png"
-                  alt="Login Image"
-                  width={300}
-                  height={200}
-                  className="w-40 h-40 lg:w-72 lg:h-72"
-                />
+               
               </div>
               <div className="text-center flex flex-col justify-center items-center mt-6 ">
-                <h1 className="text-4xl lg:text-6xl font-semibold">
+                <h1 className="text-4xl lg:text-6xl font-extrabold text-outline-title">
                   ขอเชิญร่วม ประมูล และ บริจาค
                 </h1>
-                <h2 className="text-2xl lg:text-4xl mt-8 font-semibold">
+                <h2 className="text-2xl lg:text-4xl mt-8 font-extrabold text-outline-p ">
                   ศาลเจ้าปึงเถ่ากงม่า ขอนแก่น
                 </h2>
               </div>
@@ -145,7 +139,7 @@ const DisplayScreen: React.FC<displayProp> = ({ h, data, countNumber }) => {
                     <div
                       className={`flex flex-row justify-between font-extrabold text-red-800   ${
                         h ? "" : "text-3xl lg:text-5xl text-outline-winner"
-                      } ${countNumber && !h && "animate-[zoomInOut_0.8s_ease-in-out_infinite]"}`}
+                      } `}
                     >
                       <h1> {`1. ${data?.customers[0]?.name || ""}`} </h1>{" "}
                       <p>

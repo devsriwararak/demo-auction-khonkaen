@@ -32,7 +32,7 @@ export function middleware(request: NextRequest) {
   }
 
 
-
+// ฉันต้องการให้หน้า /admin ไปที่หน้า /display/screen และ 3 วิก็กลับมา
   // ตรวจสอบว่าเข้าสู่ระบบหรือยัง
   if (!token && !status && path !== '/login' && path !== '/display' && path !== '/demo') {
     url.pathname = '/login';
@@ -40,7 +40,7 @@ export function middleware(request: NextRequest) {
   }
 
   // ตรวจสอบสถานะการเข้าสู่ระบบ
-  if (status === '3' && !path.startsWith('/admin')) {
+  if (status === '3' && !path.startsWith('/admin') && !path.startsWith(`/display/screen`)) {
     url.pathname = '/admin';
     return NextResponse.redirect(url);
   } 

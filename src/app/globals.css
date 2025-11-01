@@ -14,7 +14,11 @@ body {
 }
 
 .text-outline-title {
-  -webkit-text-stroke: 4px white;
+  -webkit-text-stroke: 3px white;
+}
+
+.text-outline-p {
+  -webkit-text-stroke: 1px rgb(236, 236, 224);
 }
 
 .text-outline-product {

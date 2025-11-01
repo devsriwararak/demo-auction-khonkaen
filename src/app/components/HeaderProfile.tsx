@@ -2,7 +2,7 @@
 import React from 'react'
 import Swal from "sweetalert2";
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
-import { SlLock, SlLogout, SlSettings, SlUser, SlWallet } from 'react-icons/sl';
+import {  SlLogout, SlSettings } from 'react-icons/sl';
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { decryptData } from '@/lib/tool';
@@ -71,9 +71,9 @@ const HeaderProfile = () => {
       }
 
       const solutions = [
-        { name: 'จัดการข้อมูลส่วนตัว',  href: '#', icon: SlUser  },
-        { name: 'ตั้งค่าความปลอดภัย',  href: '#', icon: SlLock },
-        { name: 'ตั้งค่าบัญชี',  href: '#', icon: SlWallet },
+        // { name: 'จัดการข้อมูลส่วนตัว',  href: '#', icon: SlUser  },
+        // { name: 'ตั้งค่าความปลอดภัย',  href: '#', icon: SlLock },
+        // { name: 'ตั้งค่าบัญชี',  href: '#', icon: SlWallet },
         { name: 'ออกจากระบบ',  href: '#', icon: SlLogout , action : handleLogout},
       
       ]

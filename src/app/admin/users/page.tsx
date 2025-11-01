@@ -81,7 +81,13 @@ const Page = () => {
                   <tr className="hover:bg-gray-100 w-5/12  ">
                     <td className="px-4 py-3 font-medium  ">{item.username}</td>
                     <td className="px-4 py-3 font-extralight text-gray-800 text-center  w-2/12  ">
-                      <p className="">{item.status}</p>
+                    <p>
+                    {item.status === 0 && "คณะกรรมการ"}
+                    {item.status === 1 && "บัญชี"}
+                    {item.status === 2 && "ผู้ประมูล"}
+                    </p>
+                    
+
                     </td>
                     <td className="px-4 py-3 font-extralight text-gray-800  text-center w-2/12 ">
                       {item.token && (

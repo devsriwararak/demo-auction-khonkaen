@@ -2,12 +2,12 @@
 import { handleCaptureScreen } from "@/lib/tool";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter  } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
-interface WinnerScreenPropType {
-  id: number | null;
-  // handleCaptureScreen:(id:number)=>void
-}
+interface ClientScreenProps {
+    id: number ;
+  }
 
 interface dataType {
   id: number;
@@ -20,16 +20,19 @@ interface dataType {
 
 
 
-const WinnerScreen :React.FC<WinnerScreenPropType>=(
-  ({ id }) => {
+const PageScreen : React.FC<ClientScreenProps> =({id}) => {
     // State
     const [data, setData] = useState<dataType | null>(null);
     const [products, setProducts] = useState<string | null>(null);
     // const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const winnerRef = useRef<HTMLDivElement>(null);
 
+
     // System
     const hasFetched = useRef(false);
+    const router = useRouter();
+    // const searchParams = useSearchParams();
+    // const id = Number(searchParams.get("id"));
 
 
 
@@ -70,6 +73,14 @@ const WinnerScreen :React.FC<WinnerScreenPropType>=(
       startPage();
     }, [id]);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+          router.back(); 
+        }, 3000); 
+    
+        return () => clearTimeout(timer); 
+      }, [router]);
+
     return (
       <div ref={winnerRef}>
         <div
@@ -97,27 +108,8 @@ const WinnerScreen :React.FC<WinnerScreenPropType>=(
                 
               </div>
 
-                      <div
-                        className={`absolute top-0 left-0 w-full flex  justify-between lg:px-8  `}
-                      >
-                        <Image
-                          src="/images/lantern-left-2.png"
-                          alt="Lantern Left"
-                          width={200}
-                          height={100}
-                          className="w-20 lg:w-60 lg:h-72"
-                        />
-                        <Image
-                          src="/images/lantern-right-2.png"
-                          alt="Lantern Right"
-                          width={200}
-                          height={100}
-                          className="w-20 lg:w-60 lg:h-72"
-                        />
-                      </div>
-
               <h2 className="text-2xl lg:text-4xl text-center mt-4 font-extrabold text-yellow-400  text-outline-product">
-                ขอแสดงความยินดี 
+                ขอแสดงความยินดี
               </h2>
 
               <div className="bg-red-900 mt-10 text-center border-2 border-yellow-500 rounded-md lg:mx-40 flex flex-col items-center justify-center py-4">
@@ -169,7 +161,6 @@ const WinnerScreen :React.FC<WinnerScreenPropType>=(
       </div>
     );
   }
-);
 
-// WinnerScreen.displayName = "WinnerScreen"
-export default WinnerScreen;
+
+export default PageScreen;

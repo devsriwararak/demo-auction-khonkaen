@@ -7,13 +7,14 @@ import { FaRegEdit, FaRegMoneyBillAlt, FaRegTimesCircle } from "react-icons/fa";
 
 import Swal from "sweetalert2";
 
-import { createExcel, decryptToken, errorMessage } from "@/lib/tool";
+import { createExcel, decryptData, decryptToken, errorMessage } from "@/lib/tool";
 import axios from "axios";
 import moment from "moment";
 import ModalById from "./ModalById";
 import { toast } from "react-toastify";
 import ModalEditAuction from "./ModalEditAuction";
 import ModalPdf from "@/app/components/modals/ModalPdf";
+import Cookies from "js-cookie";
 
 
 interface dataType {
@@ -40,6 +41,8 @@ const PageAuctionLst = () => {
   // Systems
   const token = decryptToken();
   const dateNow = moment().format("YYYY-MM-DD");
+  const [status, setStatus] = useState<number | null>(null)
+
 
   const [searchDate, setSearchDate] = useState({
     startDate: dateNow,
@@ -122,10 +125,53 @@ const PageAuctionLst = () => {
   };
 
   const handlePay = async (id: number) => {
+    // Swal.fire({
+    //   title: "ชำระเงิน ?",
+    //   text: "กรุณาตรวจสอบให้แน่ใจก่อนชำระเงิน  !",
+    //   icon: "warning",
+    //   showCancelButton: true,
+    //   confirmButtonColor: "green",
+    //   cancelButtonColor: "gray",
+    //   confirmButtonText: "ตกลง",
+    //   cancelButtonText: "ยกเลิก",
+    // }).then(async (result) => {
+    //   if (result.isConfirmed) {
+    //     try {
+    //       const res = await axios.post(
+    //         `${process.env.NEXT_PUBLIC_API_URL}/api/auction/add_pay`,
+    //         { id },
+    //         {
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }
+    //       );
+    //       if (res.status === 200) {
+    //         toast.success(res.data.message);
+    //         await fetchData();
+    //       }
+    //     } catch (error: unknown) {
+    //       console.log(error);
+    //       errorMessage(error);
+    //     }
+    //   }
+    // });
+
     Swal.fire({
       title: "ชำระเงิน ?",
-      text: "กรุณาตรวจสอบให้แน่ใจก่อนชำระเงิน  !",
+      text: "กรุณาตรวจสอบให้แน่ใจก่อนชำระเงิน !",
       icon: "warning",
+      input: "radio",
+      inputOptions: {
+        1: "เงินสด",
+        2: "เงินโอน",
+      },
+      inputValue: "1",
+      inputValidator: (value) => {
+        if (!value) {
+          return "กรุณาเลือกวิธีชำระเงิน!";
+        }
+      },
       showCancelButton: true,
       confirmButtonColor: "green",
       cancelButtonColor: "gray",
@@ -133,10 +179,11 @@ const PageAuctionLst = () => {
       cancelButtonText: "ยกเลิก",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        const paymentMethod = result.value;
         try {
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/api/auction/add_pay`,
-            { id },
+            { id, paymentMethod },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -146,6 +193,7 @@ const PageAuctionLst = () => {
           if (res.status === 200) {
             toast.success(res.data.message);
             await fetchData();
+            return true
           }
         } catch (error: unknown) {
           console.log(error);
@@ -160,17 +208,26 @@ const PageAuctionLst = () => {
       title: `ยกเลิกบิล ${code} ?`,
       text: "ยกเลิกบิลจะไม่สามารถกลับมาใช้งานได้  !",
       icon: "warning",
+      input: "text",
+      inputPlaceholder: "กรุณากรอกหมายเหตุการยกเลิก...",
+      inputValidator: (value) => {
+        if (!value) {
+          return "กรุณากรอกหมายเหตุก่อนดำเนินการ!";
+        }
+        return null;
+      },
       showCancelButton: true,
       confirmButtonColor: "red",
       cancelButtonColor: "gray",
       confirmButtonText: "ยกเลิกบิล",
       cancelButtonText: "ออก",
     }).then(async (result) => {
-      if (result.isConfirmed) {
+      if (result.isConfirmed && result.value) {
+        console.log(result);
         try {
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/api/auction/cancel`,
-            { id },
+            { id, note: result.value },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -194,6 +251,14 @@ const PageAuctionLst = () => {
   useEffect(() => {
     fetchData();
   }, [search, searchDate.startDate, searchDate.endDate, page]);
+
+  useEffect(() => {
+    const cookieAuth = Cookies.get("status");
+    if (cookieAuth) {
+      const status = decryptData(cookieAuth);
+      setStatus(Number(status))
+    }
+  }, []);
 
 
   return (
@@ -220,6 +285,7 @@ const PageAuctionLst = () => {
           handlePay={handlePay}
           handleCancel={handleCancel}
           handleSetModal={handleSetModal}
+          status={status}
         />
       )}
 
@@ -282,7 +348,7 @@ const PageAuctionLst = () => {
                 <th className="px-4 py-2 text-start font-medium ">
                   หัวข้อประมูล
                 </th>
-                <th className="px-4 py-2 text-start font-medium ">ผู้ชนะ</th>
+                <th className="px-4 py-2 text-start font-medium ">ผู้บริจาค</th>
                 <th className="px-4 py-2 text-start font-medium ">วันที่</th>
                 <th className="px-4 py-2 text-end font-medium ">จำนวนเงิน</th>
                 <th className="px-4 py-2 text-center font-medium  ">
@@ -302,11 +368,10 @@ const PageAuctionLst = () => {
                       onClick={() => handleSetModal(item.id, 1, "")}
                     >
                       <p
-                        className={`cursor-pointer border-l-4 px-2   ${
-                          item.status === 1 || item.status === 3
-                            ? "bg-red-100 hover:bg-red-300 border-red-700"
-                            : "bg-green-100 hover:bg-green-300 border-green-700"
-                        }`}
+                        className={`cursor-pointer border-l-4 px-2   ${item.status === 1 || item.status === 3
+                          ? "bg-red-100 hover:bg-red-300 border-red-700"
+                          : "bg-green-100 hover:bg-green-300 border-green-700"
+                          }`}
                       >
                         {item.code}
                       </p>
@@ -354,24 +419,19 @@ const PageAuctionLst = () => {
                       </div>
                     </td>
 
-            
-
-               
-
                     <td className="px-1 py-1 font-extralight text-gray-800 ">
                       <div className="flex justify-center">
                         <FaRegTimesCircle
                           onClick={
-                            item.status === 1
+                            item.status === 1 || status === 3
                               ? () => handleCancel(item.id, item.code)
                               : undefined
                           }
                           size={23}
-                          className={` ${
-                            item.status === 2 || item.status === 3
-                              ? "bg-gray-400"
-                              : "bg-red-600 cursor-pointer"
-                          } text-white p-1 rounded-full  `}
+                          className={` ${(item.status === 2 || item.status === 3) && status !== 3
+                            ? "bg-gray-400"
+                            : "bg-red-600 cursor-pointer"
+                            } text-white p-1 rounded-full  `}
                         />
                       </div>
                     </td>

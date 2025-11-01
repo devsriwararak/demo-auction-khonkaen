@@ -1,7 +1,6 @@
 // เวลาเปลี่ยนเมนูทำไมช้าจัง
 
 "use client";
-import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import {
   FiHome,
@@ -24,7 +23,6 @@ type NavbarProps = {
   toggleNavbar: () => void;
 };
 const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
-  const pathname = usePathname();
 
   // States
   const [status ,setStatus] = useState<number | null>(null)
@@ -54,8 +52,15 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
           path: ["/admin/data-default/customer"],
           status: [0,1,2,3],
         },
-        {
+         {
           id: 3,
+          name: "จัดการประเภท",
+          icon: <FiMonitor size={18} />,
+          path: ["/admin/data-default/stock-type"],
+          status: [0,1,2,3],
+        },
+        {
+          id: 4,
           name: "ข้อมูลสินค้า",
           icon: <FiBox size={18} />,
           path: ["/admin/data-default/stocks"],
@@ -106,7 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
       items: [
         {
           id: 0,
-          name: "บัญชีลูกหนี้",
+          name: "บัญชีผู้บริจาค",
           icon: <FiHardDrive size={18} />,
           path: ["/admin/debtor"],
           status: [0,1,2,3],
@@ -159,7 +164,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
                 <Menuitems
                   key={item.id}
                   item={item}
-                  pathname={pathname}
                   toggleNavbar={toggleNavbar}
                   checkStatus={status}
                 />

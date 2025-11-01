@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SlChart, SlOrganization } from "react-icons/sl";
+import { SlChart } from "react-icons/sl";
 
 export default function SaleLayout({
   children,
@@ -26,7 +26,7 @@ export default function SaleLayout({
             รายงานสรุปยอดขาย
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link
             className={`${
               pathName === "/admin/reports/login"
@@ -38,7 +38,7 @@ export default function SaleLayout({
             <SlOrganization  size={18} />
             ประวัตืการเข้าสู่ระบบ
           </Link>
-        </li>
+        </li> */}
       </ul>
 
       <div className="mt-6 border border-gray-200  bg-white shadow-lg rounded-md px-4 py-4">

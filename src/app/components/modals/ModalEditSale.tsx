@@ -21,6 +21,7 @@ interface PropsType {
   handlePay?: (id: number) => Promise<void>;
   handleCancel?: (id: number, code: string) => Promise<void>;
   handleSetModal?: (id: number, numb: number, header: string) => Promise<void>;
+  status : number | null
 }
 
 interface optionType {
@@ -67,9 +68,10 @@ interface SendDataType {
 const ModalEditSale: React.FC<PropsType> = ({
   id,
   fetchData,
-  handlePay = async () => {},
-  handleCancel = async () => {},
-  handleSetModal = async () => {},
+  handlePay = async () => { },
+  handleCancel = async () => { },
+  handleSetModal = async () => { },
+  status
 }) => {
   // States
   const [optionCustomer, setOptionCustomer] = useState<optionType[]>([]);
@@ -317,18 +319,20 @@ const ModalEditSale: React.FC<PropsType> = ({
 
   const handlePlayInModal = async (id: number) => {
     await handlePay(id);
+    // await fetchDataAll();
     setTimeout(async () => {
       await fetchDataAll();
-    }, 1500);
+    }, 3000);
   };
 
   const handleCancelForModal = async (id: number, code: string) => {
     if (!handleCancel) return false;
 
     await handleCancel(id, code);
+    //  await fetchDataAll();
     setTimeout(async () => {
       await fetchDataAll();
-    }, 1500);
+    }, 3000);
   };
 
   const handleSave = async () => {
@@ -517,14 +521,14 @@ const ModalEditSale: React.FC<PropsType> = ({
           </div>
 
           <div className="bg-white rounded-md shadow-lg px-6 py-4 mt-4 text-sm">
-            <div className="flex flex-row gap-2 items-center">
+            {/* <div className="flex flex-row gap-2 items-center">
               <FiCoffee size={16} />
               <p className=" font-medium ">อื่น ๆ</p>
-            </div>
+            </div> */}
 
             <div className="w-full">
               <div className="flex flex-row gap-4  justify-end items-end w-full mt-4   ">
-                <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+                {/* <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
                   <div className="flex flex-col gap-2">
                     <p className="">สลากออมสิน</p>
                     <input
@@ -549,7 +553,7 @@ const ModalEditSale: React.FC<PropsType> = ({
                       onChange={(e) => handleInputChange(e)}
                     />
                   </div>
-                </div>
+                </div> */}
 
                 {/* <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
                   <div className="flex flex-col gap-2">
@@ -683,13 +687,12 @@ const ModalEditSale: React.FC<PropsType> = ({
                   <button
                     onClick={handleSave}
                     disabled={sendData.status === 3}
-                    className={`${
-                      sendData.status === 0 ||
-                      sendData.status === 1 ||
-                      sendData.status === 2
+                    className={`${sendData.status === 0 ||
+                        sendData.status === 1 ||
+                        sendData.status === 2
                         ? "bg-gradient-to-r from-green-600 to-green-500"
                         : "bg-gray-400"
-                    } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                      } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                   >
                     <FiSave size={18} />
                     {!id ? "บันทึก" : "อัพเดท"}
@@ -699,11 +702,10 @@ const ModalEditSale: React.FC<PropsType> = ({
                     <button
                       disabled={sendData.status === 2 || sendData.status === 3}
                       onClick={() => handlePlayInModal(id)}
-                      className={`${
-                        sendData.status === 1
+                      className={`${sendData.status === 1
                           ? "bg-gradient-to-r from-sky-500 to-sky-400"
                           : "bg-gray-400"
-                      } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                        } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
                     >
                       <BsCashCoin size={18} />
                       ชำระเงิน
@@ -711,20 +713,37 @@ const ModalEditSale: React.FC<PropsType> = ({
                   )}
 
                   {id && (
+                    // <button
+                    //   disabled={sendData.status === 2 || sendData.status === 3}
+                    //   onClick={() =>
+                    //     handleCancelForModal(sendData.id, sendData.code)
+                    //   }
+                    //   className={`${
+                    //     sendData.status === 1
+                    //       ? "bg-gradient-to-r from-red-500 to-red-400"
+                    //       : "bg-gray-400"
+                    //   } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                    // >
+                    //   <FiSlash size={18} />
+                    //   ยกเลิกบิล
+                    // </button>
+
                     <button
-                      disabled={sendData.status === 2 || sendData.status === 3}
-                      onClick={() =>
-                        handleCancelForModal(sendData.id, sendData.code)
+                      disabled={
+                        status === 3
+                          ? false // ถ้า props status เป็น 3 → ให้กดได้ตลอด
+                          : sendData.status === 2 || sendData.status === 3 // เงื่อนไขเดิม
                       }
-                      className={`${
-                        sendData.status === 1
-                          ? "bg-gradient-to-r from-red-500 to-red-400"
-                          : "bg-gray-400"
-                      } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                      className={`${(sendData.status === 1 || status === 3)
+                        ? "bg-gradient-to-r from-red-500 to-red-400"
+                        : "bg-gray-400"
+                        } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
+                      onClick={() => handleCancelForModal(sendData.id, sendData.code)}
                     >
                       <FiSlash size={18} />
                       ยกเลิกบิล
                     </button>
+
                   )}
 
                   {id && (
@@ -741,11 +760,10 @@ const ModalEditSale: React.FC<PropsType> = ({
                     <button
                       disabled={sendData.status === 1 || sendData.status === 3}
                       onClick={() => handleSetModal(sendData.id, 3, "ใบเสร็จ")}
-                      className={`${
-                        sendData.status === 1 || sendData.status === 3
+                      className={`${sendData.status === 1 || sendData.status === 3
                           ? "bg-gray-200"
                           : ""
-                      } px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500`}
+                        } px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500`}
                     >
                       <FiPrinter size={18} />
                       ใบเสร็จ

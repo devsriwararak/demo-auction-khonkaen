@@ -122,16 +122,8 @@ const ModalAdd: React.FC<ModalAddProps> = ({
           },
         }
       );
-      console.log(res.data);
 
       if (res.status === 200) {
-        // const options = res.data.map((item: { id: number; name: string }) => ({
-        //   value: item.id,
-        //   label: item.name,
-        // }));
-        // const addDefaultOption : OptionType = { value: "", label: "ทั้งหมด" };
-        // const allOption = [addDefaultOption, ...options];
-        // setCategoryData(allOption);
         const addDefaultOption: OptionType = { id: "", name: "ทั้งหมด" };
         const allOption = [addDefaultOption, ...res.data];
         setCategoryData(allOption);
