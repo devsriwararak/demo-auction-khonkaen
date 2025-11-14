@@ -169,10 +169,9 @@ const ModalEditUser: React.FC<ModalPropType> = ({ open, setOpen, id , fetchDataM
                       } border border-gray-400 px-4 py-1 rounded-md`}
                     >
                       <option value="">เลือก</option>
-                      <option value="3">Admin</option>
-                      <option value="0">Member</option>
-                      <option value="1">Account</option>
-                      <option value="2">Display</option>
+                      <option value="0">คณะกรรมการ</option>
+                      <option value="1">บัญชี</option>
+                      <option value="2">ผู้ประมูล</option>
                     </select>
                   </div>
                 </div>

@@ -418,17 +418,16 @@ const PageAuctionLst = () => {
                         />
                       </div>
                     </td>
-
                     <td className="px-1 py-1 font-extralight text-gray-800 ">
                       <div className="flex justify-center">
                         <FaRegTimesCircle
                           onClick={
-                            item.status === 1 || status === 3
+                            (status !== 0 && (item.status === 1 || status === 3))
                               ? () => handleCancel(item.id, item.code)
                               : undefined
                           }
                           size={23}
-                          className={` ${(item.status === 2 || item.status === 3) && status !== 3
+                          className={` ${(item.status === 2 || item.status === 3 || status === 0) && status !== 3
                             ? "bg-gray-400"
                             : "bg-red-600 cursor-pointer"
                             } text-white p-1 rounded-full  `}

@@ -270,7 +270,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
     await waitForImagesToLoad(pdfContentRef.current);
 
     // ✅ titles (ชื่อชุด)
-    const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"];
+    const titles = ["สำนา(บัญชี)", "ใบรับของ", "สำเนา"];
     const pdf = new jsPDF("p", "mm", "a4");
 
     // ✅ เก็บขนาดหน้า A4
@@ -321,7 +321,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
       // ✅ วาด title ที่ด้านบน
       const imgX = 10;
       const imgY = 5;
-      const imgWidth = 30;
+      const imgWidth = 35;
       const imgHeight = (canvasTitle.height / canvasTitle.width) * imgWidth;
 
       pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);

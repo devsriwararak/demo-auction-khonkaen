@@ -519,7 +519,6 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       แก้ไขผู้บริจาค
                     </button>
                   </div>
-                  SSS : {status}
 
                   {/* data : {JSON.stringify(sendData)} */}
 
@@ -783,8 +782,8 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                       <div className="flex flex-wrap gap-3 mt-4 justify-start items-end">
                         <button
                           onClick={handleSave}
-                          disabled={sendData.status === 3}
-                          className={`${sendData.status === 1 || sendData.status === 2
+                          disabled={sendData.status === 3 || sendData.status === 2}
+                          className={`${sendData.status === 1 
                               ? "bg-gradient-to-r from-green-600 to-green-500"
                               : "bg-gray-400"
                             } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}
@@ -829,10 +828,10 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
                         <button
                           disabled={
                             status === 3
-                              ? false // ถ้า props status เป็น 3 → ให้กดได้ตลอด
-                              : sendData.status === 2 || sendData.status === 3 // เงื่อนไขเดิม
+                              ? false 
+                              : sendData.status === 2 || sendData.status === 3 || status === 0
                           }
-                          className={`${(sendData.status === 1 || status === 3)
+                          className={`${status !== 0 && (sendData.status === 1 || status === 3)
                               ? "bg-gradient-to-r from-red-500 to-red-400"
                               : "bg-gray-400"
                             } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}

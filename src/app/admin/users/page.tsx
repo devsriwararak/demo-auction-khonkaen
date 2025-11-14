@@ -57,7 +57,7 @@ const Page = () => {
         )}
       <div className="flex flex-row gap-3 items-center">
         <FiToggleRight size={20} />
-        <h1 className="text-lg">ข้อมูลผู้บริจาค</h1>
+        <h1 className="text-lg">ข้อมูลผู้ใช้งาน</h1>
       </div>
       <div className="mt-3 w-full bg-white px-4 py-4 rounded-md shadow-md text-sm">
         <div className="overflow-x-auto border border-gray-300 rounded-lg  shadow-lg ">

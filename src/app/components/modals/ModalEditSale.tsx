@@ -528,7 +528,7 @@ const ModalEditSale: React.FC<PropsType> = ({
 
             <div className="w-full">
               <div className="flex flex-row gap-4  justify-end items-end w-full mt-4   ">
-                {/* <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+                <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
                   <div className="flex flex-col gap-2">
                     <p className="">สลากออมสิน</p>
                     <input
@@ -553,9 +553,9 @@ const ModalEditSale: React.FC<PropsType> = ({
                       onChange={(e) => handleInputChange(e)}
                     />
                   </div>
-                </div> */}
+                </div>
 
-                {/* <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+                <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
                   <div className="flex flex-col gap-2">
                     <p className="">บิลอ้างอิงเลขที่</p>
                     <input
@@ -567,7 +567,7 @@ const ModalEditSale: React.FC<PropsType> = ({
                       onChange={(e) => handleInputChange(e)}
                     />
                   </div>
-                </div> */}
+                </div>
               </div>
 
               <div className="flex flex-row gap-2 items-center w-1/3 mt-6 ">
@@ -731,10 +731,10 @@ const ModalEditSale: React.FC<PropsType> = ({
                     <button
                       disabled={
                         status === 3
-                          ? false // ถ้า props status เป็น 3 → ให้กดได้ตลอด
-                          : sendData.status === 2 || sendData.status === 3 // เงื่อนไขเดิม
+                          ? false 
+                          : sendData.status === 2 || sendData.status === 3 || status === 0
                       }
-                      className={`${(sendData.status === 1 || status === 3)
+                      className={`${ status!== 0 && (sendData.status === 1 || status === 3)
                         ? "bg-gradient-to-r from-red-500 to-red-400"
                         : "bg-gray-400"
                         } px-2 py-1.5 rounded-md text-white flex gap-1 items-center`}

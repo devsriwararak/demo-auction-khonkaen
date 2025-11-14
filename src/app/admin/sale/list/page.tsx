@@ -258,7 +258,7 @@ const PageSaleList = () => {
     <div>
       <div className="flex flex-row gap-3 items-center">
         <FiList size={20} />
-        <h1 className="text-lg">รายการประมูล</h1>
+        <h1 className="text-lg">รายการขายสินค้า</h1>
       </div>
 
       {openModalEdit && (
@@ -402,12 +402,12 @@ const PageSaleList = () => {
                       <div className="flex justify-center">
                         <FaRegTimesCircle
                           onClick={
-                            item.status === 1 || status === 3
+                            status !== 0 && (item.status === 1 || status === 3)
                               ? () => handleCancel(item.id, item.code)
                               : undefined
                           }
                           size={23}
-                          className={` ${(item.status === 2 || item.status === 3) && status !== 3
+                          className={` ${(item.status === 2 || item.status === 3 || status === 0) && status !== 3
                             ? "bg-gray-400"
                             : "bg-red-600 cursor-pointer"
                             } text-white p-1 rounded-full  `}

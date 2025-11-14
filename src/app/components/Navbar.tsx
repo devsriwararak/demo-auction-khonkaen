@@ -14,6 +14,7 @@ import {
   FiCalendar,
   FiToggleRight,
   FiShare2,
+  FiUser,
 } from "react-icons/fi";
 import Menuitems from "./Menuitems";
 import Cookies from "js-cookie";
@@ -48,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
         {
           id: 2,
           name: "ข้อมูลผู้บริจาค",
-          icon: <FiCoffee size={18} />,
+          icon: <FiUser size={18} />,
           path: ["/admin/data-default/customer"],
           status: [0,1,2,3],
         },
@@ -130,13 +131,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
           path: ["/admin/users"],
           status: [3],
         },
-        {
-          id: 3,
-          name: "ส่งออก",
-          icon: <FiShare2 size={18} />,
-          path: ["/admin/"],
-          status: [3],
-        },
+        // {
+        //   id: 3,
+        //   name: "ส่งออก",
+        //   icon: <FiShare2 size={18} />,
+        //   path: ["/admin/"],
+        //   status: [3],
+        // },
       ],
     },
   ];
