@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { convertNumberToThaiWords, decryptToken, getThaiFiscalYear } from "@/lib/tool";
+import { convertNumberToThaiWords, decryptToken, formathDateThai, getThaiFiscalYear } from "@/lib/tool";
 import axios from "axios";
 
 type ModalPropsType = {
@@ -457,7 +457,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                   <div>
                     วันที่ :{" "}
                     <span className=" font-extralight">
-                      {sendData?.date || "-"}
+                      {formathDateThai(sendData?.date) || "-"}
                     </span>
                   </div>
 

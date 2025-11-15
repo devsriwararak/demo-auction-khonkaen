@@ -1,3 +1,4 @@
+import DatePickerOne from "@/app/components/ui/DatePickerOne";
 import { decryptToken } from "@/lib/tool";
 import axios from "axios";
 import moment from "moment";
@@ -16,13 +17,13 @@ const ReportSale = () => {
   });
 
   const [data, setData] = useState({
-    auctionSum_1 : 0,
-    auctionSum_2 : 0,
-    saleSum_1 : 0,
-    saleSum_2 : 0,
-    totalCash_1 : 0,
-    totalCash_2 : 0,
-    total : 0
+    auctionSum_1: 0,
+    auctionSum_2: 0,
+    saleSum_1: 0,
+    saleSum_2: 0,
+    totalCash_1: 0,
+    totalCash_2: 0,
+    total: 0
   })
 
   // Functions
@@ -43,33 +44,57 @@ const ReportSale = () => {
         }
       );
 
-      
+
       if (res.status === 200) {
-       console.log(res.data);
-       setData({
-        auctionSum_1 : res.data.auctionSum_1 || 0,
-        auctionSum_2 : res.data.auctionSum_2 || 0,
-        saleSum_1 : res.data.saleSum_1 || 0,
-        saleSum_2 : res.data.saleSum_2 || 0,
-        totalCash_1 : res.data.totalCash_1 || 0,
-        totalCash_2 : res.data.totalCash_2 || 0,
-        total : res.data.total || 0
-       })
-       
+        console.log(res.data);
+        setData({
+          auctionSum_1: res.data.auctionSum_1 || 0,
+          auctionSum_2: res.data.auctionSum_2 || 0,
+          saleSum_1: res.data.saleSum_1 || 0,
+          saleSum_2: res.data.saleSum_2 || 0,
+          totalCash_1: res.data.totalCash_1 || 0,
+          totalCash_2: res.data.totalCash_2 || 0,
+          total: res.data.total || 0
+        })
+
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchData()
-  },[searchDate.dateStart, searchDate.dateEnd])
+  }, [searchDate.dateStart, searchDate.dateEnd])
 
   return (
     <div>
-      <div className="flex flex-row gap-4 items-center justify-start">
-        <div className="w-1/5">
+      <div className="flex flex-row gap-4 items-center justify-start w-1/2">
+        <DatePickerOne
+          label="วันที่เริ่มต้น"
+          onChange={(newDate) => {
+            setSearchDate((prevSearchDate) => ({
+              ...prevSearchDate,
+              dateStart: newDate || "",
+            }));
+          }}
+          value={searchDate?.dateStart || ""}
+          className='w-full'
+        />
+
+        <DatePickerOne
+          label="วันที่สิ้นสุด"
+          name=""
+          onChange={(newDate) => {
+            setSearchDate((prevSearchDate) => ({
+              ...prevSearchDate,
+              dateEnd: newDate || "",
+            }));
+          }}
+          value={searchDate?.dateEnd || ""}
+          className='w-full'
+        />
+        {/* <div className="w-1/5">
           <p className="text-sm text-gray-600">วันที่เริ่มต้น</p>
           <input
             value={searchDate.dateStart}
@@ -96,7 +121,7 @@ const ReportSale = () => {
             type="date"
             className="border border-gray-200 rounded-md shadow-md px-4 py-1 w-full"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Contents */}

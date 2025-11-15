@@ -1,6 +1,8 @@
 import "./globals.css";
 import { ToastContainer } from 'react-toastify';
 
+import "flatpickr/dist/flatpickr.min.css";
+
 
 export default function RootLayout({
   children,

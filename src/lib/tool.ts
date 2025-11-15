@@ -6,6 +6,8 @@ import axios, { AxiosError } from "axios";
 import CryptoJS from "crypto-js";
 import html2canvas from "html2canvas";
 import Cookies from "js-cookie";
+import moment from "moment";
+import 'moment/locale/th';
 import { RefObject } from "react";
 import { toast } from "react-toastify";
 import { io, Socket } from "socket.io-client";
@@ -224,3 +226,36 @@ export function getThaiFiscalYear(): number {
 
   return buddhistYear;
 }
+
+// export const formathDateThai = (time: string) => {
+//   const date = moment.parseZone(time);
+//   const formattedDate = date.add(543, 'year').format('D MMM YYYY');
+//   return formattedDate
+// }
+
+export const formathDateThai = (time: string) => {
+  if (!time) {
+    return ""; // หรือ "Invalid date" ตามที่คุณต้องการ
+  }
+
+  // 1. ลองตรวจสอบและแปลงจากรูปแบบใหม่ (DD/MM/YYYY) ก่อน
+  // ใช้ 'true' เพื่อให้ตรวจสอบ format แบบ "strict"
+  let date = moment(time, "DD/MM/YYYY", true);
+
+  // 2. ถ้า format แรกไม่สำเร็จ (ไม่ใช่ DD/MM/YYYY)
+  if (!date.isValid()) {
+    // ให้กลับไปใช้ logic เดิม (parseZone) เพื่อไม่ให้กระทบของเก่า
+    date = moment.parseZone(time);
+  }
+
+  // 3. ถ้าลองทั้ง 2 แบบแล้วยังพัง (เช่น time เป็น "abc")
+  if (!date.isValid()) {
+    return "Invalid date"; // หรือ time เพื่อแสดงค่าที่พัง
+  }
+
+  // 4. ถ้าสำเร็จ ให้แปลงเป็น พ.ศ. และจัดรูปแบบ
+  // (Moment.js จะใช้ locale 'th' ที่ตั้งค่าไว้โดยอัตโนมัติ)
+  const formattedDate = date.add(543, 'year').format('D MMM YYYY');
+  
+  return formattedDate;
+};

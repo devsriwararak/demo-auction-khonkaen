@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { decryptToken, errorMessage } from "@/lib/tool";
+import { decryptToken, errorMessage, formathDateThai } from "@/lib/tool";
 import { FiCoffee, FiPlus, FiPrinter, FiSave, FiSlash } from "react-icons/fi";
 import { LuClipboardList } from "react-icons/lu";
 import { GoAlert } from "react-icons/go";
@@ -782,7 +782,7 @@ const ModalEditSale: React.FC<PropsType> = ({
                   <p>วันที่ : </p>
                   <p className="font-light text-sm">
                     {" "}
-                    {!id ? dateNowTh : sendData?.date}{" "}
+                    {!id ?  formathDateThai(dateNowEn) :  formathDateThai(sendData?.date)}{" "}
                   </p>
                 </div>
 

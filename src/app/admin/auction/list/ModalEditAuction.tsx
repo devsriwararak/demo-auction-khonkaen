@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import axios from "axios";
-import { decryptToken, errorMessage } from "@/lib/tool";
+import { decryptToken, errorMessage, formathDateThai } from "@/lib/tool";
 import { FiCoffee, FiPlus, FiPrinter, FiSave, FiSlash } from "react-icons/fi";
 import { LuClipboardList } from "react-icons/lu";
 import { GoAlert } from "react-icons/go";
@@ -877,7 +877,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
 
                       <div className="flex flex-row gap-2 mt-4 items-end">
                         <p>วันที่ : </p>
-                        <p className="font-light text-sm"> {sendData?.date} </p>
+                        <p className="font-light text-sm"> {formathDateThai(sendData?.date)} </p>
                       </div>
 
                       <div className="flex flex-row gap-2 mt-2 items-end">

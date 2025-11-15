@@ -7,7 +7,7 @@ import { FaRegEdit, FaRegMoneyBillAlt, FaRegTimesCircle } from "react-icons/fa";
 
 import Swal from "sweetalert2";
 
-import { createExcel, decryptData, decryptToken, errorMessage } from "@/lib/tool";
+import { createExcel, decryptData, decryptToken, errorMessage, formathDateThai } from "@/lib/tool";
 import axios from "axios";
 import moment from "moment";
 // import ModalById from "./ModalById";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import EditSale from "./EditSale";
 import ModalPdf from "@/app/components/modals/ModalPdf";
 import Cookies from "js-cookie";
+import DatePickerOne from "@/app/components/ui/DatePickerOne";
 
 interface dataType {
   id: number;
@@ -223,7 +224,7 @@ const PageSaleList = () => {
         try {
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/api/sale/cancel`,
-            { id, note : result.value },
+            { id, note: result.value },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -285,14 +286,41 @@ const PageSaleList = () => {
       )}
 
       <div className="flex flex-col lg:flex-row gap-3 justify-start items-center mt-4">
-        <div className="w-full flex flex-col lg:flex-row gap-3 ">
+        <div className="w-full flex flex-col lg:flex-row gap-3 items-end ">
           <input
-            className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
+            className="w-full lg:w-48 px-2 h-10 lg:px-4 py-1 rounded-md border border-gray-400"
             type="text"
             placeholder="ค้นหาเลขที่บิล"
             onChange={(e) => setSearch(e.target.value)}
           />
 
+          <DatePickerOne
+            label="วันที่เริ่มต้น"
+            onChange={(newDate) => {
+              setSearchDate((prevSearchDate) => ({
+                ...prevSearchDate,
+                startDate: newDate || "",
+              }));
+            }}
+            value={searchDate?.startDate || ""}
+            className='w-full'
+          />
+
+          <DatePickerOne
+            label="วันที่สิ้นสุด"
+            name=""
+            onChange={(newDate) => {
+              setSearchDate((prevSearchDate) => ({
+                ...prevSearchDate,
+                endDate: newDate || "",
+              }));
+            }}
+            value={searchDate?.endDate || ""}
+            className='w-full'
+          />
+
+
+          {/* 
           <input
             className="w-full lg:w-48 px-2 lg:px-4 py-1 rounded-md border border-gray-400"
             type="date"
@@ -308,7 +336,7 @@ const PageSaleList = () => {
             onChange={(e) =>
               setSearchDate((prev) => ({ ...prev, endDate: e.target.value }))
             }
-          />
+          /> */}
         </div>
 
         <div className="w-full flex flex-row justify-end gap-4">
@@ -362,7 +390,7 @@ const PageSaleList = () => {
                       <p className="">{item.name}</p>
                     </td>
                     <td className="px-3 py-3 font-extralight text-gray-800  w-1/12  ">
-                      <p className="">{item.date}</p>
+                      <p className="">{formathDateThai(item.date)}</p>
                     </td>
 
                     <td className="px-3 py-3 font-extralight text-gray-800 w-2/12 text-center   ">
