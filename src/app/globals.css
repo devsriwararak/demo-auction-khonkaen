@@ -22,7 +22,7 @@ body {
 }
 
 .text-outline-product {
-  -webkit-text-stroke: 1px #500a0a;
+  -webkit-text-stroke: 1.5px #500a0a;
 }
 
 .text-outline-winner {

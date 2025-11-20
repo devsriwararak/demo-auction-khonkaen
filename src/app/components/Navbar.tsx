@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   FiHome,
   FiAirplay,
-  FiCoffee,
+
   FiBox,
   FiMonitor,
   FiList,
@@ -13,7 +13,7 @@ import {
   FiShoppingCart,
   FiCalendar,
   FiToggleRight,
-  FiShare2,
+ 
   FiUser,
 } from "react-icons/fi";
 import Menuitems from "./Menuitems";
@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleNavbar }) => {
           name: "จัดการผู้ใช้งาน",
           icon: <FiToggleRight size={18} />,
           path: ["/admin/users"],
-          status: [3],
+          status: [1,3],
         },
         // {
         //   id: 3,

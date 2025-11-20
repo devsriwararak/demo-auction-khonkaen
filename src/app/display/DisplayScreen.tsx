@@ -119,7 +119,7 @@ const DisplayScreen: React.FC<displayProp> = ({ h, data, countNumber }) => {
               {/*สินค้า  */}
               <div
                 className={`text-center flex flex-row gap-4 justify-center mt-6  font-semibold ${
-                  h ? "" : "text-xl lg:text-3xl text-outline-product text-yellow-400"
+                  h ? "" : "text-xl lg:text-4xl text-outline-product text-yellow-400 "
                 } leading-relaxed `}
               >
                 {[

@@ -37,12 +37,12 @@ const ModalAdd: React.FC<ModalAddProps> = ({
   });
   // Select หมวดหมู่
   const [categoryData, setCategoryData] = useState<OptionType[]>([]);
+  const [unitData, setUnitData] = useState<OptionType[]>([]);
   // const [selectedCategory, setSelectedCategory] = useState<OptionType | null>(
   //   null
   // );
 
   // Select หน่วยนับ
-  const [unitData] = useState(dataUnitProduct());
 
   const handleSave = async () => {
     try {
@@ -133,11 +133,34 @@ const ModalAdd: React.FC<ModalAddProps> = ({
     }
   };
 
+    const fetchDataUnit = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/product/unit/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res.data);
+      
+      if (res.status === 200) {
+        const addDefaultOption: OptionType = { id: "", name: "ทั้งหมด" };
+        const allOption = [addDefaultOption, ...res.data];
+        setUnitData(allOption);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (id > 0) {
       fetchDataByid();
     } else {
       fetchDataCategory();
+      fetchDataUnit()
       setDataObject({
         category_id: "",
         name: "",

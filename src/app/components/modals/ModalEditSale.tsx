@@ -102,7 +102,6 @@ const ModalEditSale: React.FC<PropsType> = ({
   const token = decryptToken();
   const router = useRouter();
   const dateNowEn = moment().format("YYYY-MM-DD");
-  const dateNowTh = moment().format("DD-MM-YYYY");
 
   const fetchDataCustomer = async () => {
     try {

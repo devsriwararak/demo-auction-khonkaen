@@ -1,5 +1,6 @@
 import DatePickerOne from "@/app/components/ui/DatePickerOne";
 import { decryptToken } from "@/lib/tool";
+import { Button } from "@headlessui/react";
 import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
@@ -69,7 +70,7 @@ const ReportSale = () => {
 
   return (
     <div>
-      <div className="flex flex-row gap-4 items-center justify-start w-1/2">
+      <div className="flex flex-row gap-4 items-end justify-start w-1/2">
         <DatePickerOne
           label="วันที่เริ่มต้น"
           onChange={(newDate) => {
@@ -94,6 +95,9 @@ const ReportSale = () => {
           value={searchDate?.dateEnd || ""}
           className='w-full'
         />
+
+        {/* <button className="bg-red-500 active:bg-red-700 hover:bg-red-600 text-white w-fit px-4 py-2 rounded-md">พิมพ์</button> */}
+
         {/* <div className="w-1/5">
           <p className="text-sm text-gray-600">วันที่เริ่มต้น</p>
           <input

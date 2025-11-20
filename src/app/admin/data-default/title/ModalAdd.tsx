@@ -1,4 +1,5 @@
 "use client";
+import DatePickerOne from "@/app/components/ui/DatePickerOne";
 import { decryptToken, errorMessage } from "@/lib/tool";
 import {
   Dialog,
@@ -33,9 +34,10 @@ const ModalAdd: React.FC<ModalAddProps> = ({
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/add`,
-        { name, 
-          date, 
-          id: id ? id : "" 
+        {
+          name,
+          date,
+          id: id ? id : ""
         },
         {
           headers: {
@@ -44,7 +46,7 @@ const ModalAdd: React.FC<ModalAddProps> = ({
         }
       );
       console.log(res.data);
-      
+
 
       if (res.status === 200) {
         toast.success(res.data.message)
@@ -108,19 +110,29 @@ const ModalAdd: React.FC<ModalAddProps> = ({
                   as="h3"
                   className="text-base font-semibold text-gray-900"
                 >
-                   {!id ? "เพิ่มหัวข้อประมูล" : "แก้ไขหัวข้อประมูล"}
+                  {!id ? "เพิ่มหัวข้อประมูล" : "แก้ไขหัวข้อประมูล"}
                 </DialogTitle>
-                <div className="py-4 flex flex-col lg:flex-row gap-4">
-                  <input
+                <div className="py-4 flex flex-col lg:flex-row gap-4 items-end">
+
+                  {/* <input
                     type="date"
                     value={date || ""}
                     className="w-full border border-gray-400 rounded-lg  px-4 py-1.5"
                     onChange={(e) => setDate(e.target.value)}
+                  /> */}
+
+                  <DatePickerOne
+                    label="วันที่สิ้นสุด"
+                    name=""
+                    onChange={async(e) => setDate(String(e))}
+                    value={date || ""}
+                    className='w-full'
                   />
+
                   <input
                     type="text"
                     placeholder="หัวข้อประมูล"
-                    className="w-full b border border-gray-400 rounded-lg  px-4 py-1.5"
+                    className="w-full b border border-gray-400 rounded-lg h-10  px-4 py-1.5"
                     value={name || ""}
                     onChange={(e) => setName(e.target.value)}
                   />

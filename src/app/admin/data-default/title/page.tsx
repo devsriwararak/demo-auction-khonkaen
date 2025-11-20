@@ -251,7 +251,7 @@ const Page = () => {
                   <tr className="hover:bg-gray-100   ">
                     <td className="px-4 py-3 font-medium  ">{item.name}</td>
                     <td className="px-4 py-3 font-extralight text-gray-800  ">
-                      <p className="w-32">{item.date}</p>
+                      <p className="w-32">{formathDateThai(item.date)}</p>
                     </td>
                     <td className="px-2 py-3 font-extralight text-gray-800">
                       <p

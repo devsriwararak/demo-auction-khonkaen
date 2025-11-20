@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import CategoryTypeComponent from './CategoryTypeComponent';
 import UnitType from './UnitType';
 
 

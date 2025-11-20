@@ -17,13 +17,13 @@ const Page = () => {
       <div className="flex flex-row gap-4">
         <button
           onClick={() => setPath("1")}
-          className={` ${path == "1" ? "bg-red-500 text-white" : "bg-none border border-red-500 text-red-600"} w-1/5 px-4 py-1   rounded-md`}
+          className={` ${path == "1" ? "bg-red-500 active:bg-red-700 hover:bg-red-600 text-white" : "bg-none border border-red-500 text-red-600 hover:bg-red-100"} w-1/5 px-4 py-1   rounded-md`}
         >
           สรุปยอดขาย (ภาพรวม)
         </button>
         <button
           onClick={() => setPath("2")}
-          className={` ${path == "2" ? "bg-red-500 text-white" : "bg-none border border-red-500 text-red-600"} w-1/5 px-4 py-1  rounded-md`}
+          className={` ${path == "2" ? "bg-red-500 active:bg-red-700 hover:bg-red-600 text-white" : "bg-none border border-red-500 text-red-600 hover:bg-red-100"} w-1/5 px-4 py-1  rounded-md`}
         >
           สรุปรายการสินค้า
         </button>
