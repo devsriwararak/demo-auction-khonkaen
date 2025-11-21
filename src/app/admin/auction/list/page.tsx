@@ -66,7 +66,7 @@ const PageAuctionLst = () => {
     }
   };
 
-  const handleSetModal = async (id: number, numb: number, header: string) => {
+  const handleSetModal = async (id: number, numb: number, header: string ) => {
     setId(id);
     setHeader(header);
     await handleOpenModal(numb);

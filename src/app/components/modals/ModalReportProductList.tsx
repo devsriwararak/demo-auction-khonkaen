@@ -49,6 +49,8 @@ interface ProductItem {
   unit: string;
   price: number;
   total: number;
+  name : string
+  quantity : string | number
 }
 
 interface SendDataType {
@@ -153,7 +155,7 @@ const ModalReportProductList: React.FC<ModalPropsType> = ({
         
         const rawProducts = res.data.products || res.data.list || (Array.isArray(res.data) ? res.data : []);
         
-        const mappedProducts: ProductItem[] = rawProducts.map((item: any) => ({
+        const mappedProducts: ProductItem[] = rawProducts.map((item: ProductItem) => ({
             id: item.id,
             product_name: item.product_name || item.name || "", 
             qty: Number(item.qty || item.quantity || 0),        

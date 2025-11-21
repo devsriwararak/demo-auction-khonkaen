@@ -5,10 +5,10 @@ import axios from "axios";
 
 // --- 1. Helpers & Utilities ---
 
-const decryptToken = () => {
-  if (typeof window !== 'undefined') return localStorage.getItem('token') || '';
-  return '';
-};
+// const decryptToken = () => {
+//   if (typeof window !== 'undefined') return localStorage.getItem('token') || '';
+//   return '';
+// };
 
 const formatDateThai = (dateStr: string) => {
   if (!dateStr) return "-";
@@ -29,9 +29,9 @@ const getThaiFiscalYear = () => {
   return date.getMonth() >= 9 ? date.getFullYear() + 544 : date.getFullYear() + 543;
 };
 
-const convertNumberToThaiWords = (amount: number): string => {
-  return amount ? `${amount.toLocaleString()} บาทถ้วน` : "ศูนย์บาทถ้วน";
-};
+// const convertNumberToThaiWords = (amount: number): string => {
+//   return amount ? `${amount.toLocaleString()} บาทถ้วน` : "ศูนย์บาทถ้วน";
+// };
 
 // --- 2. Types Definitions ---
 

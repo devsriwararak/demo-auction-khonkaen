@@ -844,7 +844,7 @@ const ModalEditAuction: React.FC<ModalByIdType> = ({
 
                         <button
                           onClick={() =>
-                            handleSetModal(sendData.id, 3, "ใบรับของ")
+                            handleSetModal(sendData.id, 3, "ใบจองประมูล")
                           }
                           className="  px-2 py-1.5 rounded-md text-red-500 flex gap-1 items-center border border-red-500"
                         >

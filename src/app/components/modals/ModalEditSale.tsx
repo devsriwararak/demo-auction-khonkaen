@@ -405,6 +405,8 @@ const ModalEditSale: React.FC<PropsType> = ({
     if (id) fetchDataAll();
   }, [id]);
 
+
+
   return (
     <div>
       {openModalProduct && (

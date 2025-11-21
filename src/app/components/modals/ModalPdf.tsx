@@ -147,105 +147,6 @@ const ModalPdf: React.FC<ModalPropsType> = ({
     }
   };
 
-  // const handlePreviewPDF = async () => {
-  //   if (!pdfContentRef.current) return;
-
-  //   // ✅ 1. ฟังก์ชันรอให้รูปทั้งหมดโหลดเสร็จ
-  //   const waitForImagesToLoad = async (element: HTMLElement) => {
-  //     const images = element.querySelectorAll("img");
-  //     const promises = Array.from(images).map(
-  //       (img) =>
-  //         new Promise<void>((resolve) => {
-  //           if (img.complete) resolve();
-  //           else {
-  //             img.onload = () => resolve();
-  //             img.onerror = () => resolve();
-  //           }
-  //         })
-  //     );
-  //     await Promise.all(promises);
-  //   };
-
-  //   // ✅ 2. รอให้รูปทั้งหมดโหลดเสร็จก่อนเริ่มแคปเจอร์
-  //   await waitForImagesToLoad(pdfContentRef.current);
-
-  //   // ✅ 3. ปรับขนาดให้ html2canvas จับครบทุกส่วน
-  //   const canvasContent = await html2canvas(pdfContentRef.current, {
-  //     scale: 2,
-  //     useCORS: true,
-  //     allowTaint: true,
-  //     scrollX: 0,
-  //     scrollY: -window.scrollY,
-  //     windowWidth: pdfContentRef.current.scrollWidth,
-  //     windowHeight: pdfContentRef.current.scrollHeight,
-  //   });
-
-
-  //   const titles = ["ต้นฉบับ", "สำเนา", "ใบรับของ"]; // ข้อความภาษาไทย
-  //   const pdf = new jsPDF();
-
-  //   for (const title of titles) {
-  //     // สร้าง <div> ชั่วคราวสำหรับข้อความภาษาไทย
-  //     const tempDiv = document.createElement("div");
-  //     tempDiv.style.fontSize = "18px"; // ขนาดฟอนต์ที่ใหญ่พอ
-  //     tempDiv.style.fontFamily = "Arial, sans-serif"; // ฟอนต์ที่รองรับ
-  //     tempDiv.style.lineHeight = "1.2"; // เพิ่ม line-height ป้องกันการตัดส่วนท้าย
-  //     tempDiv.style.padding = "10px"; // เพิ่ม padding เพื่อไม่ให้ข้อความถูกตัด
-  //     tempDiv.style.position = "absolute";
-  //     tempDiv.style.top = "-9999px"; // ซ่อน <div> ออกจากหน้าจอ
-  //     tempDiv.innerHTML = title;
-
-  //     document.body.appendChild(tempDiv); // เพิ่ม <div> ลงใน DOM
-
-  //     // แปลง <div> เป็น Canvas
-  //     const canvas = await html2canvas(tempDiv);
-  //     const imgData = canvas.toDataURL("image/png");
-
-  //     const pageWidth = pdf.internal.pageSize.getWidth();
-  //     const imgX = 10; // ระยะห่างจากขอบซ้าย
-  //     const imgY = 5; // ระยะห่างจากขอบบน
-  //     const imgWidth = 25; // กำหนดความกว้างของภาพข้อความ
-  //     const imgHeight = (canvas.height / canvas.width) * imgWidth; // คำนวณอัตราส่วนความสูง
-
-  //     // เพิ่มภาพข้อความภาษาไทยลงใน PDF
-  //     pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
-
-  //     document.body.removeChild(tempDiv); // ลบ <div> หลังใช้งาน
-
-
-  //     // เพิ่มเนื้อหาอื่นจาก HTML
-  //     const canvasContent = await html2canvas(pdfContentRef.current);
-  //     const contentImgData = canvasContent.toDataURL("image/png");
-
-  //     const contentX = 10; // ระยะห่างจากขอบซ้าย
-  //     const contentY = imgY + imgHeight + 1; // ระยะห่างจากข้อความภาษาไทย
-  //     const contentWidth = pageWidth - 20; // ลดขอบซ้าย-ขวา
-  //     const contentHeight =
-  //       (canvasContent.height / canvasContent.width) * contentWidth; // คำนวณอัตราส่วน
-
-  //     // เพิ่มเนื้อหาในหน้า PDF
-  //     pdf.addImage(
-  //       contentImgData,
-  //       "PNG",
-  //       contentX,
-  //       contentY,
-  //       contentWidth,
-  //       contentHeight
-  //     );
-
-  //     // เพิ่มหน้าถัดไป (ยกเว้นหน้าสุดท้าย)
-  //     if (title !== titles[titles.length - 1]) {
-  //       pdf.addPage();
-  //     }
-  //   }
-
-  //   const pdfBlob = pdf.output("blob");
-  //   const url = URL.createObjectURL(pdfBlob);
-
-  //   // เปิดหน้าต่างใหม่เพื่อแสดง PDF Preview
-  //   const previewWindow = window.open(url, "_blank");
-  //   previewWindow?.focus();
-  // };
 
   const handlePreviewPDF = async () => {
     if (!pdfContentRef.current) return;
@@ -269,8 +170,22 @@ const ModalPdf: React.FC<ModalPropsType> = ({
     // ✅ 2. รอให้รูปทั้งหมดโหลดเสร็จก่อนเริ่มแคปเจอร์
     await waitForImagesToLoad(pdfContentRef.current);
 
+    let tempTitle: string[] = [];
+
+    if (type === "auction") {
+      if (header === "ใบจองประมูล") {
+        tempTitle = ['ต้นฉบับ(ผู้ประมูล)', 'สำเนา', 'ใบรับของ'];
+      } else if (header === "ใบเสร็จ") {
+        tempTitle = ['ต้นฉบับ', 'ผู้ประมูล', 'ใบรับของ'];
+      }
+    } else if (type === "sale") {
+      tempTitle = ['ต้นฉบับ(ผู้บริจาค)', 'สำเนา', 'ใบรับของ'];
+    }
+
+
+
     // ✅ titles (ชื่อชุด)
-    const titles = ["สำนา(บัญชี)", "ใบรับของ", "สำเนา"];
+    const titles = tempTitle;
     const pdf = new jsPDF("p", "mm", "a4");
 
     // ✅ เก็บขนาดหน้า A4
@@ -362,6 +277,8 @@ const ModalPdf: React.FC<ModalPropsType> = ({
     fetchDataAuctionProductList();
   }, []);
 
+
+
   return (
     <Dialog
       open={open}
@@ -384,33 +301,12 @@ const ModalPdf: React.FC<ModalPropsType> = ({
               </div>
             </div>
 
-            {/* {JSON.stringify(sendData)} */}
-            {/* {JSON.stringify(productItems)} */}
-
             {/* Hidden PDF Content */}
-            <div ref={pdfContentRef} className="px-12 pb-10  ">
+            <div ref={pdfContentRef} className="px-12 pb-10  text-[15px] ">
               {/* Header */}
 
               <div className="flex flex-row gap-4 justify-center w-full">
-                {/* <Image
-                  src="/images/admin-home-01.png"
-                  alt="Login Image"
-                  width={200}
-                  height={200}
-                  className=" w-36 h-36 "
-                  loading="eager"
-                  priority
-                />
-                <Image
-                  src="/images/admin-home-02.png"
-                  alt="Login Image"
-                  width={200}
-                  height={200}
-                  className="w-36 h-36 "
-                  loading="eager"
-                  priority
 
-                /> */}
                 <img src="/images/admin-home-01.png" alt="" className=" w-36 h-36" />
                 <img src="/images/admin-home-02.png" alt="" className=" w-36 h-36" />
               </div>
@@ -422,7 +318,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                 </h2>
               </div>
 
-              <div className="flex flex-row gap-32 justify-between mt-8">
+              <div className="flex flex-row gap-32 justify-between mt-6 text-[15px]">
                 <div className="w-8/12 flex flex-col gap-2 ">
                   <div>
                     ชื่อผู้บริจาค :{" "}
@@ -451,6 +347,17 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                       {sendData?.name || "-"}
                     </span>
                   </div>
+
+                  {type === "auction" && (
+                    <div>
+                      ของมงคลขึ้นประมูล :{" "}
+                      <span className=" font-extralight">
+                        {sendData?.title || "-"}
+                      </span>
+                    </div>
+                  )}
+
+
                 </div>
 
                 <div className="w-4/12  flex flex-col gap-2  ">
@@ -516,38 +423,6 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                 </thead>
 
                 <tbody>
-
-                  {/* {
-                    [
-                      // { id: 1, name: "สลากออมสิน", quantity: sendData.government || 0, price: 0 },
-                      // { id: 2, name: "ล็อตเตอรี่", quantity: sendData.lottery || 0, price: 0 },
-                      ...Array.from({ length: 8 }, (_, index) => ({
-                        id: index + 3,
-                        name: productItems[index]?.name || "",
-                        quantity: Number(productItems[index]?.quantity || 0).toLocaleString() || 0,
-                        price: Number(productItems[index]?.price || 0).toLocaleString() || 0
-                      }))
-                    ].map((item, index) => (
-                      <tr key={index}>
-                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                          {index + 1}{" "}
-                        </td>
-                        <td className="px-4 py-2 border border-black w-6/12 font-light">
-                          {item?.name || ""}{" "}
-                        </td>
-                        <td className="px-4 py-2 border border-black w-1/12 font-light text-center">
-                          {Number(item?.quantity || 0).toLocaleString() || ""}{" "}
-                        </td>
-                        <td className="px-4 py-2 border border-black w-2/12 font-light text-center">
-                          {Number(item?.price) || ""}{" "}{" "}
-                        </td>
-                        <td className="px-4 border border-black w-2/12 font-light text-center">
-                          {" "}
-                        </td>
-                      </tr>
-                    ))
-                  } */}
-
                   {
                     [
                       // ✅ แสดงเฉพาะเมื่อค่ามากกว่า 0
@@ -584,8 +459,6 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                         </tr>
                       ))
                   }
-
-
 
                   <tr>
                     <td></td>
@@ -626,7 +499,7 @@ const ModalPdf: React.FC<ModalPropsType> = ({
 
               <div className="mt-8 flex flex-row justify-center gap-4 font-light">
                 <div className="w-full flex flex-col justify-center items-center">
-                  <span> ผู้ออกบิล</span>
+                  <span> ผู้ออกบิล / ผู้ส่งของ</span>
                   <span className="mt-2">
                     ( ........................................................ )
                   </span>
@@ -637,7 +510,9 @@ const ModalPdf: React.FC<ModalPropsType> = ({
                 </div>
 
                 <div className="w-full flex flex-col justify-center items-center">
-                  <span>ผู้รับสินค้า</span>
+                  <span  id="signature-target"> 
+                    {type === "auction" ? "ผู้ประมูล" :"ผู้บริจาค"}
+                  </span>
                   <span className="mt-2">
                     ( ........................................................ )
                   </span>

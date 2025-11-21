@@ -382,12 +382,33 @@ const Page = () => {
   };
 
   // ต้องการแก้ไขราคา แทนที่ราคากับ cusId ที่มีอยู่แล้ว
-  const handleAddChangePrice = (cusId: number, price: number) => {
+  // const handleAddChangePrice = (cusId: number, price: number) => {
+  //   setSendData((prev) => ({
+  //     ...prev,
+  //     customers: prev.customers.map((item) =>
+  //       item.customer_id === cusId
+  //         ? { ...item, price } // อัปเดทราคา
+  //         : item
+  //     ),
+  //   }));
+  // };
+  const handleAddChangePrice = (
+    oldCusId: number,
+    newCusId: number,
+    newPrice: number,
+    newCusName: string
+  ) => {
     setSendData((prev) => ({
       ...prev,
       customers: prev.customers.map((item) =>
-        item.customer_id === cusId
-          ? { ...item, price } // อัปเดทราคา
+        // เช็คจาก ID เก่า (oldCusId) ว่าใช่แถวที่ต้องการแก้ไหม
+        item.customer_id === oldCusId
+          ? {
+            ...item,
+            customer_id: newCusId,     // อัปเดตเป็น ID ใหม่
+            customer_name: newCusName, // อัปเดตชื่อใหม่
+            price: newPrice            // อัปเดตราคาใหม่
+          }
           : item
       ),
     }));
@@ -560,7 +581,6 @@ const Page = () => {
           onAddChangePrice={handleAddChangePrice}
         />
       )}
-
 
       {/* LEFT SECTION */}
       <div className="w-full lg:w-4/6">
@@ -922,7 +942,7 @@ const Page = () => {
                   <th className="border-b px-2 py-2 text-start font-medium">
                     จำนวนเงิน
                   </th>
-                  {/* <th className="border-b px-2 py-2 text-start font-medium">แก้ไข</th> */}
+                  <th className="border-b px-2 py-2 text-start font-medium">แก้ไข</th>
                 </tr>
               </thead>
 
@@ -937,7 +957,7 @@ const Page = () => {
                         {item.customer_name}
                       </td>
                       <td className="border-b px-4 py-3 font-light  text-gray-600 ">
-                        {item.price}
+                        {Number(item.price).toLocaleString()}
                       </td>
                       <td className="border-b px-4 py-3 font-light  text-gray-600  ">
                         <FaRegEdit

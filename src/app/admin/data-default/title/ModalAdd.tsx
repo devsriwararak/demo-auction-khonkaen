@@ -30,7 +30,8 @@ const ModalAdd: React.FC<ModalAddProps> = ({
   const dateNow = moment().format("YYYY-MM-DD");
   const [date, setDate] = useState(dateNow);
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auction_title/add`,
@@ -104,58 +105,60 @@ const ModalAdd: React.FC<ModalAddProps> = ({
             transition
             className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
-            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 ">
-              <div className="mt-3 text-center  sm:mt-0 sm:text-left ">
-                <DialogTitle
-                  as="h3"
-                  className="text-base font-semibold text-gray-900"
-                >
-                  {!id ? "เพิ่มหัวข้อประมูล" : "แก้ไขหัวข้อประมูล"}
-                </DialogTitle>
-                <div className="py-4 flex flex-col lg:flex-row gap-4 items-end">
+            <form onSubmit={handleSave} >
+              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 ">
+                <div className="mt-3 text-center  sm:mt-0 sm:text-left ">
+                  <DialogTitle
+                    as="h3"
+                    className="text-base font-semibold text-gray-900"
+                  >
+                    {!id ? "เพิ่มหัวข้อประมูล" : "แก้ไขหัวข้อประมูล"}
+                  </DialogTitle>
+                  <div className="py-4 flex flex-col lg:flex-row gap-4 items-end">
 
-                  {/* <input
+                    {/* <input
                     type="date"
                     value={date || ""}
                     className="w-full border border-gray-400 rounded-lg  px-4 py-1.5"
                     onChange={(e) => setDate(e.target.value)}
                   /> */}
 
-                  <DatePickerOne
-                    label="วันที่สิ้นสุด"
-                    name=""
-                    onChange={async(e) => setDate(String(e))}
-                    value={date || ""}
-                    className='w-full'
-                  />
+                    <DatePickerOne
+                      label="วันที่สิ้นสุด"
+                      name=""
+                      onChange={async (e) => setDate(String(e))}
+                      value={date || ""}
+                      className='w-full'
+                    />
 
-                  <input
-                    type="text"
-                    placeholder="หัวข้อประมูล"
-                    className="w-full b border border-gray-400 rounded-lg h-10  px-4 py-1.5"
-                    value={name || ""}
-                    onChange={(e) => setName(e.target.value)}
-                  />
+                    <input
+                      type="text"
+                      placeholder="หัวข้อประมูล"
+                      className="w-full b border border-gray-400 rounded-lg h-10  px-4 py-1.5"
+                      value={name || ""}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-gray-100 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <button
-                type="button"
-                onClick={handleSave}
-                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-              >
-                {!id ? "บันทึก" : "อัพเดท"}
-              </button>
-              <button
-                type="button"
-                data-autofocus
-                onClick={handleModalAdd}
-                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-              >
-                ยกเลิก
-              </button>
-            </div>
+              <div className="bg-gray-100 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type='submit'
+                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                >
+                  {!id ? "บันทึก" : "อัพเดท"}
+                </button>
+                <button
+                  type="button"
+                  data-autofocus
+                  onClick={handleModalAdd}
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </form>
+
           </DialogPanel>
         </div>
       </div>
