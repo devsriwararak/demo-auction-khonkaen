@@ -173,11 +173,12 @@ const ModalPdf: React.FC<ModalPropsType> = ({
     let tempTitle: string[] = [];
 
     if (type === "auction") {
-      if (header === "ใบจองประมูล") {
-        tempTitle = ['ต้นฉบับ(ผู้ประมูล)', 'สำเนา', 'ใบรับของ'];
-      } else if (header === "ใบเสร็จ") {
-        tempTitle = ['ต้นฉบับ', 'ผู้ประมูล', 'ใบรับของ'];
-      }
+      // if (header === "ใบจองประมูล") {
+      //   tempTitle = ['ต้นฉบับ(ผู้ประมูล)', 'สำเนา', 'ใบรับของ'];
+      // } else if (header === "ใบเสร็จ") {
+      //   tempTitle = ['ต้นฉบับ', 'ผู้ประมูล', 'ใบรับของ'];
+      // }
+       tempTitle = ['ต้นฉบับ(ผู้ประมูล)', 'สำเนา', 'ใบรับของ'];
     } else if (type === "sale") {
       tempTitle = ['ต้นฉบับ(ผู้บริจาค)', 'สำเนา', 'ใบรับของ'];
     }
